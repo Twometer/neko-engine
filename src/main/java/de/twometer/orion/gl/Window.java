@@ -99,12 +99,13 @@ public class Window {
         });
 
         glfwSetMouseButtonCallback(handle, (window, button, action, mods) -> {
-            if (action == GLFW_RELEASE)
+            if (action == GLFW_RELEASE && clickCallback != null)
                 clickCallback.onClick(button);
         });
 
         glfwSetCharCallback(handle, (window, codepoint) -> {
-            charTypedCallback.onChar((char) codepoint);
+            if (charTypedCallback != null)
+                charTypedCallback.onChar((char) codepoint);
         });
 
         glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {

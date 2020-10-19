@@ -44,7 +44,7 @@ public class SimpleModel extends BaseModel {
         this.centerOfMass = com;
     }
 
-    public static BaseModel create(String name, Mesh mesh, int primitiveType) {
+    public static SimpleModel create(String name, Mesh mesh, int primitiveType) {
         int dimensions = mesh.getDimensions();
 
         mesh.getVertices().flip();
