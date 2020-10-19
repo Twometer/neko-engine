@@ -128,9 +128,6 @@ public class SimpleModel extends BaseModel {
 
     @Override
     public void render() {
-        if (dimensions == 3)
-            return;
-
         boolean hasColors = colorBuffer != -1;
         boolean hasNormals = normalBuffer != -1;
         boolean hasTextures = texCoordBuffer != -1;

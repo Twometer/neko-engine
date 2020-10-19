@@ -1,7 +1,9 @@
 package de.twometer.orion.res;
 
+import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.Color;
 import de.twometer.orion.render.model.*;
+import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.Log;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -20,6 +22,7 @@ public class ModelLoader {
     }
 
     public static List<BaseModel> loadModels(String modelFile) {
+        Log.d("Loading model " + modelFile);
         String path = AssetPaths.MODEL_PATH + modelFile;
         AIScene aiScene = aiImportFile(path, aiProcess_Triangulate);
         if (aiScene == null) {
@@ -45,7 +48,13 @@ public class ModelLoader {
             aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_EMISSIVE, aiTextureType_NONE, 0, aiEmissiveColor);
             Color emissiveColor = new Color(aiEmissiveColor.r(), aiEmissiveColor.g(), aiEmissiveColor.b(), aiEmissiveColor.a());
 
-            materials.add(new Material(matname.dataString(), texpath.dataString(), diffuseColor, emissiveColor));
+            var texturePath = texpath.dataString();
+            materials.add(new Material(matname.dataString(), texturePath, diffuseColor, emissiveColor));
+
+            if (!texturePath.isEmpty()) {
+                // Preload textures
+                OrionApp.get().getTextureProvider().getTexture(texturePath);
+            }
 
             matname.free();
             texpath.free();
@@ -88,7 +97,7 @@ public class ModelLoader {
     }
 
     private static BaseModel convert(String name, AIMesh aiMesh, List<Material> mats) {
-        Mesh mesh = Mesh.create(aiMesh.mNumVertices() + 100, 3)
+        Mesh mesh = Mesh.create(aiMesh.mNumVertices(), 3)
                 .withTexCoords()
                 .withNormals();
         AIVector3D.Buffer aiVertices = aiMesh.mVertices();
@@ -103,9 +112,9 @@ public class ModelLoader {
             mesh.putNormal(aiNormal.x(), aiNormal.y(), aiNormal.z());
         }
 
-        AIVector3D.Buffer buffer = aiMesh.mTextureCoords(0);
-        while (buffer.remaining() > 0) {
-            AIVector3D aiTexCoord = buffer.get();
+        AIVector3D.Buffer aiTexCoords = aiMesh.mTextureCoords(0);
+        while (aiTexCoords.remaining() > 0) {
+            AIVector3D aiTexCoord = aiTexCoords.get();
             mesh.putTexCoord(aiTexCoord.x(), 1 - aiTexCoord.y());
         }
 

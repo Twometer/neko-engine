@@ -2,10 +2,13 @@ package de.twometer.orion.core;
 
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
+import de.twometer.orion.res.cache.ShaderProvider;
+import de.twometer.orion.res.cache.TextureProvider;
+import de.twometer.orion.util.FpsCounter;
 import de.twometer.orion.util.Log;
 import de.twometer.orion.util.Timer;
 
-import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL11.*;
 
 public abstract class OrionApp {
 
@@ -15,7 +18,13 @@ public abstract class OrionApp {
 
     private Timer timer;
 
-    private Camera camera;
+    private final Camera camera = new Camera();
+
+    private final ShaderProvider shaderProvider = new ShaderProvider();
+
+    private final TextureProvider textureProvider = new TextureProvider();
+
+    private final FpsCounter fpsCounter = new FpsCounter();
 
     /* Singleton */
     public OrionApp() {
@@ -32,11 +41,10 @@ public abstract class OrionApp {
     /* Startup */
 
     public final void launch(String title, int width, int height) {
-        launch(title, width, height, 30);
+        launch(title, width, height, 50);
     }
 
     public final void launch(String title, int width, int height, int tps) {
-        camera = new Camera();
         window = new Window(title, width, height);
         timer = new Timer(tps);
         runGameLoop();
@@ -49,16 +57,24 @@ public abstract class OrionApp {
 
         window.create();
         window.setSizeCallback(this::onResize);
-
+        this.onResize(window.getWidth(), window.getHeight());
         timer.reset();
 
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glClearColor(0, 0, 0, 0);
+
         onInitialize();
+        Log.i("Initialization complete.");
     }
 
     private void runGameLoop() {
         setup();
 
         while (!window.shouldClose()) {
+            camera.update();
+
             onRender();
 
             if (timer.elapsed()) {
@@ -66,7 +82,7 @@ public abstract class OrionApp {
                 onUpdate(timer.getPartial());
             }
 
-            camera.update();
+            fpsCounter.count();
             window.update();
         }
 
@@ -115,5 +131,13 @@ public abstract class OrionApp {
 
     public final Camera getCamera() {
         return camera;
+    }
+
+    public final ShaderProvider getShaderProvider() {
+        return shaderProvider;
+    }
+
+    public final TextureProvider getTextureProvider() {
+        return textureProvider;
     }
 }
