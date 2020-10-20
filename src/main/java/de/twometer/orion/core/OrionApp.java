@@ -30,8 +30,6 @@ public abstract class OrionApp {
 
     private final FpsCounter fpsCounter = new FpsCounter();
 
-    private final DeferredPipeline pipeline = new DeferredPipeline();
-
     /* Singleton */
     public OrionApp() {
         if (app == null)
@@ -70,8 +68,7 @@ public abstract class OrionApp {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0, 0, 0, 1);
-
-        pipeline.create();
+        renderManager.setup();
 
         onInitialize();
         Log.i("Initialization complete.");
@@ -89,9 +86,9 @@ public abstract class OrionApp {
                 onUpdate(timer.getPartial());
             }
 
-            pipeline.begin();
+            renderManager.getPipeline().begin();
             onRenderDeferred();
-            pipeline.finish();
+            renderManager.getPipeline().finish();
 
             onRenderForward();
 
@@ -162,7 +159,4 @@ public abstract class OrionApp {
         return renderManager;
     }
 
-    public void reloadLights() {
-        pipeline.reloadLights();
-    }
 }

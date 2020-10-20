@@ -4,6 +4,7 @@ import de.twometer.orion.render.filter.IModelFilter;
 import de.twometer.orion.render.light.PointLight;
 import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.render.shading.IShadingStrategy;
 
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RenderManager {
+
+    private final DeferredPipeline pipeline = new DeferredPipeline();
 
     private final List<BaseModel> models = new ArrayList<>();
 
@@ -20,8 +23,8 @@ public class RenderManager {
 
     private IShadingStrategy shadingStrategy = new DeferredShadingStrategy();
 
-    public void addModelFilter(IModelFilter filter) {
-        modelFilters.add(filter);
+    public void setup() {
+        pipeline.create();
     }
 
     public boolean shouldRender(ModelPart part) {
@@ -29,10 +32,6 @@ public class RenderManager {
             if (!filter.shouldRender(part))
                 return false;
         return true;
-    }
-
-    public void addModel(BaseModel model) {
-        models.add(model);
     }
 
     public void update() {
@@ -46,19 +45,33 @@ public class RenderManager {
         }
     }
 
-    public List<PointLight> getLights() {
-        return lights;
+    public void addModelFilter(IModelFilter filter) {
+        modelFilters.add(filter);
+    }
+
+    public void addModel(BaseModel model) {
+        models.add(model);
     }
 
     public void addLight(PointLight light) {
         lights.add(light);
+        pipeline.reloadLights();
     }
 
     public void setShadingStrategy(IShadingStrategy shadingStrategy) {
         this.shadingStrategy = shadingStrategy;
     }
 
+    public List<PointLight> getLights() {
+        return lights;
+    }
+
     public IShadingStrategy getShadingStrategy() {
         return shadingStrategy;
     }
+
+    public DeferredPipeline getPipeline() {
+        return pipeline;
+    }
+
 }

@@ -19,6 +19,8 @@ public class ExampleApp extends OrionApp {
 
     @Override
     public void onInitialize() {
+        getWindow().setCursorVisible(false);
+
         getRenderManager().addModelFilter(new FrustumCullingFilter());
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
@@ -29,8 +31,6 @@ public class ExampleApp extends OrionApp {
                 getRenderManager().addLight(new PointLight(model.getCenter()));
             }
         });
-
-        reloadLights();
     }
 
     @Override
