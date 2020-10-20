@@ -8,7 +8,7 @@ import de.twometer.orion.gl.Uniform;
 import de.twometer.orion.render.Color;
 import org.joml.Matrix4f;
 
-public class ExampleShader extends Shader{
+public class ExampleShader extends Shader {
 
     @Inject(UniformInject.ViewMatrix)
     public Uniform<Matrix4f> viewMatrix;
@@ -24,7 +24,7 @@ public class ExampleShader extends Shader{
     public Uniform<Boolean> hasTexture;
 
     public ExampleShader() {
-        super("BaseVert.glsl", "BaseFrag.glsl");
+        super("ExampleVert.glsl", "ExampleFrag.glsl");
     }
 
 }

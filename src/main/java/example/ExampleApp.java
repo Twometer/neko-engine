@@ -1,23 +1,16 @@
 package example;
 
 import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.render.Color;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
-import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ExampleApp extends OrionApp {
-
-    private BaseModel skeld;
-    private ExampleShader shader;
 
     public static void main(String[] args) {
         (new ExampleApp()).launch("Example app", 1024, 768);
@@ -25,19 +18,15 @@ public class ExampleApp extends OrionApp {
 
     @Override
     public void onInitialize() {
-        skeld = ModelLoader.loadModel("TheSkeld.obj");
-        shader = getShaderProvider().getShader(ExampleShader.class);
-
         getRenderManager().addModelFilter(new FrustumCullingFilter());
+
+        var skeld = ModelLoader.loadModel("TheSkeld.obj");
+        addModel(skeld, new ExampleShadingStrategy());
     }
 
     @Override
     public void onRender() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        shader.bind();
-        shader.modelMatrix.set(new Matrix4f());
-        shader.modelColor.set(Color.RED);
-        skeld.render();
     }
 
     @Override

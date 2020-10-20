@@ -2,6 +2,8 @@ package de.twometer.orion.core;
 
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
+import de.twometer.orion.render.shading.IShadingStrategy;
+import de.twometer.orion.render.RenderItem;
 import de.twometer.orion.render.RenderManager;
 import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.res.cache.ShaderProvider;
@@ -9,9 +11,6 @@ import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
 import de.twometer.orion.util.Log;
 import de.twometer.orion.util.Timer;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -32,8 +31,6 @@ public abstract class OrionApp {
     private final TextureProvider textureProvider = new TextureProvider();
 
     private final FpsCounter fpsCounter = new FpsCounter();
-
-    private final List<BaseModel> models = new ArrayList<>();
 
     /* Singleton */
     public OrionApp() {
@@ -91,6 +88,7 @@ public abstract class OrionApp {
             }
 
             onRender();
+            renderManager.renderFrame();
             fpsCounter.count();
             window.update();
         }
@@ -154,7 +152,7 @@ public abstract class OrionApp {
         return renderManager;
     }
 
-    protected void addModel(BaseModel model) {
-        models.add(model);
+    protected void addModel(BaseModel model, IShadingStrategy strategy) {
+        renderManager.addRenderItem(new RenderItem(model, strategy));
     }
 }

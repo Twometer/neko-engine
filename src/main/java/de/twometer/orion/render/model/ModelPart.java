@@ -130,8 +130,13 @@ public class ModelPart extends BaseModel {
 
     @Override
     public void render() {
-        if (!OrionApp.get().getRenderManager().shouldRender(this))
+        var renderManager = OrionApp.get().getRenderManager();
+        if (!renderManager.shouldRender(this))
             return;
+
+        var shaderProvider = OrionApp.get().getShaderProvider();
+        var textureProvider = OrionApp.get().getTextureProvider();
+        renderManager.getShadingStrategy().prepareRender(this, shaderProvider, textureProvider);
 
         boolean hasColors = colorBuffer != -1;
         boolean hasNormals = normalBuffer != -1;
