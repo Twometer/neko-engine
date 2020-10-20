@@ -3,6 +3,9 @@ package de.twometer.orion.render.model;
 import de.twometer.orion.render.Transform;
 import org.joml.Vector3f;
 
+import javax.swing.*;
+import java.util.function.Consumer;
+
 public abstract class BaseModel {
 
     private final String name;
@@ -48,5 +51,15 @@ public abstract class BaseModel {
 
     public void setTag(Object tag) {
         this.tag = tag;
+    }
+
+    public void traverseTree(Consumer<BaseModel> consumer) {
+        if (this instanceof CompositeModel) {
+            var model = (CompositeModel)this;
+            for (var child : model.getChildren())
+                child.traverseTree(consumer);
+        } else {
+            consumer.accept(this);
+        }
     }
 }

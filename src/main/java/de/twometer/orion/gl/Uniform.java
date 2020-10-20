@@ -30,26 +30,31 @@ public class Uniform<T> {
     }
 
     public void set(T val) {
+        set(0, val);
+    }
+
+    public void set(int idx, T val) {
+        int location = this.location + idx;
         if (val instanceof Color) {
             switch (dimensionOverride) {
-                case 3 -> setColor3((Color) val);
-                case 4 -> setColor4((Color) val);
+                case 3 -> setColor3(location, (Color) val);
+                case 4 -> setColor4(location, (Color) val);
                 default -> throw new IllegalArgumentException("Color with " + dimensionOverride + " dimensions not allowed");
             }
         } else if (val instanceof Vector3f) {
-            setVector3((Vector3f) val);
+            setVector3(location, (Vector3f) val);
         } else if (val instanceof Vector4f) {
-            setVector4((Vector4f) val);
+            setVector4(location, (Vector4f) val);
         } else if (val instanceof Vector2f) {
-            setVector2((Vector2f) val);
+            setVector2(location, (Vector2f) val);
         } else if (val instanceof Float) {
-            setFloat((Float) val);
+            setFloat(location, (Float) val);
         } else if (val instanceof Integer) {
-            setInt((Integer) val);
+            setInt(location, (Integer) val);
         } else if (val instanceof Boolean) {
-            setBool((Boolean) val);
+            setBool(location, (Boolean) val);
         } else if (val instanceof Matrix4f) {
-            setMatrix((Matrix4f) val);
+            setMatrix(location, (Matrix4f) val);
         }
     }
 
@@ -57,15 +62,15 @@ public class Uniform<T> {
         return uniformInject;
     }
 
-    private void setColor3(Color color) {
-        setVector3(color.toVector3f());
+    private void setColor3(int location, Color color) {
+        setVector3(location, color.toVector3f());
     }
 
-    private void setColor4(Color color) {
-        setVector4(color.toVector4f());
+    private void setColor4(int location, Color color) {
+        setVector4(location, color.toVector4f());
     }
 
-    private void setMatrix(Matrix4f mat) {
+    private void setMatrix(int location, Matrix4f mat) {
         if (mat == null)
             return;
         if (matrixBuffer == null)
@@ -74,27 +79,27 @@ public class Uniform<T> {
         glUniformMatrix4fv(location, false, matrixBuffer);
     }
 
-    private void setVector4(Vector4f vec) {
+    private void setVector4(int location, Vector4f vec) {
         glUniform4f(location, vec.x, vec.y, vec.z, vec.w);
     }
 
-    private void setVector3(Vector3f vec) {
+    private void setVector3(int location, Vector3f vec) {
         glUniform3f(location, vec.x, vec.y, vec.z);
     }
 
-    private void setVector2(Vector2f vec) {
+    private void setVector2(int location, Vector2f vec) {
         glUniform2f(location, vec.x, vec.y);
     }
 
-    private void setFloat(float f) {
+    private void setFloat(int location, float f) {
         glUniform1f(location, f);
     }
 
-    private void setInt(int i) {
+    private void setInt(int location, int i) {
         glUniform1i(location, i);
     }
 
-    private void setBool(boolean b) {
+    private void setBool(int location, boolean b) {
         glUniform1i(location, b ? 1 : 0);
     }
 }

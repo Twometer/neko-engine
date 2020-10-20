@@ -1,4 +1,4 @@
-package example;
+package de.twometer.orion.render.pipeline;
 
 import de.twometer.orion.api.Dimensions;
 import de.twometer.orion.api.Inject;
@@ -8,7 +8,7 @@ import de.twometer.orion.gl.Uniform;
 import de.twometer.orion.render.Color;
 import org.joml.Matrix4f;
 
-public class ExampleShader extends Shader {
+public class DeferredShader extends Shader {
 
     @Inject(UniformInject.ViewMatrix)
     public Uniform<Matrix4f> viewMatrix;
@@ -23,8 +23,8 @@ public class ExampleShader extends Shader {
 
     public Uniform<Boolean> hasTexture;
 
-    public ExampleShader() {
-        super("ExampleVert.glsl", "ExampleFrag.glsl");
+    public DeferredShader() {
+        super("Deferred");
     }
 
 }

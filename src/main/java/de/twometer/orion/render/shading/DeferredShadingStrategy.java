@@ -1,16 +1,15 @@
-package example;
+package de.twometer.orion.render.shading;
 
-import de.twometer.orion.render.shading.IShadingStrategy;
 import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.pipeline.DeferredShader;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import org.joml.Matrix4f;
 
-public class ExampleShadingStrategy implements IShadingStrategy {
-
+public class DeferredShadingStrategy implements IShadingStrategy {
     @Override
     public void prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures) {
-        var shader = shaders.getShader(ExampleShader.class);
+        var shader = shaders.getShader(DeferredShader.class);
         var mat = part.getMaterial();
 
         if (mat.hasTexture())
@@ -21,5 +20,4 @@ public class ExampleShadingStrategy implements IShadingStrategy {
         shader.modelMatrix.set(new Matrix4f());
         shader.hasTexture.set(mat.hasTexture());
     }
-
 }

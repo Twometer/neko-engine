@@ -2,10 +2,8 @@ package de.twometer.orion.core;
 
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
-import de.twometer.orion.render.shading.IShadingStrategy;
-import de.twometer.orion.render.RenderItem;
 import de.twometer.orion.render.RenderManager;
-import de.twometer.orion.render.model.BaseModel;
+import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
@@ -31,6 +29,8 @@ public abstract class OrionApp {
     private final TextureProvider textureProvider = new TextureProvider();
 
     private final FpsCounter fpsCounter = new FpsCounter();
+
+    private final DeferredPipeline pipeline = new DeferredPipeline();
 
     /* Singleton */
     public OrionApp() {
@@ -69,7 +69,9 @@ public abstract class OrionApp {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glClearColor(0, 0, 0, 0);
+        glClearColor(0, 0, 0, 1);
+
+        pipeline.create();
 
         onInitialize();
         Log.i("Initialization complete.");
@@ -87,8 +89,12 @@ public abstract class OrionApp {
                 onUpdate(timer.getPartial());
             }
 
-            onRender();
-            renderManager.renderFrame();
+            pipeline.begin();
+            onRenderDeferred();
+            pipeline.finish();
+
+            onRenderForward();
+
             fpsCounter.count();
             window.update();
         }
@@ -106,23 +112,27 @@ public abstract class OrionApp {
 
     /* Callbacks */
 
-    public void onRender() {
+    protected void onRenderDeferred() {
+        renderManager.renderFrame();
+    }
+
+    protected void onRenderForward() {
 
     }
 
-    public void onUpdate(float partial) {
+    protected void onUpdate(float partial) {
 
     }
 
-    public void onInitialize() {
+    protected void onInitialize() {
 
     }
 
-    public void onDestroy() {
+    protected void onDestroy() {
 
     }
 
-    public void onResize(int w, int h) {
+    protected void onResize(int w, int h) {
         glViewport(0, 0, w, h);
     }
 
@@ -152,7 +162,7 @@ public abstract class OrionApp {
         return renderManager;
     }
 
-    protected void addModel(BaseModel model, IShadingStrategy strategy) {
-        renderManager.addRenderItem(new RenderItem(model, strategy));
+    public void reloadLights() {
+        pipeline.reloadLights();
     }
 }

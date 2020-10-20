@@ -2,6 +2,7 @@ package de.twometer.orion.gl;
 
 import de.twometer.orion.core.OrionApp;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Framebuffer {
         glViewport(0, 0, width, height);
     }
 
-    public void unbind() {
+    public static void unbind() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         var window = OrionApp.get().getWindow();
         glViewport(0, 0, window.getWidth(), window.getHeight());
@@ -58,17 +59,24 @@ public class Framebuffer {
         return create(window.getWidth(), window.getHeight());
     }
 
+    public Framebuffer finish() {
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            throw new IllegalStateException("Framebuffer not complete");
+        unbind();
+        return this;
+    }
+
     public static Framebuffer create(int width, int height) {
         int fbo = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        return new Framebuffer(width, height, fbo).withColorTexture(0);
-    }
-
-    public Framebuffer withColorTexture() {
-        return withColorTexture(0);
+        return new Framebuffer(width, height, fbo);
     }
 
     public Framebuffer withColorTexture(int attachmentNum) {
+        return withColorTexture(attachmentNum, GL_RGBA8, GL_LINEAR, GL_UNSIGNED_BYTE);
+    }
+
+    public Framebuffer withColorTexture(int attachmentNum, int format, int interpolation, int dataType) {
         int attachment = GL_COLOR_ATTACHMENT0 + attachmentNum;
         if (colorTextures.contains(attachment)) {
             throw new IllegalArgumentException("Cannot create color attachment " + attachmentNum + "twice");
@@ -79,13 +87,12 @@ public class Framebuffer {
         colorTextures.add(tex);
 
         glBindTexture(GL_TEXTURE_2D, tex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, dataType, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolation);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolation);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, tex, 0);
-
 
         int[] colorAttachmentsArray = colorAttachments.stream().mapToInt(Integer::intValue).toArray();
         glDrawBuffers(colorAttachmentsArray);
@@ -125,5 +132,11 @@ public class Framebuffer {
 
     public int getHeight() {
         return height;
+    }
+
+    public void blitDepth(Framebuffer dst) {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst == null ? 0 : dst.framebuffer);
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
     }
 }

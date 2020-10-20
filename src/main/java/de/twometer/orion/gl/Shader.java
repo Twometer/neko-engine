@@ -20,17 +20,18 @@ public abstract class Shader {
     private final List<Uniform> uniforms = new ArrayList<>();
 
     public Shader(String name) {
-        this(name, name);
+        this(name + "Vert.glsl", name + "Frag.glsl");
     }
 
     public Shader(String vertex, String fragment) {
         id = ShaderLoader.loadShader(vertex, fragment);
+        bind();
         bindUniforms();
+        init();
+        unbind();
     }
 
     private void bindUniforms() {
-        bind();
-
         var fields = getClass().getDeclaredFields();
         for (var field : fields) {
             field.setAccessible(true);
@@ -53,8 +54,6 @@ public abstract class Shader {
                 }
             }
         }
-
-        unbind();
     }
 
     public final void bind() {
@@ -74,6 +73,14 @@ public abstract class Shader {
                 case ViewMatrix -> u.set(cam.getViewMatrix());
             }
         }
+    }
+
+    protected void bindSampler(String sampler, int unit) {
+        glUniform1i(glGetUniformLocation(id, sampler), unit);
+    }
+
+    public void init() {
+
     }
 
 }

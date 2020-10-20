@@ -2,13 +2,14 @@ package example;
 
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
+import de.twometer.orion.render.light.PointLight;
+import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 
 public class ExampleApp extends OrionApp {
 
@@ -21,12 +22,15 @@ public class ExampleApp extends OrionApp {
         getRenderManager().addModelFilter(new FrustumCullingFilter());
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
-        addModel(skeld, new ExampleShadingStrategy());
-    }
+        getRenderManager().addModel(skeld);
 
-    @Override
-    public void onRender() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        skeld.traverseTree(model -> {
+            if (model instanceof ModelPart && model.getName().contains("Luces")) {
+                getRenderManager().addLight(new PointLight(model.getCenter()));
+            }
+        });
+
+        reloadLights();
     }
 
     @Override

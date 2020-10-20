@@ -81,4 +81,8 @@ public class CompositeModel extends BaseModel {
         for (BaseModel child : children)
             child.setTag(tag);
     }
+
+    public List<BaseModel> getChildren() {
+        return children;
+    }
 }
