@@ -2,7 +2,9 @@ package de.twometer.orion.res;
 
 import de.twometer.orion.gl.Texture;
 import de.twometer.orion.util.Log;
+import org.joml.internal.MemUtil;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

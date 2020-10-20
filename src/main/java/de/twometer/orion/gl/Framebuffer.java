@@ -73,10 +73,10 @@ public class Framebuffer {
     }
 
     public Framebuffer withColorTexture(int attachmentNum) {
-        return withColorTexture(attachmentNum, GL_RGBA8, GL_LINEAR, GL_UNSIGNED_BYTE);
+        return withColorTexture(attachmentNum, GL_RGBA8, GL_RGBA, GL_LINEAR, GL_UNSIGNED_BYTE);
     }
 
-    public Framebuffer withColorTexture(int attachmentNum, int format, int interpolation, int dataType) {
+    public Framebuffer withColorTexture(int attachmentNum, int internalFormat, int format, int interpolation, int dataType) {
         int attachment = GL_COLOR_ATTACHMENT0 + attachmentNum;
         if (colorTextures.contains(attachment)) {
             throw new IllegalArgumentException("Cannot create color attachment " + attachmentNum + "twice");
@@ -87,7 +87,7 @@ public class Framebuffer {
         colorTextures.add(tex);
 
         glBindTexture(GL_TEXTURE_2D, tex);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, dataType, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, dataType, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolation);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolation);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

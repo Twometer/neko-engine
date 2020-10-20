@@ -7,6 +7,7 @@ in vec2 TexCoords;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
+uniform sampler2D ssao;
 
 const int MAX_NR_LIGHTS = 128;
 
@@ -25,8 +26,10 @@ void main(void){
     const float quadratic = 1.0f;
     const vec3 color = vec3(1, 1, 1);
 
+    float AO = texture(ssao, TexCoords).r;
+
     // then calculate lighting as usual
-    vec3 lighting  = Diffuse * 0.1;// hard-coded ambient component
+    vec3 lighting = 0.3 * Diffuse * AO;// hard-coded ambient component
     vec3 viewDir  = normalize(viewPos - FragPos);
     for (int i = 0; i < numLights; ++i)
     {

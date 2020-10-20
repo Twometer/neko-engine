@@ -21,5 +21,6 @@ public class LightingShader extends Shader {
         bindSampler("gPosition", 0);
         bindSampler("gNormal", 1);
         bindSampler("gAlbedoSpec", 2);
+        bindSampler("ssao", 3);
     }
 }

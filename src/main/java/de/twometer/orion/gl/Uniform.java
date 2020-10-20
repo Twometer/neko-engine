@@ -37,9 +37,14 @@ public class Uniform<T> {
         int location = this.location + idx;
         if (val instanceof Color) {
             switch (dimensionOverride) {
-                case 3 -> setColor3(location, (Color) val);
-                case 4 -> setColor4(location, (Color) val);
-                default -> throw new IllegalArgumentException("Color with " + dimensionOverride + " dimensions not allowed");
+                case 3:
+                    setColor3(location, (Color) val);
+                    break;
+                case 4:
+                    setColor4(location, (Color) val);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Color with " + dimensionOverride + " dimensions not allowed");
             }
         } else if (val instanceof Vector3f) {
             setVector3(location, (Vector3f) val);

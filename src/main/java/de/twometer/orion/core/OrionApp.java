@@ -45,7 +45,7 @@ public abstract class OrionApp {
     /* Startup */
 
     public final void launch(String title, int width, int height) {
-        launch(title, width, height, 50);
+        launch(title, width, height, 90);
     }
 
     public final void launch(String title, int width, int height, int tps) {

@@ -1,6 +1,7 @@
 package de.twometer.orion.res;
 
 import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.gl.Texture;
 import de.twometer.orion.render.Color;
 import de.twometer.orion.render.model.*;
 import de.twometer.orion.util.Log;
@@ -23,7 +24,7 @@ public class ModelLoader {
     public static List<BaseModel> loadModels(String modelFile) {
         Log.d("Loading model " + modelFile);
         String path = AssetPaths.MODEL_PATH + modelFile;
-        AIScene aiScene = aiImportFile(path, aiProcess_Triangulate);
+        AIScene aiScene = aiImportFile(path, 0);
         if (aiScene == null) {
             throw new IllegalStateException(aiGetErrorString());
         }
@@ -52,10 +53,10 @@ public class ModelLoader {
 
             materials.add(new Material(matname.dataString(), texture, diffuseColor, emissiveColor));
 
-            matname.free();
+            /*matname.free();
             texpath.free();
             aiDiffuseColor.free();
-            aiEmissiveColor.free();
+            aiEmissiveColor.free();*/
         }
 
         PointerBuffer aiMeshes = aiScene.mMeshes();

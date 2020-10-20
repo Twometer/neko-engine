@@ -1,6 +1,10 @@
 package de.twometer.orion.util;
 
+import java.util.Random;
+
 public class MathF {
+
+    private static final Random random = new Random();
 
     public static final float PI = (float) Math.PI;
 
@@ -44,6 +48,10 @@ public class MathF {
 
     public static float lerp(float a, float b, float f) {
         return a + f * (b - a);
+    }
+
+    public static float rand() {
+        return random.nextFloat();
     }
 
 }

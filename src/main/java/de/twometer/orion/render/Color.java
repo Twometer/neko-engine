@@ -40,4 +40,19 @@ public class Color {
         return new Vector4f(r, g, b, a);
     }
 
+    public float getR() {
+        return r;
+    }
+
+    public float getG() {
+        return g;
+    }
+
+    public float getB() {
+        return b;
+    }
+
+    public float getA() {
+        return a;
+    }
 }

@@ -5,9 +5,11 @@ import de.twometer.orion.api.Dimensions;
 import de.twometer.orion.api.Location;
 import de.twometer.orion.api.UniformInject;
 import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.render.Camera;
 import de.twometer.orion.res.ShaderLoader;
 import de.twometer.orion.util.Log;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +63,7 @@ public abstract class Shader {
         setDefaults();
     }
 
-    public final void unbind() {
+    public static void unbind() {
         glUseProgram(0);
     }
 
@@ -69,8 +71,12 @@ public abstract class Shader {
         var cam = OrionApp.get().getCamera();
         for (var u : uniforms) {
             switch (u.getInjectType()) {
-                case ProjMatrix -> u.set(cam.getProjectionMatrix());
-                case ViewMatrix -> u.set(cam.getViewMatrix());
+                case ProjMatrix:
+                    u.set(cam.getProjectionMatrix());
+                    break;
+                case ViewMatrix:
+                    u.set(cam.getViewMatrix());
+                    break;
             }
         }
     }

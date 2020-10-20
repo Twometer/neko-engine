@@ -14,6 +14,7 @@ public class FpsCounter {
             fps = frames;
             lastReset = System.currentTimeMillis();
             frames = 0;
+            Log.d("FPS: " + fps);
         }
     }
 
