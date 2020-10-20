@@ -1,34 +1,30 @@
 package example;
 
-import de.twometer.orion.api.Uniform;
+import de.twometer.orion.api.Dimensions;
+import de.twometer.orion.api.Inject;
+import de.twometer.orion.api.UniformInject;
 import de.twometer.orion.gl.Shader;
+import de.twometer.orion.gl.Uniform;
+import de.twometer.orion.render.Color;
 import org.joml.Matrix4f;
 
-public class ExampleShader extends Shader {
+public class ExampleShader extends Shader{
 
-    @Uniform("viewMatrix")
-    private int loc_viewMatrix;
+    @Inject(UniformInject.ViewMatrix)
+    public Uniform<Matrix4f> viewMatrix;
 
-    @Uniform("projMatrix")
-    private int loc_projMatrix;
+    @Inject(UniformInject.ProjMatrix)
+    public Uniform<Matrix4f> projMatrix;
 
-    @Uniform("modelMatrix")
-    private int loc_modelMatrix;
+    public Uniform<Matrix4f> modelMatrix;
+
+    @Dimensions(4)
+    public Uniform<Color> modelColor;
+
+    public Uniform<Boolean> hasTexture;
 
     public ExampleShader() {
         super("BaseVert.glsl", "BaseFrag.glsl");
-    }
-
-    public void setModelMatrix(Matrix4f mat) {
-        setMatrix(loc_modelMatrix, mat);
-    }
-
-    public void setViewMatrix(Matrix4f mat) {
-        setMatrix(loc_viewMatrix, mat);
-    }
-
-    public void setProjMatrix(Matrix4f mat) {
-        setMatrix(loc_projMatrix, mat);
     }
 
 }

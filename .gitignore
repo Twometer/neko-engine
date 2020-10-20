@@ -85,5 +85,8 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-# Test assets
-assets/
+# Large test assets
+assets/Models
+assets/Fonts
+assets/Sounds
+assets/Textures

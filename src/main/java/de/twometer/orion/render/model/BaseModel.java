@@ -24,6 +24,10 @@ public abstract class BaseModel {
 
     public abstract Vector3f getMaximum();
 
+    public Vector3f getTransformedCenter() {
+        return transform.transform(getCenter());
+    }
+
     public Vector3f getSize() {
         Vector3f maximum = getMaximum();
         Vector3f minimum = getMinimum();

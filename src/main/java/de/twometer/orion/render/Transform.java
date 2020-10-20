@@ -62,4 +62,10 @@ public class Transform {
         rotation.set(t.rotation);
         scale.set(t.scale);
     }
+
+    public Vector3f transform(Vector3f vec) {
+        Vector3f projected = new Vector3f();
+        vec.mulProject(getMatrix(), vec);
+        return projected;
+    }
 }

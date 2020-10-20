@@ -21,6 +21,7 @@ public class ShaderProvider {
                 cache.put(shaderClass, shader);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 Log.e("Failed to create shader instance", e);
+                e.getCause().printStackTrace();
             }
         }
         return (T) shader;

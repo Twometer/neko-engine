@@ -73,4 +73,8 @@ public class Camera {
     public void setFar(float far) {
         this.far = far;
     }
+
+    public boolean ready() {
+        return viewMatrix != null && projectionMatrix != null;
+    }
 }

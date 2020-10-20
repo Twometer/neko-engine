@@ -1,6 +1,7 @@
 package de.twometer.orion.render.model;
 
-import de.twometer.orion.util.Log;
+import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.gl.Texture;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -9,7 +10,7 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
 
-public class SimpleModel extends BaseModel {
+public class ModelPart extends BaseModel {
 
     private final int vao;
 
@@ -30,7 +31,7 @@ public class SimpleModel extends BaseModel {
 
     private Material material;
 
-    private SimpleModel(String name, int vao, int vertexBuffer, int colorBuffer, int normalBuffer, int texCoordBuffer, int dimensions, int vertices, int primitiveType, Vector3f min, Vector3f max, Vector3f com) {
+    private ModelPart(String name, int vao, int vertexBuffer, int colorBuffer, int normalBuffer, int texCoordBuffer, int dimensions, int vertices, int primitiveType, Vector3f min, Vector3f max, Vector3f com) {
         super(name);
         this.vao = vao;
         this.vertexBuffer = vertexBuffer;
@@ -45,7 +46,7 @@ public class SimpleModel extends BaseModel {
         this.centerOfMass = com;
     }
 
-    public static SimpleModel create(String name, Mesh mesh, int primitiveType) {
+    public static ModelPart create(String name, Mesh mesh, int primitiveType) {
         int dimensions = mesh.getDimensions();
 
         mesh.getVertices().flip();
@@ -116,7 +117,7 @@ public class SimpleModel extends BaseModel {
 
         }
 
-        return new SimpleModel(name, vao, vertexBuffer, colorBuffer, normalBuffer, texCoordBuffer, dimensions, mesh.getVertexCount(), primitiveType, min, max, com);
+        return new ModelPart(name, vao, vertexBuffer, colorBuffer, normalBuffer, texCoordBuffer, dimensions, mesh.getVertexCount(), primitiveType, min, max, com);
     }
 
     public void destroy() {
@@ -129,6 +130,9 @@ public class SimpleModel extends BaseModel {
 
     @Override
     public void render() {
+        if (!OrionApp.get().getRenderManager().shouldRender(this))
+            return;
+
         boolean hasColors = colorBuffer != -1;
         boolean hasNormals = normalBuffer != -1;
         boolean hasTextures = texCoordBuffer != -1;

@@ -3,7 +3,6 @@ package de.twometer.orion.res;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.Color;
 import de.twometer.orion.render.model.*;
-import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.Log;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -49,12 +48,9 @@ public class ModelLoader {
             Color emissiveColor = new Color(aiEmissiveColor.r(), aiEmissiveColor.g(), aiEmissiveColor.b(), aiEmissiveColor.a());
 
             var texturePath = texpath.dataString();
-            materials.add(new Material(matname.dataString(), texturePath, diffuseColor, emissiveColor));
+            var texture = !texturePath.isEmpty() ? OrionApp.get().getTextureProvider().getTexture(texturePath) : null;
 
-            if (!texturePath.isEmpty()) {
-                // Preload textures
-                OrionApp.get().getTextureProvider().getTexture(texturePath);
-            }
+            materials.add(new Material(matname.dataString(), texture, diffuseColor, emissiveColor));
 
             matname.free();
             texpath.free();
@@ -118,7 +114,7 @@ public class ModelLoader {
             mesh.putTexCoord(aiTexCoord.x(), 1 - aiTexCoord.y());
         }
 
-        SimpleModel model = mesh.bake(name, GL_TRIANGLES);
+        ModelPart model = mesh.bake(name, GL_TRIANGLES);
         model.setMaterial(mats.get(aiMesh.mMaterialIndex()));
         return model;
     }

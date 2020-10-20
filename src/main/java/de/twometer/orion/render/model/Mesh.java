@@ -139,8 +139,8 @@ public class Mesh {
         return dimensions;
     }
 
-    public SimpleModel bake(String modelName, int primitiveType) {
-        SimpleModel model = SimpleModel.create(modelName, this, primitiveType);
+    public ModelPart bake(String modelName, int primitiveType) {
+        ModelPart model = ModelPart.create(modelName, this, primitiveType);
         destroy();
         return model;
     }

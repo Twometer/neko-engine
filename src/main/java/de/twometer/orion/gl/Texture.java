@@ -25,7 +25,7 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, textureId);
     }
 
-    public void unbind() {
+    public static void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 

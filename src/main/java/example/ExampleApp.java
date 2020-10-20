@@ -1,6 +1,8 @@
 package example;
 
 import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.render.Color;
+import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;
@@ -25,15 +27,16 @@ public class ExampleApp extends OrionApp {
     public void onInitialize() {
         skeld = ModelLoader.loadModel("TheSkeld.obj");
         shader = getShaderProvider().getShader(ExampleShader.class);
+
+        getRenderManager().addModelFilter(new FrustumCullingFilter());
     }
 
     @Override
     public void onRender() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.bind();
-        shader.setModelMatrix(new Matrix4f());
-        shader.setViewMatrix(getCamera().getViewMatrix());
-        shader.setProjMatrix(getCamera().getProjectionMatrix());
+        shader.modelMatrix.set(new Matrix4f());
+        shader.modelColor.set(Color.RED);
         skeld.render();
     }
 
