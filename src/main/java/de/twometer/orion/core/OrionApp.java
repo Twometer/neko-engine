@@ -2,6 +2,7 @@ package de.twometer.orion.core;
 
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
+import de.twometer.orion.render.model.SimpleModel;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;

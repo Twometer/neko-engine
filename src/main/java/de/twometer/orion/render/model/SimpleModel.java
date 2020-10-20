@@ -1,5 +1,6 @@
 package de.twometer.orion.render.model;
 
+import de.twometer.orion.util.Log;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;

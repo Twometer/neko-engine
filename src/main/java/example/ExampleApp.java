@@ -39,26 +39,23 @@ public class ExampleApp extends OrionApp {
 
     @Override
     public void onUpdate(float partial) {
-        final float speed = 0.04f;
+        final float speed = 0.125f;
 
         float yaw = MathF.toRadians(getCamera().getAngle().x);
-        float dx = MathF.sin(yaw) * speed;
-        float dz = MathF.cos(yaw) * speed;
-
-        float dx2 = MathF.sin(yaw + MathF.PI / 2) * speed;
-        float dz2 = MathF.cos(yaw + MathF.PI / 2) * speed;
+        Vector3f fwd = new Vector3f(MathF.sin(yaw), 0, MathF.cos(yaw)).normalize(speed);
+        Vector3f left = new Vector3f(MathF.sin(yaw + MathF.PI / 2), 0, MathF.cos(yaw + MathF.PI / 2)).normalize(speed);
 
         if (getWindow().isKeyPressed(GLFW_KEY_W))
-            getCamera().getPosition().add(new Vector3f(dx, 0.0f, dz));
+            getCamera().getPosition().add(fwd);
 
         if (getWindow().isKeyPressed(GLFW_KEY_A))
-            getCamera().getPosition().add(new Vector3f(dx2, 0.0f, dz2));
+            getCamera().getPosition().add(left);
 
         if (getWindow().isKeyPressed(GLFW_KEY_S))
-            getCamera().getPosition().sub(new Vector3f(dx, 0.0f, dz));
+            getCamera().getPosition().sub(fwd);
 
         if (getWindow().isKeyPressed(GLFW_KEY_D))
-            getCamera().getPosition().sub(new Vector3f(dx2, 0.0f, dz2));
+            getCamera().getPosition().sub(left);
 
         if (getWindow().isKeyPressed(GLFW_KEY_SPACE))
             getCamera().getPosition().add(new Vector3f(0, speed, 0));
