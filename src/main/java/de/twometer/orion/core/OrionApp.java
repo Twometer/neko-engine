@@ -29,7 +29,7 @@ public abstract class OrionApp {
 
     private Timer timer;
 
-    private Scene scene = new Scene();
+    private Scene scene;
 
     private final Camera camera = new Camera();
 
@@ -96,6 +96,8 @@ public abstract class OrionApp {
         window.setSizeCallback(this::onResize);
         this.onResize(window.getWidth(), window.getHeight());
 
+        setScene(new Scene()); // Default scene
+
         onInitialize();
         Log.i("Initialization complete.");
     }
@@ -113,6 +115,7 @@ public abstract class OrionApp {
             }
 
             pipeline.render();
+            getScene().getSkybox().render();
             onRenderForward();
 
             fpsCounter.count();
@@ -177,6 +180,7 @@ public abstract class OrionApp {
 
     public void setScene(Scene scene) {
         this.scene = scene;
+        scene.initialize();
     }
 
     public Scene getScene() {

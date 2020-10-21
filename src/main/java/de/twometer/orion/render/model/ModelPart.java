@@ -130,7 +130,7 @@ public class ModelPart extends BaseModel {
     @Override
     public void render() {
         var renderManager = OrionApp.get().getRenderManager();
-        if (!renderManager.shouldRender(this))
+        if (!renderManager.shouldRender(this) && !isIgnoreFilters())
             return;
 
         var shaderProvider = OrionApp.get().getShaderProvider();

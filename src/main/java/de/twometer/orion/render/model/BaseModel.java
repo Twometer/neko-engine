@@ -10,6 +10,8 @@ public abstract class BaseModel {
 
     private final Transform transform;
 
+    private boolean ignoreFilters;
+
     private Object tag;
 
     public BaseModel(String name) {
@@ -59,5 +61,13 @@ public abstract class BaseModel {
         } else {
             consumer.accept(this);
         }
+    }
+
+    public boolean isIgnoreFilters() {
+        return ignoreFilters;
+    }
+
+    public void setIgnoreFilters(boolean ignoreFilters) {
+        this.ignoreFilters = ignoreFilters;
     }
 }

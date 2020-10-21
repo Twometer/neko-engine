@@ -5,6 +5,7 @@ import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.res.ModelLoader;
+import de.twometer.orion.res.TextureLoader;
 import de.twometer.orion.util.MathF;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -31,6 +32,10 @@ public class ExampleApp extends OrionApp {
                 getScene().addLight(new LightSource(model.getCenter()));
         });
         getScene().addModel(skeld);
+
+        var skyboxCubemap = TextureLoader.loadCubemap("Sky/right.png", "Sky/left.png", "Sky/top.png", "Sky/bottom.png", "Sky/front.png", "Sky/back.png");
+        getScene().getSkybox().setActive(true);
+        getScene().getSkybox().setTexture(skyboxCubemap);
     }
 
     @Override
