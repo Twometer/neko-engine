@@ -1,51 +1,79 @@
 package de.twometer.orion.render.fx;
 
-import de.twometer.orion.util.MathF;
+import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.gl.Framebuffer;
+import de.twometer.orion.gl.Shader;
+import de.twometer.orion.render.pipeline.PostRenderer;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL30.GL_RGBA16F;
 
-public class SSAO {
+public class SSAO extends FXBase {
 
-    public static int generateNoiseTexture() {
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(16 * 3);
-        for (int i = 0; i < 16; i++) {
-            buffer.put(MathF.rand() * 2.0f - 1.0f);
-            buffer.put(MathF.rand() * 2.0f - 1.0f);
-            buffer.put(0);
-        }
+    private SSAOShader ssaoShader;
+    private SSAOBlurShader ssaoBlurShader;
 
-        buffer.flip();
-        int texture = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 4, 4, 0, GL_RGB, GL_FLOAT, buffer);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        return texture;
+    private Framebuffer ssaoBuffer;
+    private Framebuffer ssaoBlurBuffer;
+
+    private int ssaoNoise;
+
+    private int samples;
+
+    public void create() {
+        ssaoShader = OrionApp.get().getShaderProvider().getShader(SSAOShader.class);
+        ssaoBlurShader = OrionApp.get().getShaderProvider().getShader(SSAOBlurShader.class);
+
+        ssaoBuffer = Framebuffer.create()
+                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+                .finish();
+        ssaoBlurBuffer = Framebuffer.create()
+                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+                .finish();
+
+        ssaoNoise = SSAOUtil.generateNoiseTexture();
+
+        List<Vector3f> ssaoKernel = SSAOUtil.generateSampleKernel();
+        ssaoShader.bind();
+        for (int i = 0; i < ssaoKernel.size(); i++)
+            ssaoShader.samples.set(i, ssaoKernel.get(i));
+        Shader.unbind();
+
+        ssaoBlurBuffer.bind();
+        glClearColor(1, 1, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0, 0, 0, 1);
+        Framebuffer.unbind();
     }
 
-    public static List<Vector3f> generateSampleKernel() {
-        List<Vector3f> ssaoKernel = new ArrayList<>();
-        for (int i = 0; i < 64; i++) {
-            Vector3f sample = new Vector3f(
-                    MathF.rand() * 2.0f - 1.0f,
-                    MathF.rand() * 2.0f - 1.0f,
-                    MathF.rand()
-            );
-            float scale = i / 64.0f;
-            scale = MathF.lerp(0.1f, 1.0f, scale * scale);
-            sample = sample.normalize(scale);
-            ssaoKernel.add(sample);
-        }
-        return ssaoKernel;
+    void renderImpl(PostRenderer post) {
+        if (!isActive())
+            return;
+
+        post.bindTexture(4, ssaoNoise);
+
+        ssaoShader.bind();
+        ssaoShader.kernelSize.set(samples);
+        post.copyTo(ssaoBuffer);
+        post.bindTexture(3, ssaoBuffer.getColorTexture());
+
+        ssaoBlurShader.bind();
+        post.copyTo(ssaoBlurBuffer);
     }
 
+    public int getTexture() {
+        return ssaoBlurBuffer.getColorTexture();
+    }
+
+    public int getSamples() {
+        return samples;
+    }
+
+    public void setSamples(int samples) {
+        this.samples = samples;
+    }
 }

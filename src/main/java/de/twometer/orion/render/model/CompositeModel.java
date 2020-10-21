@@ -1,6 +1,5 @@
 package de.twometer.orion.render.model;
 
-import de.twometer.orion.render.Transform;
 import org.joml.Vector3f;
 
 import java.util.List;

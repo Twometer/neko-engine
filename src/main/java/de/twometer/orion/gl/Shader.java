@@ -8,6 +8,7 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.Camera;
 import de.twometer.orion.res.ShaderLoader;
 import de.twometer.orion.util.Log;
+import org.joml.Vector2f;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public abstract class Shader {
     }
 
     private void setDefaults() {
+        var win = OrionApp.get().getWindow();
         var cam = OrionApp.get().getCamera();
         for (var u : uniforms) {
             switch (u.getInjectType()) {
@@ -77,6 +79,13 @@ public abstract class Shader {
                 case ViewMatrix:
                     u.set(cam.getViewMatrix());
                     break;
+                case ViewportSize:
+                    u.set(new Vector2f(win.getWidth(), win.getHeight()));
+                    break;
+                case None:
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Uniform injection of " + u.getInjectType() + " not implemented.");
             }
         }
     }

@@ -1,4 +1,4 @@
-package de.twometer.orion.render;
+package de.twometer.orion.render.model;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

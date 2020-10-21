@@ -21,7 +21,7 @@ public class Framebuffer {
     private final List<Integer> colorTextures = new ArrayList<>();
     private final List<Integer> colorAttachments = new ArrayList<>();
 
-    private Framebuffer(int width, int height, int framebuffer) {
+    Framebuffer(int width, int height, int framebuffer) {
         this.width = width;
         this.height = height;
         this.framebuffer = framebuffer;

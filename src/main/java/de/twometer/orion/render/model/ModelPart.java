@@ -1,10 +1,6 @@
 package de.twometer.orion.render.model;
 
 import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.gl.Texture;
-import de.twometer.orion.render.RenderManager;
-import de.twometer.orion.res.cache.ShaderProvider;
-import de.twometer.orion.res.cache.TextureProvider;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -133,7 +129,7 @@ public class ModelPart extends BaseModel {
 
     @Override
     public void render() {
-        var renderManager = OrionApp.get().getRenderManager();
+        var renderManager = OrionApp.get().getScene();
         if (!renderManager.shouldRender(this))
             return;
 

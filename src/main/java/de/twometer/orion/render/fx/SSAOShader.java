@@ -5,6 +5,7 @@ import de.twometer.orion.api.UniformInject;
 import de.twometer.orion.gl.Shader;
 import de.twometer.orion.gl.Uniform;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class SSAOShader extends Shader {
@@ -14,6 +15,11 @@ public class SSAOShader extends Shader {
 
     @Inject(UniformInject.ViewMatrix)
     public Uniform<Matrix4f> view;
+
+    @Inject(UniformInject.ViewportSize)
+    public Uniform<Vector2f> viewportSize;
+
+    public Uniform<Integer> kernelSize;
 
     public Uniform<Vector3f> samples;
 

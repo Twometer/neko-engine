@@ -18,5 +18,5 @@ void main() {
     }
 
     float r = result / (4.0 * 4.0);
-    FragColor = vec4(r, r, r, r);
+    FragColor = vec4(r, 0, 0, 1.0f);
 }

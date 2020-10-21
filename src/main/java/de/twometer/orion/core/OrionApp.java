@@ -2,8 +2,7 @@ package de.twometer.orion.core;
 
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
-import de.twometer.orion.render.RenderManager;
-import de.twometer.orion.render.pipeline.DeferredPipeline;
+import de.twometer.orion.render.Scene;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
@@ -20,7 +19,7 @@ public abstract class OrionApp {
 
     private Timer timer;
 
-    private final RenderManager renderManager = new RenderManager();
+    private final Scene scene = new Scene();
 
     private final Camera camera = new Camera();
 
@@ -68,7 +67,7 @@ public abstract class OrionApp {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0, 0, 0, 1);
-        renderManager.setup();
+        scene.setup();
 
         onInitialize();
         Log.i("Initialization complete.");
@@ -79,16 +78,16 @@ public abstract class OrionApp {
 
         while (!window.shouldClose()) {
             camera.update();
-            renderManager.update();
+            scene.update();
 
             if (timer.elapsed()) {
                 timer.reset();
                 onUpdate(timer.getPartial());
             }
 
-            renderManager.getPipeline().begin();
+            scene.getPipeline().begin();
             onRenderDeferred();
-            renderManager.getPipeline().finish();
+            scene.getPipeline().finish();
 
             onRenderForward();
 
@@ -110,7 +109,7 @@ public abstract class OrionApp {
     /* Callbacks */
 
     protected void onRenderDeferred() {
-        renderManager.renderFrame();
+        scene.renderFrame();
     }
 
     protected void onRenderForward() {
@@ -155,8 +154,8 @@ public abstract class OrionApp {
         return textureProvider;
     }
 
-    public RenderManager getRenderManager() {
-        return renderManager;
+    public Scene getScene() {
+        return scene;
     }
 
 }

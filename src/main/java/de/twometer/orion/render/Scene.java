@@ -11,7 +11,7 @@ import de.twometer.orion.render.shading.IShadingStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenderManager {
+public class Scene {
 
     private final DeferredPipeline pipeline = new DeferredPipeline();
 

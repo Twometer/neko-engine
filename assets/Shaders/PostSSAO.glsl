@@ -9,19 +9,21 @@ uniform sampler2D gNormal;
 uniform sampler2D noise;
 
 uniform vec3 samples[64];
+uniform vec2 viewportSize;
 uniform mat4 projection;
 uniform mat4 view;
+uniform int kernelSize;
 
-const int kernelSize = 64;
 const float radius = 0.5;
 const float bias = 0.025;
-const vec2 noiseScale = vec2(1024.0/4.0, 768.0/4.0);
 
 vec3 samplePositionTex(vec2 coords) {
     return (view * texture(gPosition, coords)).xyz;
 }
 
 void main(void){
+    vec2 noiseScale = viewportSize / 4.0;
+
     // get input for SSAO algorithm
     mat3 normalMatrix = transpose(inverse(mat3(view)));
 
