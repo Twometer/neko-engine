@@ -5,6 +5,7 @@ import de.twometer.orion.event.Events;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.GBuffer;
 import de.twometer.orion.render.light.LightSource;
+import de.twometer.orion.render.post.PostFxPipeline;
 import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.Subscribe;
@@ -19,6 +20,8 @@ public class DeferredPipeline {
 
     private GBuffer gBuffer;
 
+    private final PostFxPipeline postFx = new PostFxPipeline();
+
     private final DeferredShadingStrategy strategy = new DeferredShadingStrategy();
 
     public void create() {
@@ -26,6 +29,7 @@ public class DeferredPipeline {
         Events.register(this);
 
         lightingShader = OrionApp.get().getShaderProvider().getShader(LightingShader.class);
+        postFx.init();
     }
 
     @Subscribe
@@ -75,7 +79,11 @@ public class DeferredPipeline {
         lightingShader.viewPos.set(OrionApp.get().getCamera().getPosition());
         postRenderer.bindTexture(3, ssao.getTexture());
         postRenderer.bindTexture(4, bloom.getTexture());
-        postRenderer.copyTo(null);
+        if (postFx.empty())
+            postRenderer.copyTo(null);
+        else {
+            postFx.render();
+        }
 
         postRenderer.end();
         gBuffer.blitDepth(null);
@@ -83,5 +91,9 @@ public class DeferredPipeline {
 
     public GBuffer getGBuffer() {
         return gBuffer;
+    }
+
+    public PostFxPipeline getPostFx() {
+        return postFx;
     }
 }

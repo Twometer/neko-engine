@@ -11,7 +11,7 @@ void main() {
     vec2 uv = TexCoords;
     uv *=  1.0 - uv.yx;
     float vig = uv.x * uv.y * strength;
-    vig = pow(vig, exponent);
+    vig = min(pow(vig, exponent), 1.0f);
 
     FragColor = texture(texInput, TexCoords) * vig;
 }

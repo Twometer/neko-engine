@@ -4,6 +4,7 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.post.VignettePostFx;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.res.TextureLoader;
 import de.twometer.orion.util.MathF;
@@ -22,8 +23,9 @@ public class ExampleApp extends OrionApp {
     public void onInitialize() {
         getWindow().setCursorVisible(false);
         getRenderManager().addModelFilter(new FrustumCullingFilter());
+        getPipeline().getPostFx().addEffect(new VignettePostFx(20.0f, 0.15f));
         getFxManager().getSsao().setActive(true);
-        getFxManager().getSsao().setSamples(16);
+        getFxManager().getSsao().setSamples(12);
         getFxManager().getBloom().setActive(true);
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
