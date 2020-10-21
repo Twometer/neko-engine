@@ -19,7 +19,7 @@ public class Scene {
 
     private final List<PointLight> lights = new ArrayList<>();
 
-    private IShadingStrategy shadingStrategy = new DeferredShadingStrategy();
+    private IShadingStrategy shadingStrategy;
 
     public boolean shouldRender(ModelPart part) {
         for (var filter : modelFilters)

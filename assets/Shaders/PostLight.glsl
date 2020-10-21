@@ -19,8 +19,10 @@ void main(void){
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
-    float Specular = texture(gAlbedoSpec, TexCoords).a;
+
+    vec4 diffSpec = texture(gAlbedoSpec, TexCoords);
+    vec3 Diffuse = diffSpec.rgb;
+    float Specular = diffSpec.a;
 
     const float linear = 1.0f;
     const float quadratic = 1.0f;

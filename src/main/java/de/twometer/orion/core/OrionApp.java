@@ -9,6 +9,7 @@ import de.twometer.orion.render.Camera;
 import de.twometer.orion.render.Scene;
 import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.render.pipeline.DeferredPipeline;
+import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
@@ -101,9 +102,7 @@ public abstract class OrionApp {
                 onUpdate(timer.getPartial());
             }
 
-            pipeline.begin();
-            onRenderDeferred();
-            pipeline.finish();
+            pipeline.render();
 
             onRenderForward();
 
@@ -123,10 +122,6 @@ public abstract class OrionApp {
     }
 
     /* Callbacks */
-
-    protected void onRenderDeferred() {
-        scene.renderFrame();
-    }
 
     protected void onRenderForward() {
 

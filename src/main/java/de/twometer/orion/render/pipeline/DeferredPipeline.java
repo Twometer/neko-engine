@@ -6,6 +6,7 @@ import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.GBuffer;
 import de.twometer.orion.render.fx.SSAO;
 import de.twometer.orion.render.light.PointLight;
+import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -22,6 +23,8 @@ public class DeferredPipeline {
     private LightingShader lightingShader;
 
     private GBuffer gBuffer;
+
+    private DeferredShadingStrategy strategy = new DeferredShadingStrategy();
 
     public void create() {
         Log.d("Creating deferred rendering pipeline");
@@ -51,12 +54,22 @@ public class DeferredPipeline {
             lightingShader.lights.set(i, lights.get(i).getPosition());
     }
 
-    public void begin() {
+    public void render() {
+        // Setup
         gBuffer.bind();
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    }
 
-    public void finish() {
+        // Geometry pass
+        var scene = OrionApp.get().getScene();
+        scene.setShadingStrategy(strategy);
+
+        strategy.setPass(DeferredShadingStrategy.RenderPass.Solid);
+        scene.renderFrame();
+
+        strategy.setPass(DeferredShadingStrategy.RenderPass.Translucent);
+        scene.renderFrame();
+
+        // Post processing
         postRenderer.begin();
         gBuffer.bindTextures(postRenderer);
 

@@ -48,6 +48,14 @@ public class ModelLoader {
             aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_EMISSIVE, aiTextureType_NONE, 0, aiEmissiveColor);
             Color emissiveColor = new Color(aiEmissiveColor.r(), aiEmissiveColor.g(), aiEmissiveColor.b(), aiEmissiveColor.a());
 
+            var buf = PointerBuffer.allocateDirect(1);
+            aiGetMaterialProperty(aiMaterial, AI_MATKEY_OPACITY, buf);
+            var prop = AIMaterialProperty.create(buf.get());
+            var op = prop.mData().asFloatBuffer().get();
+            if (op < diffuseColor.getA())
+                diffuseColor = new Color(diffuseColor.getR(), diffuseColor.getG(), diffuseColor.getB(), op);
+
+
             var texturePath = texpath.dataString();
             var texture = !texturePath.isEmpty() ? OrionApp.get().getTextureProvider().getTexture(texturePath) : null;
 
