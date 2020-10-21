@@ -3,7 +3,6 @@ package example;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.PointLight;
-import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;

@@ -29,7 +29,7 @@ void main(void){
     float AO = texture(ssao, TexCoords).r;
 
     // then calculate lighting as usual
-    vec3 lighting = 0.3 * Diffuse * AO;// hard-coded ambient component
+    vec3 lighting = 0.3 * Diffuse;// hard-coded ambient component
     vec3 viewDir  = normalize(viewPos - FragPos);
     for (int i = 0; i < numLights; ++i)
     {
@@ -47,5 +47,5 @@ void main(void){
         specular *= attenuation;
         lighting += diffuse + specular;
     }
-    FragColor = vec4(lighting, 1.0);
+    FragColor = vec4(lighting * (AO + 0.15f), 1.0);
 }

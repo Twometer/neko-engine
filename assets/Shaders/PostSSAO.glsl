@@ -23,8 +23,10 @@ vec3 samplePositionTex(vec2 coords) {
 
 void main(void){
     // get input for SSAO algorithm
+    mat3 normalMatrix = transpose(inverse(mat3(view)));
+
     vec3 fragPos = samplePositionTex(TexCoords);
-    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
+    vec3 normal = normalize(normalMatrix * texture(gNormal, TexCoords).xyz);
     vec3 randomVec = normalize(texture(noise, TexCoords * noiseScale).xyz);
     // create TBN change-of-basis matrix: from tangent-space to view-space
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));

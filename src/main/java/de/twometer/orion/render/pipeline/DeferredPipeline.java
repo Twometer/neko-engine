@@ -4,6 +4,7 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.gl.Framebuffer;
 import de.twometer.orion.gl.Shader;
 import de.twometer.orion.render.fx.SSAO;
+import de.twometer.orion.render.fx.SSAOBlurShader;
 import de.twometer.orion.render.fx.SSAOShader;
 import de.twometer.orion.render.light.PointLight;
 import de.twometer.orion.render.utils.PostProcessing;
@@ -20,18 +21,20 @@ public class DeferredPipeline {
     private final PostProcessing postProcessing = new PostProcessing();
 
     private SSAOShader ssaoShader;
+    private SSAOBlurShader ssaoBlurShader;
     private LightingShader lightingShader;
 
     private Framebuffer gBuffer;
     private Framebuffer ssaoBuffer;
+    private Framebuffer ssaoBlurBuffer;
 
-    private List<Vector3f> ssaoKernel;
     private int ssaoNoise;
 
     public void create() {
         Log.d("Creating deferred pipeline");
         postProcessing.create();
         ssaoShader = OrionApp.get().getShaderProvider().getShader(SSAOShader.class);
+        ssaoBlurShader = OrionApp.get().getShaderProvider().getShader(SSAOBlurShader.class);
         lightingShader = OrionApp.get().getShaderProvider().getShader(LightingShader.class);
         gBuffer = Framebuffer.create()
                 .withDepthBuffer()
@@ -41,11 +44,15 @@ public class DeferredPipeline {
                 .finish();
 
         ssaoBuffer = Framebuffer.create()
-                .withColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT) //, GL_RED, GL_RED, GL_NEAREST, GL_FLOAT
+                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT) //, GL_RED, GL_RED, GL_NEAREST, GL_FLOAT
                 .finish();
-        ssaoKernel = SSAO.generateSampleKernel();
+        ssaoBlurBuffer = Framebuffer.create()
+                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+                .finish();
+
         ssaoNoise = SSAO.generateNoiseTexture();
 
+        List<Vector3f> ssaoKernel = SSAO.generateSampleKernel();
         ssaoShader.bind();
         for (int i = 0; i < ssaoKernel.size(); i++)
             ssaoShader.samples.set(i, ssaoKernel.get(i));
@@ -54,7 +61,6 @@ public class DeferredPipeline {
 
     public void reloadLights() {
         List<PointLight> lights = OrionApp.get().getRenderManager().getLights();
-
 
         lightingShader.bind();
         lightingShader.numLights.set(lights.size());
@@ -78,8 +84,11 @@ public class DeferredPipeline {
 
         ssaoShader.bind();
         postProcessing.copyTo(ssaoBuffer);
-
         postProcessing.bindTexture(3, ssaoBuffer.getColorTexture());
+
+        ssaoBlurShader.bind();
+        postProcessing.copyTo(ssaoBlurBuffer);
+        postProcessing.bindTexture(3, ssaoBlurBuffer.getColorTexture());
 
         lightingShader.bind();
         lightingShader.viewPos.set(OrionApp.get().getCamera().getPosition());
