@@ -4,7 +4,7 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.event.Events;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.GBuffer;
-import de.twometer.orion.render.light.PointLight;
+import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,7 +37,7 @@ public class DeferredPipeline {
     }
 
     public void reloadLights() {
-        List<PointLight> lights = OrionApp.get().getScene().getLights();
+        List<LightSource> lights = OrionApp.get().getScene().getLights();
 
         lightingShader.bind();
         lightingShader.numLights.set(lights.size());
@@ -55,7 +55,7 @@ public class DeferredPipeline {
 
         // Geometry pass
         var scene = OrionApp.get().getScene();
-        scene.setShadingStrategy(strategy);
+        OrionApp.get().getRenderManager().setShadingStrategy(strategy);
 
         strategy.setPass(DeferredShadingStrategy.RenderPass.Opaque);
         scene.render();

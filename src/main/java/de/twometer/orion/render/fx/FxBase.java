@@ -3,7 +3,7 @@ package de.twometer.orion.render.fx;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.pipeline.PostRenderer;
 
-public abstract class FXBase {
+public abstract class FxBase {
 
     private boolean active;
 

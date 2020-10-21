@@ -2,7 +2,7 @@ package example;
 
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
-import de.twometer.orion.render.light.PointLight;
+import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;
@@ -20,15 +20,15 @@ public class ExampleApp extends OrionApp {
     @Override
     public void onInitialize() {
         getWindow().setCursorVisible(false);
-        getScene().addModelFilter(new FrustumCullingFilter());
+        getRenderManager().addModelFilter(new FrustumCullingFilter());
         getFxManager().getSsao().setActive(true);
-        getFxManager().getSsao().setSamples(8);
+        getFxManager().getSsao().setSamples(16);
         getFxManager().getBloom().setActive(true);
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
         skeld.traverseTree(model -> {
             if (model instanceof ModelPart && model.getName().contains("Luces"))
-                getScene().addLight(new PointLight(model.getCenter()));
+                getScene().addLight(new LightSource(model.getCenter()));
         });
         getScene().addModel(skeld);
     }

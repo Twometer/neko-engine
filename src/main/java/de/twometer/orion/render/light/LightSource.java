@@ -2,11 +2,11 @@ package de.twometer.orion.render.light;
 
 import org.joml.Vector3f;
 
-public class PointLight {
+public class LightSource {
 
     private final Vector3f position;
 
-    public PointLight(Vector3f position) {
+    public LightSource(Vector3f position) {
         this.position = position;
     }
 

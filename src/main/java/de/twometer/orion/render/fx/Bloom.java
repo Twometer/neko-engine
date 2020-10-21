@@ -8,7 +8,7 @@ import de.twometer.orion.render.shading.BloomShadingStrategy;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class Bloom extends FXBase {
+public class Bloom extends FxBase {
 
     private final BloomShadingStrategy shadingStrategy = new BloomShadingStrategy();
 
@@ -34,7 +34,7 @@ public class Bloom extends FXBase {
 
         buf0.bind();
         glClear(GL_COLOR_BUFFER_BIT);
-        scene.setShadingStrategy(shadingStrategy);
+        OrionApp.get().getRenderManager().setShadingStrategy(shadingStrategy);
         scene.render();
         Framebuffer.unbind();
 

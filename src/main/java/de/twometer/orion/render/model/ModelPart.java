@@ -129,7 +129,7 @@ public class ModelPart extends BaseModel {
 
     @Override
     public void render() {
-        var renderManager = OrionApp.get().getScene();
+        var renderManager = OrionApp.get().getRenderManager();
         if (!renderManager.shouldRender(this))
             return;
 

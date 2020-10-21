@@ -1,4 +1,4 @@
-package de.twometer.orion.render.utils;
+package de.twometer.orion.render.shaders;
 
 import de.twometer.orion.gl.Shader;
 

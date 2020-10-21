@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL30.GL_RGBA16F;
 
-public class SSAO extends FXBase {
+public class SSAO extends FxBase {
 
     private SSAOShader ssaoShader;
     private SSAOBlurShader ssaoBlurShader;

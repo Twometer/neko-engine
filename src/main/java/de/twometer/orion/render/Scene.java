@@ -1,12 +1,8 @@
 package de.twometer.orion.render;
 
 import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.render.filter.IModelFilter;
-import de.twometer.orion.render.light.PointLight;
+import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.model.BaseModel;
-import de.twometer.orion.render.model.ModelPart;
-import de.twometer.orion.render.shading.IShadingStrategy;
-import de.twometer.orion.render.shading.NopShadingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,52 +11,24 @@ public class Scene {
 
     private final List<BaseModel> models = new ArrayList<>();
 
-    private final List<IModelFilter> modelFilters = new ArrayList<>();
-
-    private final List<PointLight> lights = new ArrayList<>();
-
-    private IShadingStrategy shadingStrategy = new NopShadingStrategy();
-
-    public boolean shouldRender(ModelPart part) {
-        for (var filter : modelFilters)
-            if (!filter.shouldRender(part))
-                return false;
-        return true;
-    }
-
-    public void update() {
-        for (var filter : modelFilters)
-            filter.update();
-    }
+    private final List<LightSource> lights = new ArrayList<>();
 
     public void render() {
         for (var model : models)
             model.render();
     }
 
-    public void addModelFilter(IModelFilter filter) {
-        modelFilters.add(filter);
-    }
-
     public void addModel(BaseModel model) {
         models.add(model);
     }
 
-    public void addLight(PointLight light) {
+    public void addLight(LightSource light) {
         lights.add(light);
         OrionApp.get().getPipeline().reloadLights();
     }
 
-    public void setShadingStrategy(IShadingStrategy shadingStrategy) {
-        this.shadingStrategy = shadingStrategy;
-    }
-
-    public List<PointLight> getLights() {
+    public List<LightSource> getLights() {
         return lights;
-    }
-
-    public IShadingStrategy getShadingStrategy() {
-        return shadingStrategy;
     }
 
 }

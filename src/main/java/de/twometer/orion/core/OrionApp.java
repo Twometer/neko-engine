@@ -6,6 +6,7 @@ import de.twometer.orion.event.MouseClickedEvent;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
+import de.twometer.orion.render.RenderManager;
 import de.twometer.orion.render.Scene;
 import de.twometer.orion.render.fx.FxManager;
 import de.twometer.orion.render.pipeline.DeferredPipeline;
@@ -28,7 +29,7 @@ public abstract class OrionApp {
 
     private Timer timer;
 
-    private final Scene scene = new Scene();
+    private Scene scene = new Scene();
 
     private final Camera camera = new Camera();
 
@@ -43,6 +44,8 @@ public abstract class OrionApp {
     private final FxManager fxManager = new FxManager();
 
     private final PostRenderer postRenderer = new PostRenderer();
+
+    private final RenderManager renderManager = new RenderManager();
 
     /* Singleton */
     public OrionApp() {
@@ -102,7 +105,7 @@ public abstract class OrionApp {
 
         while (!window.shouldClose()) {
             camera.update();
-            scene.update();
+            renderManager.update();
 
             if (timer.elapsed()) {
                 timer.reset();
@@ -172,6 +175,10 @@ public abstract class OrionApp {
         return textureProvider;
     }
 
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
     public Scene getScene() {
         return scene;
     }
@@ -186,6 +193,10 @@ public abstract class OrionApp {
 
     public PostRenderer getPostRenderer() {
         return postRenderer;
+    }
+
+    public RenderManager getRenderManager() {
+        return renderManager;
     }
 
     /* Misc */
