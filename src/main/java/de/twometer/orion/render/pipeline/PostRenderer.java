@@ -1,6 +1,7 @@
 package de.twometer.orion.render.pipeline;
 
 import de.twometer.orion.gl.Framebuffer;
+import de.twometer.orion.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class PostRenderer {
     private Framebuffer whiteFbo;
 
     public void create() {
+        Log.d("Creating post processing engine");
         this.vao = glGenVertexArrays();
         glBindVertexArray(vao);
 

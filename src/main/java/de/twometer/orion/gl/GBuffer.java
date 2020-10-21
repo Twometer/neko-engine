@@ -40,7 +40,8 @@ public class GBuffer extends Framebuffer {
         return getColorTexture(2);
     }
 
-    public void bindTextures(PostRenderer post) {
+    public void bindTextures() {
+        var post = OrionApp.get().getPostRenderer();
         post.bindTexture(0, getPositionTexture());
         post.bindTexture(1, getNormalTexture());
         post.bindTexture(2, getAlbedoTexture());

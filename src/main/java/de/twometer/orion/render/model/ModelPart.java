@@ -158,6 +158,7 @@ public class ModelPart extends BaseModel {
         glDisableVertexAttribArray(0);
 
         glBindVertexArray(0);
+        renderManager.getShadingStrategy().finishRender();
     }
 
     @Override
@@ -182,4 +183,5 @@ public class ModelPart extends BaseModel {
     public void setMaterial(Material material) {
         this.material = material;
     }
+
 }

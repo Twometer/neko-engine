@@ -7,15 +7,16 @@ import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
 import de.twometer.orion.render.Scene;
-import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.fx.FxManager;
 import de.twometer.orion.render.pipeline.DeferredPipeline;
-import de.twometer.orion.render.shading.DeferredShadingStrategy;
+import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
 import de.twometer.orion.util.Log;
 import de.twometer.orion.util.Timer;
-import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.NoSubscriberEvent;
+import org.greenrobot.eventbus.Subscribe;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -38,6 +39,10 @@ public abstract class OrionApp {
     private final FpsCounter fpsCounter = new FpsCounter();
 
     private final DeferredPipeline pipeline = new DeferredPipeline();
+
+    private final FxManager fxManager = new FxManager();
+
+    private final PostRenderer postRenderer = new PostRenderer();
 
     /* Singleton */
     public OrionApp() {
@@ -77,7 +82,9 @@ public abstract class OrionApp {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0, 0, 0, 1);
+        postRenderer.create();
         pipeline.create();
+        fxManager.create();
 
         timer.reset();
 
@@ -103,7 +110,6 @@ public abstract class OrionApp {
             }
 
             pipeline.render();
-
             onRenderForward();
 
             fpsCounter.count();
@@ -172,5 +178,19 @@ public abstract class OrionApp {
 
     public DeferredPipeline getPipeline() {
         return pipeline;
+    }
+
+    public FxManager getFxManager() {
+        return fxManager;
+    }
+
+    public PostRenderer getPostRenderer() {
+        return postRenderer;
+    }
+
+    /* Misc */
+
+    @Subscribe
+    public void _eventBusDummy0(NoSubscriberEvent event) {
     }
 }

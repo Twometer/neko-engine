@@ -8,4 +8,8 @@ public interface IShadingStrategy {
 
     boolean prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures);
 
+    default void finishRender() {
+
+    }
+
 }

@@ -4,11 +4,8 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.PointLight;
 import de.twometer.orion.render.model.ModelPart;
-import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;
-import org.greenrobot.eventbus.NoSubscriberEvent;
-import org.greenrobot.eventbus.Subscribe;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -23,21 +20,17 @@ public class ExampleApp extends OrionApp {
     @Override
     public void onInitialize() {
         getWindow().setCursorVisible(false);
-
         getScene().addModelFilter(new FrustumCullingFilter());
-
-        var ssao = getPipeline().getSsao();
-        ssao.setActive(true);
-        ssao.setSamples(8);
+        getFxManager().getSsao().setActive(true);
+        getFxManager().getSsao().setSamples(8);
+        getFxManager().getBloom().setActive(true);
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
-        getScene().addModel(skeld);
-
         skeld.traverseTree(model -> {
-            if (model instanceof ModelPart && model.getName().contains("Luces")) {
+            if (model instanceof ModelPart && model.getName().contains("Luces"))
                 getScene().addLight(new PointLight(model.getCenter()));
-            }
         });
+        getScene().addModel(skeld);
     }
 
     @Override
@@ -76,7 +69,4 @@ public class ExampleApp extends OrionApp {
         if (getCamera().getAngle().y < -90) getCamera().getAngle().y = -90f;
     }
 
-    @Subscribe
-    public void dummy(NoSubscriberEvent event) {
-    }
 }

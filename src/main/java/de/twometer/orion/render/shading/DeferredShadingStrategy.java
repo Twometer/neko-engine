@@ -1,10 +1,13 @@
 package de.twometer.orion.render.shading;
 
+import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.render.pipeline.DeferredShader;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import org.joml.Matrix4f;
+
+import static org.lwjgl.opengl.GL11.glDepthMask;
 
 public class DeferredShadingStrategy implements IShadingStrategy {
     private RenderPass pass;
@@ -17,11 +20,10 @@ public class DeferredShadingStrategy implements IShadingStrategy {
         if (mat.hasTexture())
             mat.getTexture().bind();
 
-        if (pass == RenderPass.Solid && mat.getDiffuseColor().getA() != 1.0f)
-            return false;
-        else if (pass == RenderPass.Translucent && mat.getDiffuseColor().getA() == 1.0f)
+        if ((pass == RenderPass.Opaque && mat.isOpaque()) || (pass == RenderPass.Translucent && !mat.isOpaque()))
             return false;
 
+        glDepthMask(!mat.isEmissive() || !OrionApp.get().getFxManager().getBloom().isActive());
 
         shader.bind();
         shader.modelColor.set(mat.getDiffuseColor());
@@ -31,12 +33,17 @@ public class DeferredShadingStrategy implements IShadingStrategy {
         return true;
     }
 
+    @Override
+    public void finishRender() {
+        glDepthMask(true);
+    }
+
     public void setPass(RenderPass pass) {
         this.pass = pass;
     }
 
     public enum RenderPass {
-        Solid,
+        Opaque,
         Translucent
     }
 

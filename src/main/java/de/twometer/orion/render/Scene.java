@@ -5,8 +5,8 @@ import de.twometer.orion.render.filter.IModelFilter;
 import de.twometer.orion.render.light.PointLight;
 import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.render.model.ModelPart;
-import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.render.shading.IShadingStrategy;
+import de.twometer.orion.render.shading.NopShadingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class Scene {
 
     private final List<PointLight> lights = new ArrayList<>();
 
-    private IShadingStrategy shadingStrategy;
+    private IShadingStrategy shadingStrategy = new NopShadingStrategy();
 
     public boolean shouldRender(ModelPart part) {
         for (var filter : modelFilters)
@@ -33,10 +33,9 @@ public class Scene {
             filter.update();
     }
 
-    public void renderFrame() {
-        for (var model : models) {
+    public void render() {
+        for (var model : models)
             model.render();
-        }
     }
 
     public void addModelFilter(IModelFilter filter) {

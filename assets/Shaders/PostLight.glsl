@@ -8,6 +8,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D ssao;
+uniform sampler2D bloom;
 
 const int MAX_NR_LIGHTS = 128;
 
@@ -29,6 +30,7 @@ void main(void){
     const vec3 color = vec3(1, 1, 1);
 
     float AO = texture(ssao, TexCoords).r;
+    vec3 Bloom = texture(bloom, TexCoords).rgb;
 
     // then calculate lighting as usual
     vec3 lighting = 0.3 * Diffuse;// hard-coded ambient component
@@ -49,5 +51,5 @@ void main(void){
         specular *= attenuation;
         lighting += diffuse + specular;
     }
-    FragColor = vec4(lighting * (AO + 0.15f), 1.0);
+    FragColor = vec4(mix(lighting * (AO + 0.15f), Bloom, length(Bloom)) + Bloom, 1.0f);
 }

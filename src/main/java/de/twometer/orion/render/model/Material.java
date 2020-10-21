@@ -39,4 +39,12 @@ public class Material {
     public boolean hasTexture() {
         return texture != null;
     }
+
+    public boolean isEmissive() {
+        return emissiveColor.getR() != 0;
+    }
+
+    public boolean isOpaque() {
+        return diffuseColor.getA() == 1.0f;
+    }
 }

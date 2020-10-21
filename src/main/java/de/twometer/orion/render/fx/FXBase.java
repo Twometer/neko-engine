@@ -1,5 +1,6 @@
 package de.twometer.orion.render.fx;
 
+import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.pipeline.PostRenderer;
 
 public abstract class FXBase {
@@ -14,9 +15,9 @@ public abstract class FXBase {
         this.active = active;
     }
 
-    public void render(PostRenderer post) {
+    public final void render() {
         if (active)
-            renderImpl(post);
+            renderImpl(OrionApp.get().getPostRenderer());
     }
 
     public abstract void create();
