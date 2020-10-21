@@ -1,13 +1,20 @@
 package de.twometer.orion.core;
 
+import de.twometer.orion.event.CharTypedEvent;
+import de.twometer.orion.event.Events;
+import de.twometer.orion.event.MouseClickedEvent;
+import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
 import de.twometer.orion.render.Scene;
+import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
 import de.twometer.orion.util.Log;
 import de.twometer.orion.util.Timer;
+import org.greenrobot.eventbus.EventBus;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -28,6 +35,8 @@ public abstract class OrionApp {
     private final TextureProvider textureProvider = new TextureProvider();
 
     private final FpsCounter fpsCounter = new FpsCounter();
+
+    private final DeferredPipeline pipeline = new DeferredPipeline();
 
     /* Singleton */
     public OrionApp() {
@@ -58,16 +67,23 @@ public abstract class OrionApp {
     private void setup() {
         Log.i("Starting up...");
 
+        Events.init();
+        Events.register(this);
+
         window.create();
-        window.setSizeCallback(this::onResize);
-        this.onResize(window.getWidth(), window.getHeight());
-        timer.reset();
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0, 0, 0, 1);
-        scene.setup();
+        pipeline.create();
+
+        timer.reset();
+
+        window.setCharTypedCallback(c -> Events.post(new CharTypedEvent(c)));
+        window.setClickCallback(b -> Events.post(new MouseClickedEvent(b)));
+        window.setSizeCallback(this::onResize);
+        this.onResize(window.getWidth(), window.getHeight());
 
         onInitialize();
         Log.i("Initialization complete.");
@@ -85,9 +101,9 @@ public abstract class OrionApp {
                 onUpdate(timer.getPartial());
             }
 
-            scene.getPipeline().begin();
+            pipeline.begin();
             onRenderDeferred();
-            scene.getPipeline().finish();
+            pipeline.finish();
 
             onRenderForward();
 
@@ -130,6 +146,7 @@ public abstract class OrionApp {
 
     protected void onResize(int w, int h) {
         glViewport(0, 0, w, h);
+        Events.post(new SizeChangedEvent(w, h));
     }
 
     /* Accessors */
@@ -158,4 +175,7 @@ public abstract class OrionApp {
         return scene;
     }
 
+    public DeferredPipeline getPipeline() {
+        return pipeline;
+    }
 }

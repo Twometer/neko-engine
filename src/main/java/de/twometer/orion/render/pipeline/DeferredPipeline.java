@@ -1,10 +1,13 @@
 package de.twometer.orion.render.pipeline;
 
 import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.event.Events;
+import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.GBuffer;
 import de.twometer.orion.render.fx.SSAO;
 import de.twometer.orion.render.light.PointLight;
 import de.twometer.orion.util.Log;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -20,14 +23,23 @@ public class DeferredPipeline {
 
     private GBuffer gBuffer;
 
-
     public void create() {
-        Log.d("Creating deferred pipeline");
+        Log.d("Creating deferred rendering pipeline");
+        Events.register(this);
+
         postRenderer.create();
         ssao.create();
 
         lightingShader = OrionApp.get().getShaderProvider().getShader(LightingShader.class);
+    }
+
+    @Subscribe
+    public void onSizeChanged(SizeChangedEvent e) {
+        if (gBuffer != null) {
+            gBuffer.destroy();
+        }
         gBuffer = GBuffer.create();
+        ssao.resize(e.width, e.height);
     }
 
     public void reloadLights() {

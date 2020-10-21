@@ -7,6 +7,8 @@ import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.util.MathF;
+import org.greenrobot.eventbus.NoSubscriberEvent;
+import org.greenrobot.eventbus.Subscribe;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -15,7 +17,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class ExampleApp extends OrionApp {
 
     public static void main(String[] args) {
-        (new ExampleApp()).launch("Example app", 1920, 1080);
+        (new ExampleApp()).launch("Example app", 1280, 720);
     }
 
     @Override
@@ -24,7 +26,7 @@ public class ExampleApp extends OrionApp {
 
         getScene().addModelFilter(new FrustumCullingFilter());
 
-        var ssao = getScene().getPipeline().getSsao();
+        var ssao = getPipeline().getSsao();
         ssao.setActive(true);
         ssao.setSamples(8);
 
@@ -72,5 +74,9 @@ public class ExampleApp extends OrionApp {
 
         if (getCamera().getAngle().y > 90) getCamera().getAngle().y = 90f;
         if (getCamera().getAngle().y < -90) getCamera().getAngle().y = -90f;
+    }
+
+    @Subscribe
+    public void dummy(NoSubscriberEvent event) {
     }
 }

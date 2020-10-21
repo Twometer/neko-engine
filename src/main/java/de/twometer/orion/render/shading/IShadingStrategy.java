@@ -6,6 +6,6 @@ import de.twometer.orion.res.cache.TextureProvider;
 
 public interface IShadingStrategy {
 
-    void prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures);
+    boolean prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures);
 
 }

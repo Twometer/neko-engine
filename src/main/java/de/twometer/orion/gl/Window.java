@@ -92,10 +92,11 @@ public class Window {
         GL.createCapabilities();
 
         glfwSetFramebufferSizeCallback(handle, (window, width, height) -> {
-            if (sizeCallback != null)
-                sizeCallback.sizeChanged(width, height);
             this.width = width;
             this.height = height;
+
+            if (sizeCallback != null)
+                sizeCallback.sizeChanged(width, height);
         });
 
         glfwSetMouseButtonCallback(handle, (window, button, action, mods) -> {

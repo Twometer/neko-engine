@@ -19,6 +19,10 @@ public abstract class FXBase {
             renderImpl(post);
     }
 
+    public abstract void create();
+
     abstract void renderImpl(PostRenderer post);
+
+    public abstract void resize(int w, int h);
 
 }

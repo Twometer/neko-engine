@@ -66,6 +66,10 @@ public class Framebuffer {
         return this;
     }
 
+    public static Framebuffer create(float width, float height) {
+        return create((int) width, (int) height);
+    }
+
     public static Framebuffer create(int width, int height) {
         int fbo = glGenFramebuffers();
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);

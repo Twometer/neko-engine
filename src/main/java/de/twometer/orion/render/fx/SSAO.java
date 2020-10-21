@@ -24,16 +24,11 @@ public class SSAO extends FXBase {
 
     private int samples;
 
+    private float scale = 1.0f;
+
     public void create() {
         ssaoShader = OrionApp.get().getShaderProvider().getShader(SSAOShader.class);
         ssaoBlurShader = OrionApp.get().getShaderProvider().getShader(SSAOBlurShader.class);
-
-        ssaoBuffer = Framebuffer.create()
-                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
-                .finish();
-        ssaoBlurBuffer = Framebuffer.create()
-                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
-                .finish();
 
         ssaoNoise = SSAOUtil.generateNoiseTexture();
 
@@ -42,12 +37,6 @@ public class SSAO extends FXBase {
         for (int i = 0; i < ssaoKernel.size(); i++)
             ssaoShader.samples.set(i, ssaoKernel.get(i));
         Shader.unbind();
-
-        ssaoBlurBuffer.bind();
-        glClearColor(1, 1, 1, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(0, 0, 0, 1);
-        Framebuffer.unbind();
     }
 
     void renderImpl(PostRenderer post) {
@@ -65,6 +54,22 @@ public class SSAO extends FXBase {
         post.copyTo(ssaoBlurBuffer);
     }
 
+    @Override
+    public void resize(int w, int h) {
+        ssaoBuffer = Framebuffer.create(w * scale, h * scale)
+                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+                .finish();
+        ssaoBlurBuffer = Framebuffer.create(w * scale, h * scale)
+                .withColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+                .finish();
+
+        ssaoBlurBuffer.bind();
+        glClearColor(1, 1, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(0, 0, 0, 1);
+        Framebuffer.unbind();
+    }
+
     public int getTexture() {
         return ssaoBlurBuffer.getColorTexture();
     }
@@ -75,5 +80,9 @@ public class SSAO extends FXBase {
 
     public void setSamples(int samples) {
         this.samples = samples;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
     }
 }

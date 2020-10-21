@@ -135,7 +135,9 @@ public class ModelPart extends BaseModel {
 
         var shaderProvider = OrionApp.get().getShaderProvider();
         var textureProvider = OrionApp.get().getTextureProvider();
-        renderManager.getShadingStrategy().prepareRender(this, shaderProvider, textureProvider);
+        var prepareOk = renderManager.getShadingStrategy().prepareRender(this, shaderProvider, textureProvider);
+        if (!prepareOk)
+            return;
 
         boolean hasColors = colorBuffer != -1;
         boolean hasNormals = normalBuffer != -1;

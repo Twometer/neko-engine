@@ -1,10 +1,10 @@
 package de.twometer.orion.render;
 
+import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.IModelFilter;
 import de.twometer.orion.render.light.PointLight;
 import de.twometer.orion.render.model.BaseModel;
 import de.twometer.orion.render.model.ModelPart;
-import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.render.shading.IShadingStrategy;
 
@@ -13,8 +13,6 @@ import java.util.List;
 
 public class Scene {
 
-    private final DeferredPipeline pipeline = new DeferredPipeline();
-
     private final List<BaseModel> models = new ArrayList<>();
 
     private final List<IModelFilter> modelFilters = new ArrayList<>();
@@ -22,10 +20,6 @@ public class Scene {
     private final List<PointLight> lights = new ArrayList<>();
 
     private IShadingStrategy shadingStrategy = new DeferredShadingStrategy();
-
-    public void setup() {
-        pipeline.create();
-    }
 
     public boolean shouldRender(ModelPart part) {
         for (var filter : modelFilters)
@@ -55,7 +49,7 @@ public class Scene {
 
     public void addLight(PointLight light) {
         lights.add(light);
-        pipeline.reloadLights();
+        OrionApp.get().getPipeline().reloadLights();
     }
 
     public void setShadingStrategy(IShadingStrategy shadingStrategy) {
@@ -68,10 +62,6 @@ public class Scene {
 
     public IShadingStrategy getShadingStrategy() {
         return shadingStrategy;
-    }
-
-    public DeferredPipeline getPipeline() {
-        return pipeline;
     }
 
 }

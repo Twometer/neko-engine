@@ -7,8 +7,9 @@ import de.twometer.orion.res.cache.TextureProvider;
 public class NopShadingStrategy implements IShadingStrategy {
 
     @Override
-    public void prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures) {
+    public boolean prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures) {
         // Do nothing
+        return true;
     }
 
 }

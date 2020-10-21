@@ -57,5 +57,6 @@ void main(void){
     }
     occlusion = 1.0 - (occlusion / kernelSize);
 
-    FragColor = vec4(occlusion, occlusion, occlusion, 1);
+    FragColor.r = occlusion;
+    FragColor.a = 1.0;
 }

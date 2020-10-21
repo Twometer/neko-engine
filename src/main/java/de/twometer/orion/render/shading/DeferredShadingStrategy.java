@@ -8,7 +8,7 @@ import org.joml.Matrix4f;
 
 public class DeferredShadingStrategy implements IShadingStrategy {
     @Override
-    public void prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures) {
+    public boolean prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures) {
         var shader = shaders.getShader(DeferredShader.class);
         var mat = part.getMaterial();
 
@@ -19,5 +19,7 @@ public class DeferredShadingStrategy implements IShadingStrategy {
         shader.modelColor.set(mat.getDiffuseColor());
         shader.modelMatrix.set(new Matrix4f());
         shader.hasTexture.set(mat.hasTexture());
+
+        return true;
     }
 }
