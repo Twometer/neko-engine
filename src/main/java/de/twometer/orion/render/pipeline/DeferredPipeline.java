@@ -5,7 +5,6 @@ import de.twometer.orion.event.Events;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.GBuffer;
 import de.twometer.orion.render.light.LightSource;
-import de.twometer.orion.render.post.PostFxPipeline;
 import de.twometer.orion.render.shading.DeferredShadingStrategy;
 import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.Subscribe;
@@ -20,8 +19,6 @@ public class DeferredPipeline {
 
     private GBuffer gBuffer;
 
-    private final PostFxPipeline postFx = new PostFxPipeline();
-
     private final DeferredShadingStrategy strategy = new DeferredShadingStrategy();
 
     public void create() {
@@ -29,7 +26,6 @@ public class DeferredPipeline {
         Events.register(this);
 
         lightingShader = OrionApp.get().getShaderProvider().getShader(LightingShader.class);
-        postFx.init();
     }
 
     @Subscribe
@@ -50,13 +46,15 @@ public class DeferredPipeline {
     }
 
     public void render() {
+        var app = OrionApp.get();
+
         // Setup
         gBuffer.bind();
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
         // Geometry pass
-        var scene = OrionApp.get().getScene();
-        OrionApp.get().getRenderManager().setShadingStrategy(strategy);
+        var scene = app.getScene();
+        app.getRenderManager().setShadingStrategy(strategy);
 
         strategy.setPass(DeferredShadingStrategy.RenderPass.Opaque);
         scene.render();
@@ -64,25 +62,28 @@ public class DeferredPipeline {
         strategy.setPass(DeferredShadingStrategy.RenderPass.Translucent);
         scene.render();
 
-        var bloom = OrionApp.get().getFxManager().getBloom();
+        var bloom = app.getFxManager().getBloom();
         bloom.render();
 
         // Post processing
-        var postRenderer = OrionApp.get().getPostRenderer();
+        var postRenderer = app.getPostRenderer();
         postRenderer.begin();
         gBuffer.bindTextures();
 
-        var ssao = OrionApp.get().getFxManager().getSsao();
+        var ssao = app.getFxManager().getSsao();
         ssao.render();
 
         lightingShader.bind();
-        lightingShader.viewPos.set(OrionApp.get().getCamera().getPosition());
+        lightingShader.viewPos.set(app.getCamera().getPosition());
         postRenderer.bindTexture(3, ssao.getTexture());
         postRenderer.bindTexture(4, bloom.getTexture());
-        if (postFx.empty())
+
+        var overlayManager = app.getOverlayManager();
+        if (overlayManager.isEmtpy())
             postRenderer.copyTo(null);
         else {
-            postFx.render();
+            postRenderer.copyTo(overlayManager.getBuf0());
+            overlayManager.render();
         }
 
         postRenderer.end();
@@ -93,7 +94,4 @@ public class DeferredPipeline {
         return gBuffer;
     }
 
-    public PostFxPipeline getPostFx() {
-        return postFx;
-    }
 }

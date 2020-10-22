@@ -4,11 +4,13 @@ import de.twometer.orion.event.CharTypedEvent;
 import de.twometer.orion.event.Events;
 import de.twometer.orion.event.MouseClickedEvent;
 import de.twometer.orion.event.SizeChangedEvent;
+import de.twometer.orion.gl.Framebuffer;
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.render.Camera;
 import de.twometer.orion.render.RenderManager;
 import de.twometer.orion.render.Scene;
 import de.twometer.orion.render.fx.FxManager;
+import de.twometer.orion.render.overlay.OverlayManager;
 import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.cache.ShaderProvider;
@@ -26,26 +28,20 @@ public abstract class OrionApp {
     private static OrionApp app;
 
     private Window window;
-
     private Timer timer;
-
     private Scene scene;
 
     private final Camera camera = new Camera();
-
-    private final ShaderProvider shaderProvider = new ShaderProvider();
-
-    private final TextureProvider textureProvider = new TextureProvider();
-
     private final FpsCounter fpsCounter = new FpsCounter();
 
-    private final DeferredPipeline pipeline = new DeferredPipeline();
-
-    private final FxManager fxManager = new FxManager();
-
-    private final PostRenderer postRenderer = new PostRenderer();
+    private final ShaderProvider shaderProvider = new ShaderProvider();
+    private final TextureProvider textureProvider = new TextureProvider();
 
     private final RenderManager renderManager = new RenderManager();
+    private final DeferredPipeline pipeline = new DeferredPipeline();
+    private final FxManager fxManager = new FxManager();
+    private final OverlayManager overlayManager = new OverlayManager();
+    private final PostRenderer postRenderer = new PostRenderer();
 
     /* Singleton */
     public OrionApp() {
@@ -60,9 +56,8 @@ public abstract class OrionApp {
     }
 
     /* Startup */
-
     public final void launch(String title, int width, int height) {
-        launch(title, width, height, 90);
+        launch(title, width, height, 45);
     }
 
     public final void launch(String title, int width, int height, int tps) {
@@ -72,33 +67,39 @@ public abstract class OrionApp {
     }
 
     /* Game loop internals */
-
     private void setup() {
         Log.i("Starting up...");
 
+        // Event system
         Events.init();
         Events.register(this);
 
+        // GL Context
         window.create();
 
+        // GL State
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glClearColor(0, 0, 0, 1);
+
+        // Scene
+        setScene(new Scene());
+
+        // Services
         postRenderer.create();
         pipeline.create();
         fxManager.create();
+        overlayManager.create();
 
-        timer.reset();
+        // Initial events
+        Events.post(new SizeChangedEvent(window.getWidth(), window.getHeight()));
 
-        window.setCharTypedCallback(c -> Events.post(new CharTypedEvent(c)));
-        window.setClickCallback(b -> Events.post(new MouseClickedEvent(b)));
-        window.setSizeCallback(this::onResize);
-        this.onResize(window.getWidth(), window.getHeight());
-
-        setScene(new Scene()); // Default scene
-
+        // User's init
         onInitialize();
+
+        // Reset the timer
+        timer.reset();
         Log.i("Initialization complete.");
     }
 
@@ -111,12 +112,12 @@ public abstract class OrionApp {
 
             if (timer.elapsed()) {
                 timer.reset();
-                onUpdate(timer.getPartial());
+                onUpdate();
             }
 
             pipeline.render();
             getScene().getSkybox().render();
-            onRenderForward();
+            onRender();
 
             fpsCounter.count();
             window.update();
@@ -133,17 +134,22 @@ public abstract class OrionApp {
         System.exit(0);
     }
 
+    @Subscribe(priority = 1)
+    public void onSizeChanged(SizeChangedEvent e) {
+        Framebuffer.unbind();
+        glViewport(0, 0, e.width, e.height);
+    }
+
     /* Callbacks */
-
-    protected void onRenderForward() {
-
-    }
-
-    protected void onUpdate(float partial) {
-
-    }
-
     protected void onInitialize() {
+
+    }
+
+    protected void onRender() {
+
+    }
+
+    protected void onUpdate() {
 
     }
 
@@ -151,13 +157,7 @@ public abstract class OrionApp {
 
     }
 
-    protected void onResize(int w, int h) {
-        glViewport(0, 0, w, h);
-        Events.post(new SizeChangedEvent(w, h));
-    }
-
     /* Accessors */
-
     public final Window getWindow() {
         return window;
     }
@@ -203,9 +203,8 @@ public abstract class OrionApp {
         return renderManager;
     }
 
-    /* Misc */
-
-    @Subscribe
-    public void _eventBusDummy0(NoSubscriberEvent event) {
+    public OverlayManager getOverlayManager() {
+        return overlayManager;
     }
+
 }

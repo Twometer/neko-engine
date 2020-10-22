@@ -1,5 +1,7 @@
 package de.twometer.orion.gl;
 
+import de.twometer.orion.event.*;
+import org.greenrobot.eventbus.EventBus;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -95,23 +97,21 @@ public class Window {
             this.width = width;
             this.height = height;
 
-            if (sizeCallback != null)
-                sizeCallback.sizeChanged(width, height);
+            Events.post(new SizeChangedEvent(width, height));
         });
 
         glfwSetMouseButtonCallback(handle, (window, button, action, mods) -> {
-            if (action == GLFW_RELEASE && clickCallback != null)
-                clickCallback.onClick(button);
+            if (action == GLFW_RELEASE)
+                Events.post(new MouseClickedEvent(button));
         });
 
         glfwSetCharCallback(handle, (window, codepoint) -> {
-            if (charTypedCallback != null)
-                charTypedCallback.onChar((char) codepoint);
+            Events.post(new CharTypedEvent((char) codepoint));
         });
 
         glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {
-            if (key == GLFW_KEY_BACKSPACE && (action == GLFW_REPEAT || action == GLFW_PRESS))
-                charTypedCallback.onChar('\b');
+            if (action == GLFW_REPEAT || action == GLFW_PRESS)
+                Events.post(new KeyPressedEvent(key));
         });
     }
 

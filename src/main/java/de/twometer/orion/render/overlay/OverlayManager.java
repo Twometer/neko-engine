@@ -1,34 +1,32 @@
-package de.twometer.orion.render.post;
+package de.twometer.orion.render.overlay;
 
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.event.Events;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Framebuffer;
-import de.twometer.orion.gl.Shader;
 import de.twometer.orion.render.shaders.CopyShader;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostFxPipeline {
+public class OverlayManager {
 
-    private final List<IPostFx> fx = new ArrayList<>();
+    private final List<IOverlay> fx = new ArrayList<>();
 
     private Framebuffer buf0;
     private Framebuffer buf1;
 
     private boolean buf = true;
 
-    public void init() {
+    public void create() {
         Events.register(this);
     }
 
     public void render() {
         var post = OrionApp.get().getPostRenderer();
-        post.copyTo(buf0); // Render the scene
 
-        for (IPostFx fx : this.fx) {
+        for (IOverlay fx : this.fx) {
             Framebuffer srcBuf = buf ? buf0 : buf1;
             Framebuffer dstBuf = buf ? buf1 : buf0;
 
@@ -59,12 +57,15 @@ public class PostFxPipeline {
         buf1 = Framebuffer.create().withColorTexture(0).finish();
     }
 
-    public void addEffect(IPostFx effect) {
+    public void addOverlay(IOverlay effect) {
         fx.add(effect);
     }
 
-    public boolean empty() {
+    public boolean isEmtpy() {
         return fx.isEmpty();
     }
 
+    public Framebuffer getBuf0() {
+        return buf0;
+    }
 }

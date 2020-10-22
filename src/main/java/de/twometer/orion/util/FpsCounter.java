@@ -12,7 +12,7 @@ public class FpsCounter {
         frames++;
         if (System.currentTimeMillis() - lastReset > 1000) {
             fps = frames;
-            lastReset = System.currentTimeMillis();
+            lastReset = System.nanoTime();
             frames = 0;
             Log.d("FPS: " + fps);
         }

@@ -7,20 +7,20 @@ public class Timer {
     private long lastReset;
 
     public Timer(int tps) {
-        this.delay = 1000 / tps;
+        this.delay = 1000000000 / tps;
         reset();
     }
 
     public void reset() {
-        lastReset = System.currentTimeMillis();
+        lastReset = System.nanoTime();
     }
 
     public boolean elapsed() {
-        return System.currentTimeMillis() - lastReset > delay;
+        return System.nanoTime() - lastReset > delay;
     }
 
     public float getPartial() {
-        float f = (lastReset + delay - System.currentTimeMillis()) / (float) delay;
+        float f = (lastReset + delay - System.nanoTime()) / (float) delay;
         return 1 - f;
     }
 

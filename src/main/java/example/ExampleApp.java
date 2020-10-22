@@ -4,7 +4,7 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.model.ModelPart;
-import de.twometer.orion.render.post.VignettePostFx;
+import de.twometer.orion.render.overlay.VignetteOverlay;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.res.TextureLoader;
 import de.twometer.orion.util.MathF;
@@ -22,17 +22,19 @@ public class ExampleApp extends OrionApp {
     @Override
     public void onInitialize() {
         getWindow().setCursorVisible(false);
+
         getRenderManager().addModelFilter(new FrustumCullingFilter());
-        getPipeline().getPostFx().addEffect(new VignettePostFx(20.0f, 0.15f));
+
         getFxManager().getSsao().setActive(true);
         getFxManager().getSsao().setSamples(12);
         getFxManager().getBloom().setActive(true);
 
+        getOverlayManager().addOverlay(new VignetteOverlay(20.0f, 0.15f));
+
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
-        skeld.traverseTree(model -> {
-            if (model instanceof ModelPart && model.getName().contains("Luces"))
-                getScene().addLight(new LightSource(model.getCenter()));
-        });
+        skeld.streamTree()
+                .filter(m -> m instanceof ModelPart && m.getName().contains("Luces"))
+                .forEach(m -> getScene().addLight(new LightSource(m.getCenter())));
         getScene().addModel(skeld);
 
         var skyboxCubemap = TextureLoader.loadCubemap("Sky/right.png", "Sky/left.png", "Sky/top.png", "Sky/bottom.png", "Sky/front.png", "Sky/back.png");
@@ -41,7 +43,7 @@ public class ExampleApp extends OrionApp {
     }
 
     @Override
-    public void onUpdate(float partial) {
+    public void onUpdate() {
         final float speed = 0.125f;
 
         float yaw = MathF.toRadians(getCamera().getAngle().x);
