@@ -9,9 +9,11 @@ import org.joml.Vector3f;
 
 public class Camera {
 
-    private final Vector3f position = new Vector3f(0, 0, 0);
+    private final Vector3f lastTickPosition = new Vector3f();
+    private final Vector3f position = new Vector3f();
 
-    private final Vector2f angle = new Vector2f(0, 0);
+    private final Vector2f lastTickAngle = new Vector2f();
+    private final Vector2f angle = new Vector2f();
 
     private Matrix4f viewMatrix;
 
@@ -24,11 +26,15 @@ public class Camera {
     private float far = 100.0f;
 
     public void update() {
+        var partial = OrionApp.get().getTimer().getPartial();
+        Vector3f posInterpolated = getInterpolatedPosition(partial);
+        Vector2f angInterpolated = getInterpolatedAngle(partial);
+
         Window window = OrionApp.get().getWindow();
         float aspect = window.getWidth() / (float) window.getHeight();
 
-        float yaw = MathF.toRadians(angle.x);
-        float pitch = MathF.toRadians(angle.y);
+        float yaw = MathF.toRadians(angInterpolated.x);
+        float pitch = MathF.toRadians(angInterpolated.y);
 
         Vector3f direction = new Vector3f(
                 MathF.cos(pitch) * MathF.sin(yaw),
@@ -42,8 +48,21 @@ public class Camera {
         );
         Vector3f up = new Vector3f(right).cross(direction);
 
-        viewMatrix = new Matrix4f().lookAt(position, direction.add(position), up);
+        viewMatrix = new Matrix4f().lookAt(posInterpolated, direction.add(posInterpolated), up);
         projectionMatrix = new Matrix4f().perspective(fov, aspect, near, far);
+    }
+
+    public void tick() {
+        lastTickPosition.set(position);
+        lastTickAngle.set(angle);
+    }
+
+    public Vector3f getInterpolatedPosition(float partial) {
+        return MathF.lerp(lastTickPosition, position, partial);
+    }
+
+    public Vector2f getInterpolatedAngle(float partial) {
+        return MathF.lerp(lastTickAngle, angle, partial);
     }
 
     public Matrix4f getViewMatrix() {

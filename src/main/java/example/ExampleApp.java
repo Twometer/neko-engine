@@ -43,7 +43,7 @@ public class ExampleApp extends OrionApp {
     }
 
     @Override
-    public void onUpdate() {
+    public void onTick() {
         final float speed = 0.125f;
 
         float yaw = MathF.toRadians(getCamera().getAngle().x);

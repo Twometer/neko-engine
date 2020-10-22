@@ -1,5 +1,8 @@
 package de.twometer.orion.util;
 
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+
 import java.util.Random;
 
 public class MathF {
@@ -48,6 +51,21 @@ public class MathF {
 
     public static float lerp(float a, float b, float f) {
         return a + f * (b - a);
+    }
+
+    public static Vector2f lerp(Vector2f a, Vector2f b, float f) {
+        return new Vector2f(
+                lerp(a.x, b.x, f),
+                lerp(a.y, b.y, f)
+        );
+    }
+
+    public static Vector3f lerp(Vector3f a, Vector3f b, float f) {
+        return new Vector3f(
+                lerp(a.x, b.x, f),
+                lerp(a.y, b.y, f),
+                lerp(a.z, b.z, f)
+        );
     }
 
     public static float rand() {

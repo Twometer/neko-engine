@@ -1,8 +1,6 @@
 package de.twometer.orion.core;
 
-import de.twometer.orion.event.CharTypedEvent;
 import de.twometer.orion.event.Events;
-import de.twometer.orion.event.MouseClickedEvent;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Framebuffer;
 import de.twometer.orion.gl.Window;
@@ -16,9 +14,9 @@ import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
 import de.twometer.orion.util.FpsCounter;
+import de.twometer.orion.util.FpsLimiter;
 import de.twometer.orion.util.Log;
 import de.twometer.orion.util.Timer;
-import org.greenrobot.eventbus.NoSubscriberEvent;
 import org.greenrobot.eventbus.Subscribe;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -33,6 +31,7 @@ public abstract class OrionApp {
 
     private final Camera camera = new Camera();
     private final FpsCounter fpsCounter = new FpsCounter();
+    private final FpsLimiter fpsLimiter = new FpsLimiter();
 
     private final ShaderProvider shaderProvider = new ShaderProvider();
     private final TextureProvider textureProvider = new TextureProvider();
@@ -107,13 +106,14 @@ public abstract class OrionApp {
         setup();
 
         while (!window.shouldClose()) {
-            camera.update();
-            renderManager.update();
-
             if (timer.elapsed()) {
                 timer.reset();
-                onUpdate();
+                camera.tick();
+                onTick();
             }
+
+            camera.update();
+            renderManager.update();
 
             pipeline.render();
             getScene().getSkybox().render();
@@ -121,6 +121,7 @@ public abstract class OrionApp {
 
             fpsCounter.count();
             window.update();
+            fpsLimiter.sync();
         }
 
         destroy();
@@ -149,7 +150,7 @@ public abstract class OrionApp {
 
     }
 
-    protected void onUpdate() {
+    protected void onTick() {
 
     }
 
@@ -207,4 +208,11 @@ public abstract class OrionApp {
         return overlayManager;
     }
 
+    public FpsLimiter getFpsLimiter() {
+        return fpsLimiter;
+    }
+
+    public FpsCounter getFpsCounter() {
+        return fpsCounter;
+    }
 }
