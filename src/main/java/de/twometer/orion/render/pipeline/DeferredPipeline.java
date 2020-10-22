@@ -50,9 +50,6 @@ public class DeferredPipeline {
     }
 
     public void render() {
-        var bloom = OrionApp.get().getFxManager().getBloom();
-        bloom.render();
-
         // Setup
         gBuffer.bind();
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -66,6 +63,9 @@ public class DeferredPipeline {
 
         strategy.setPass(DeferredShadingStrategy.RenderPass.Translucent);
         scene.render();
+
+        var bloom = OrionApp.get().getFxManager().getBloom();
+        bloom.render();
 
         // Post processing
         var postRenderer = OrionApp.get().getPostRenderer();

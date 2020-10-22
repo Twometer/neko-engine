@@ -29,14 +29,15 @@ public class Bloom extends FxBase {
         var scene = OrionApp.get().getScene();
         var gBuf = OrionApp.get().getPipeline().getGBuffer();
 
-        buf0.bind();
+        glEnable(GL_DEPTH_TEST);
         gBuf.blitDepth(buf0);
-
         buf0.bind();
         glClear(GL_COLOR_BUFFER_BIT);
         OrionApp.get().getRenderManager().setShadingStrategy(shadingStrategy);
         scene.render();
         Framebuffer.unbind();
+
+        glDisable(GL_DEPTH_TEST);
 
         final int passes = 10;
         boolean horizontal = true;
@@ -55,7 +56,6 @@ public class Bloom extends FxBase {
         }
 
         texture = (horizontal ? buf1 : buf0).getColorTexture();
-
         post.end();
     }
 
