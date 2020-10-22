@@ -4,6 +4,7 @@ import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.LightSource;
 import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.overlay.FXAAOverlay;
 import de.twometer.orion.render.overlay.VignetteOverlay;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.res.TextureLoader;
@@ -30,6 +31,7 @@ public class ExampleApp extends OrionApp {
         getFxManager().getBloom().setActive(true);
 
         getOverlayManager().addOverlay(new VignetteOverlay(20.0f, 0.15f));
+        getOverlayManager().addOverlay(new FXAAOverlay());
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
         skeld.streamTree()
