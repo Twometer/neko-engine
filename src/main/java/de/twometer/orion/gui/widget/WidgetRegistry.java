@@ -1,5 +1,6 @@
 package de.twometer.orion.gui.widget;
 
+import de.twometer.orion.util.CrashHandler;
 import de.twometer.orion.util.Reflect;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +36,8 @@ public class WidgetRegistry {
         try {
             return Reflect.newInstance(clazz);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            CrashHandler.fatal(e);
+            return null;
         }
     }
 

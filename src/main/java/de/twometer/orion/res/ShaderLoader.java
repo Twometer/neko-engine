@@ -1,5 +1,6 @@
 package de.twometer.orion.res;
 
+import de.twometer.orion.util.CrashHandler;
 import de.twometer.orion.util.Log;
 
 import java.io.IOException;
@@ -44,7 +45,8 @@ public class ShaderLoader {
 
             return programId;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            CrashHandler.fatal(e);
+            return 0;
         }
     }
 

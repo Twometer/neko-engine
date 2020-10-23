@@ -69,7 +69,7 @@ public class Window {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!glfwInit())
-            throw new RuntimeException("Failed to initialize GLFW");
+            throw new IllegalStateException("Failed to initialize GLFW");
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

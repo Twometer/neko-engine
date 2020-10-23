@@ -2,6 +2,7 @@ package de.twometer.orion.res;
 
 import de.twometer.orion.gl.Cubemap;
 import de.twometer.orion.gl.Texture;
+import de.twometer.orion.util.CrashHandler;
 import de.twometer.orion.util.Log;
 import org.joml.internal.MemUtil;
 import org.lwjgl.BufferUtils;
@@ -51,7 +52,8 @@ public class TextureLoader {
 
             return new Cubemap(textureId);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            CrashHandler.fatal(e);
+            return null;
         }
     }
 
@@ -75,7 +77,8 @@ public class TextureLoader {
 
             return new Texture(textureId, image.getWidth(), image.getHeight());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            CrashHandler.fatal(e);
+            return null;
         }
     }
 

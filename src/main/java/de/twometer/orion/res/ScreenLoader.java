@@ -4,6 +4,7 @@ import de.twometer.orion.gui.core.*;
 import de.twometer.orion.gui.widget.ContainerBase;
 import de.twometer.orion.gui.widget.WidgetBase;
 import de.twometer.orion.gui.widget.WidgetRegistry;
+import de.twometer.orion.util.CrashHandler;
 import de.twometer.orion.util.InstanceCache;
 import de.twometer.orion.util.Log;
 import de.twometer.orion.util.Reflect;
@@ -45,7 +46,7 @@ public class ScreenLoader {
             try {
                 field.set(screen, wid);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                CrashHandler.fatal(e);
             }
         }
     }
@@ -115,7 +116,7 @@ public class ScreenLoader {
                 field.setAccessible(true);
                 field.set(widget, decodedValue);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                CrashHandler.fatal(e);
             }
         }
 
@@ -147,7 +148,8 @@ public class ScreenLoader {
             var stream = new ByteArrayInputStream(xml);
             return builder.parse(stream).getDocumentElement();
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
+            CrashHandler.fatal(e);
+            return null;
         }
     }
 

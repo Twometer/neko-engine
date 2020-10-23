@@ -15,7 +15,7 @@ public class InstanceCache<T> {
                 t = Reflect.newInstance(clazz);
                 instances.put(clazz, t);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                CrashHandler.fatal(e);
             }
         }
         return t;

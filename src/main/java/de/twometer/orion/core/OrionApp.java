@@ -14,10 +14,7 @@ import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
-import de.twometer.orion.util.FpsCounter;
-import de.twometer.orion.util.FpsLimiter;
-import de.twometer.orion.util.Log;
-import de.twometer.orion.util.Timer;
+import de.twometer.orion.util.*;
 import org.greenrobot.eventbus.Subscribe;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -70,6 +67,7 @@ public abstract class OrionApp {
     /* Game loop internals */
     private void setup() {
         Log.i("Starting up...");
+        CrashHandler.register();
 
         // Event system
         Events.init();

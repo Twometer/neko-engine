@@ -1,6 +1,7 @@
 package de.twometer.orion.gui;
 
 import de.twometer.orion.gui.core.Screen;
+import de.twometer.orion.util.CrashHandler;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class GuiManager {
             try {
                 currentScreen.load();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                CrashHandler.fatal(e);
             }
             currentScreen.onRelayout();
         }
