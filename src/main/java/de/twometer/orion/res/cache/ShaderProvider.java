@@ -2,6 +2,7 @@ package de.twometer.orion.res.cache;
 
 import de.twometer.orion.gl.Shader;
 import de.twometer.orion.util.Log;
+import de.twometer.orion.util.Reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +19,7 @@ public class ShaderProvider {
         Shader shader = cache.get(shaderClass);
         if (shader == null) {
             try {
-                shader = newInstance(shaderClass);
+                shader = Reflect.newInstance(shaderClass);
                 cache.put(shaderClass, shader);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 Log.e("Failed to create shader instance", e);
@@ -28,11 +29,6 @@ public class ShaderProvider {
         return (T) shader;
     }
 
-    private static <T> T newInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        var c = clazz.getConstructors();
-        if (c.length == 0)
-            throw new InstantiationException("Can't find constructor");
-        return (T) c[0].newInstance();
-    }
+
 
 }

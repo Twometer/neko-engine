@@ -4,6 +4,7 @@ import de.twometer.orion.event.Events;
 import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Framebuffer;
 import de.twometer.orion.gl.Window;
+import de.twometer.orion.gui.GuiManager;
 import de.twometer.orion.render.Camera;
 import de.twometer.orion.render.RenderManager;
 import de.twometer.orion.render.Scene;
@@ -36,6 +37,7 @@ public abstract class OrionApp {
     private final ShaderProvider shaderProvider = new ShaderProvider();
     private final TextureProvider textureProvider = new TextureProvider();
 
+    private final GuiManager guiManager = new GuiManager();
     private final RenderManager renderManager = new RenderManager();
     private final DeferredPipeline pipeline = new DeferredPipeline();
     private final FxManager fxManager = new FxManager();
@@ -90,6 +92,7 @@ public abstract class OrionApp {
         pipeline.create();
         fxManager.create();
         overlayManager.create();
+        guiManager.create();
 
         // Initial events
         Events.post(new SizeChangedEvent(window.getWidth(), window.getHeight()));
@@ -215,4 +218,9 @@ public abstract class OrionApp {
     public FpsCounter getFpsCounter() {
         return fpsCounter;
     }
+
+    public GuiManager getGuiManager() {
+        return guiManager;
+    }
+
 }

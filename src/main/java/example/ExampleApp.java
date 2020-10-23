@@ -27,7 +27,7 @@ public class ExampleApp extends OrionApp {
         getRenderManager().addModelFilter(new FrustumCullingFilter());
 
         getFxManager().getSsao().setActive(true);
-        getFxManager().getSsao().setSamples(12);
+        getFxManager().getSsao().setSamples(64);
         getFxManager().getBloom().setActive(true);
 
         getOverlayManager().addOverlay(new VignetteOverlay(20.0f, 0.15f));
@@ -42,6 +42,8 @@ public class ExampleApp extends OrionApp {
         var skyboxCubemap = TextureLoader.loadCubemap("Sky/right.png", "Sky/left.png", "Sky/top.png", "Sky/bottom.png", "Sky/front.png", "Sky/back.png");
         getScene().getSkybox().setActive(true);
         getScene().getSkybox().setTexture(skyboxCubemap);
+
+        getGuiManager().showScreen(new ExampleScreen());
     }
 
     @Override

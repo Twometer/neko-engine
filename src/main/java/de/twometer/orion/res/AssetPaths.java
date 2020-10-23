@@ -14,4 +14,8 @@ public class AssetPaths {
 
     public static final String SOUND_PATH = BASE_PATH + "Sounds/";
 
+    public static final String STRING_PATH = BASE_PATH + "Strings/";
+
+    public static final String GUI_PATH = BASE_PATH + "Gui/";
+
 }

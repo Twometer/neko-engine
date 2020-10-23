@@ -5,6 +5,7 @@ plugins {
 group 'de.twometer'
 version '1.0-SNAPSHOT'
 
+project.ext.mainClass = "example.ExampleApp"
 project.ext.lwjglVersion = "3.2.3"
 project.ext.lwjglNatives = "natives-windows"
 
@@ -36,4 +37,14 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 
     testCompile 'junit:junit:4.12'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": mainClass
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
