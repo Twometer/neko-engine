@@ -118,6 +118,20 @@ public class ScreenLoader {
                 throw new RuntimeException(e);
             }
         }
+
+        var attrs = elem.getAttributes();
+        for (var i = 0; i < attrs.getLength(); i++) {
+            var attr = attrs.item(i);
+            if (attr.getNodeName().contains(".")) { // Foreign property
+                var parts = attr.getNodeName().split("\\.");
+                var foreignWidget = parts[0];
+                var foreignKey = parts[1];
+                var value = attr.getNodeValue();
+                var foreignWidgetClazz = WidgetRegistry.getWidget(foreignWidget);
+                var prop = new ForeignProperty(foreignWidgetClazz,foreignKey,value);
+                widget.getForeignProperties().add(prop);
+            }
+        }
     }
 
     private static String makeUpperCamelCase(String s) {

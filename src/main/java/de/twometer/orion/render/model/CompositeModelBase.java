@@ -4,15 +4,15 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-public class CompositeModel extends BaseModel {
+public class CompositeModelBase extends ModelBase {
 
-    private final List<BaseModel> children;
+    private final List<ModelBase> children;
 
     private Vector3f minimum;
     private Vector3f maximum;
     private Vector3f center;
 
-    public CompositeModel(String name, List<BaseModel> children) {
+    public CompositeModelBase(String name, List<ModelBase> children) {
         super(name);
         this.children = children;
     }
@@ -20,7 +20,7 @@ public class CompositeModel extends BaseModel {
     @Override
     public void render() {
         Transform parentTransform = getTransform();
-        for (BaseModel child : children) {
+        for (ModelBase child : children) {
             child.getTransform().set(parentTransform);
             child.render();
         }
@@ -33,7 +33,7 @@ public class CompositeModel extends BaseModel {
             float y = 0;
             float z = 0;
 
-            for (BaseModel model : children) {
+            for (ModelBase model : children) {
                 Vector3f com = model.getCenter();
                 x += com.x;
                 y += com.y;
@@ -50,7 +50,7 @@ public class CompositeModel extends BaseModel {
     public Vector3f getMinimum() {
         if (minimum == null) {
             minimum = new Vector3f(9999999, 9999999, 9999999);
-            for (BaseModel model : children) {
+            for (ModelBase model : children) {
                 var childMinimum = model.getMinimum();
                 if (childMinimum.x < minimum.x) minimum.x = childMinimum.x;
                 if (childMinimum.y < minimum.y) minimum.y = childMinimum.y;
@@ -64,7 +64,7 @@ public class CompositeModel extends BaseModel {
     public Vector3f getMaximum() {
         if (maximum == null) {
             maximum = new Vector3f(-9999999, -9999999, -9999999);
-            for (BaseModel model : children) {
+            for (ModelBase model : children) {
                 var childMaximum = model.getMaximum();
                 if (childMaximum.x > maximum.x) maximum.x = childMaximum.x;
                 if (childMaximum.y > maximum.y) maximum.y = childMaximum.y;
@@ -77,11 +77,11 @@ public class CompositeModel extends BaseModel {
     @Override
     public void setTag(Object tag) {
         super.setTag(tag);
-        for (BaseModel child : children)
+        for (ModelBase child : children)
             child.setTag(tag);
     }
 
-    public List<BaseModel> getChildren() {
+    public List<ModelBase> getChildren() {
         return children;
     }
 }

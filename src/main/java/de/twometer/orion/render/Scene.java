@@ -2,7 +2,7 @@ package de.twometer.orion.render;
 
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.light.LightSource;
-import de.twometer.orion.render.model.BaseModel;
+import de.twometer.orion.render.model.ModelBase;
 import de.twometer.orion.render.sky.Skybox;
 import de.twometer.orion.util.Log;
 
@@ -13,7 +13,7 @@ public class Scene {
 
     private boolean initialized = false;
 
-    private final List<BaseModel> models = new ArrayList<>();
+    private final List<ModelBase> models = new ArrayList<>();
 
     private final List<LightSource> lights = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class Scene {
             model.render();
     }
 
-    public void addModel(BaseModel model) {
+    public void addModel(ModelBase model) {
         models.add(model);
     }
 

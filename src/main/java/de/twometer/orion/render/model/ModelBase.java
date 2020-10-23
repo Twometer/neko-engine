@@ -3,13 +3,10 @@ package de.twometer.orion.render.model;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public abstract class BaseModel {
+public abstract class ModelBase {
 
     private final String name;
 
@@ -19,7 +16,7 @@ public abstract class BaseModel {
 
     private Object tag;
 
-    public BaseModel(String name) {
+    public ModelBase(String name) {
         this.name = name;
         this.transform = new Transform();
     }
@@ -58,15 +55,15 @@ public abstract class BaseModel {
         this.tag = tag;
     }
 
-    public Stream<BaseModel> streamTree() {
-        var tree = new ArrayList<BaseModel>();
+    public Stream<ModelBase> streamTree() {
+        var tree = new ArrayList<ModelBase>();
         traverseTree(tree::add);
         return tree.stream();
     }
 
-    public void traverseTree(Consumer<BaseModel> consumer) {
-        if (this instanceof CompositeModel) {
-            var model = (CompositeModel) this;
+    public void traverseTree(Consumer<ModelBase> consumer) {
+        if (this instanceof CompositeModelBase) {
+            var model = (CompositeModelBase) this;
             for (var child : model.getChildren())
                 child.traverseTree(consumer);
         } else {

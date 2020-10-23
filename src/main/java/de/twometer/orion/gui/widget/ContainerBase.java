@@ -18,4 +18,10 @@ public abstract class ContainerBase extends WidgetBase {
         return children;
     }
 
+    protected WidgetBase singleChild() {
+        if (children.size() > 1)
+            throw new IllegalStateException(getClass() + " does not allow more than 1 child.");
+        return children.get(0);
+    }
+
 }

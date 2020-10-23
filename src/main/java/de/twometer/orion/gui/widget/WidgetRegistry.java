@@ -1,8 +1,5 @@
 package de.twometer.orion.gui.widget;
 
-import de.twometer.orion.gui.widget.Button;
-import de.twometer.orion.gui.widget.Grid;
-import de.twometer.orion.gui.widget.WidgetBase;
 import de.twometer.orion.util.Reflect;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,11 +20,17 @@ public class WidgetRegistry {
         registry.put(widget.getSimpleName(), widget);
     }
 
-    public static WidgetBase createWidget(String name) {
+    public static Class<? extends WidgetBase> getWidget(String name) {
         var clazz = registry.get(name);
 
         if (clazz == null)
             throw new NoSuchElementException("Widget " + name + " is not registered.");
+
+        return clazz;
+    }
+
+    public static WidgetBase createWidget(String name) {
+        var clazz = getWidget(name);
 
         try {
             return Reflect.newInstance(clazz);

@@ -9,7 +9,7 @@ import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
 
-public class ModelPart extends BaseModel {
+public class ModelBasePart extends ModelBase {
 
     private final int vao;
 
@@ -30,7 +30,7 @@ public class ModelPart extends BaseModel {
 
     private Material material;
 
-    private ModelPart(String name, int vao, int vertexBuffer, int colorBuffer, int normalBuffer, int texCoordBuffer, int dimensions, int vertices, int primitiveType, Vector3f min, Vector3f max, Vector3f com) {
+    private ModelBasePart(String name, int vao, int vertexBuffer, int colorBuffer, int normalBuffer, int texCoordBuffer, int dimensions, int vertices, int primitiveType, Vector3f min, Vector3f max, Vector3f com) {
         super(name);
         this.vao = vao;
         this.vertexBuffer = vertexBuffer;
@@ -45,7 +45,7 @@ public class ModelPart extends BaseModel {
         this.centerOfMass = com;
     }
 
-    public static ModelPart create(String name, Mesh mesh, int primitiveType) {
+    public static ModelBasePart create(String name, Mesh mesh, int primitiveType) {
         int dimensions = mesh.getDimensions();
 
         mesh.getVertices().flip();
@@ -116,7 +116,7 @@ public class ModelPart extends BaseModel {
 
         }
 
-        return new ModelPart(name, vao, vertexBuffer, colorBuffer, normalBuffer, texCoordBuffer, dimensions, mesh.getVertexCount(), primitiveType, min, max, com);
+        return new ModelBasePart(name, vao, vertexBuffer, colorBuffer, normalBuffer, texCoordBuffer, dimensions, mesh.getVertexCount(), primitiveType, min, max, com);
     }
 
     public void destroy() {

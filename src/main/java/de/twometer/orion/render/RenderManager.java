@@ -1,7 +1,7 @@
 package de.twometer.orion.render;
 
 import de.twometer.orion.render.filter.IModelFilter;
-import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.model.ModelBasePart;
 import de.twometer.orion.render.shading.IShadingStrategy;
 import de.twometer.orion.render.shading.NopShadingStrategy;
 
@@ -14,7 +14,7 @@ public class RenderManager {
 
     private IShadingStrategy shadingStrategy = new NopShadingStrategy();
 
-    public boolean shouldRender(ModelPart part) {
+    public boolean shouldRender(ModelBasePart part) {
         for (var filter : modelFilters)
             if (!filter.shouldRender(part))
                 return false;

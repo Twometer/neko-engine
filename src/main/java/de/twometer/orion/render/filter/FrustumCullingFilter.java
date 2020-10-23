@@ -1,8 +1,7 @@
 package de.twometer.orion.render.filter;
 
 import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.render.Camera;
-import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.model.ModelBasePart;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -19,7 +18,7 @@ public class FrustumCullingFilter implements IModelFilter {
     }
 
     @Override
-    public boolean shouldRender(ModelPart part) {
+    public boolean shouldRender(ModelBasePart part) {
         return insideFrustum(part.getCenter(), part.getSize().length());
     }
 

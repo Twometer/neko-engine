@@ -3,7 +3,7 @@ package example;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.LightSource;
-import de.twometer.orion.render.model.ModelPart;
+import de.twometer.orion.render.model.ModelBasePart;
 import de.twometer.orion.render.overlay.FXAAOverlay;
 import de.twometer.orion.render.overlay.VignetteOverlay;
 import de.twometer.orion.res.ModelLoader;
@@ -35,7 +35,7 @@ public class ExampleApp extends OrionApp {
 
         var skeld = ModelLoader.loadModel("TheSkeld.obj");
         skeld.streamTree()
-                .filter(m -> m instanceof ModelPart && m.getName().contains("Luces"))
+                .filter(m -> m instanceof ModelBasePart && m.getName().contains("Luces"))
                 .forEach(m -> getScene().addLight(new LightSource(m.getCenter())));
         getScene().addModel(skeld);
 

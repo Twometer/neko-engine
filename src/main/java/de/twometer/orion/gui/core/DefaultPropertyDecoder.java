@@ -2,6 +2,7 @@ package de.twometer.orion.gui.core;
 
 public class DefaultPropertyDecoder implements IPropertyDecoder<Object> {
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Object decode(String str, Class<?> requiredType) {
         if (requiredType == int.class) {
@@ -18,6 +19,8 @@ public class DefaultPropertyDecoder implements IPropertyDecoder<Object> {
         } else if (requiredType == Point.class) {
             var s = str.split(",");
             return new Point(Integer.parseInt(s[0]), Integer.parseInt(s[1]));
+        } else if (requiredType.isEnum()) {
+            return Enum.valueOf((Class) requiredType, str);
         }
         throw new IllegalArgumentException("Default decoder can't decode " + requiredType + " format.");
     }

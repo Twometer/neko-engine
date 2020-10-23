@@ -2,7 +2,7 @@ package de.twometer.orion.render.sky;
 
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.gl.Cubemap;
-import de.twometer.orion.render.model.BaseModel;
+import de.twometer.orion.render.model.ModelBase;
 import de.twometer.orion.render.model.Mesh;
 import de.twometer.orion.render.shading.IShadingStrategy;
 import de.twometer.orion.render.shading.SkyboxShadingStrategy;
@@ -15,7 +15,7 @@ public class Skybox {
 
     private Cubemap texture;
 
-    private BaseModel cubeModel;
+    private ModelBase cubeModel;
 
     private final IShadingStrategy strategy = new SkyboxShadingStrategy();
 

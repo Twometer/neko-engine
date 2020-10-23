@@ -1,7 +1,6 @@
 package de.twometer.orion.res;
 
 import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.gl.Texture;
 import de.twometer.orion.render.Color;
 import de.twometer.orion.render.model.*;
 import de.twometer.orion.util.Log;
@@ -17,11 +16,11 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 
 public class ModelLoader {
 
-    public static BaseModel loadModel(String modelFile) {
-        return new CompositeModel(modelFile, loadModels(modelFile));
+    public static ModelBase loadModel(String modelFile) {
+        return new CompositeModelBase(modelFile, loadModels(modelFile));
     }
 
-    public static List<BaseModel> loadModels(String modelFile) {
+    public static List<ModelBase> loadModels(String modelFile) {
         Log.d("Loading model " + modelFile);
         String path = AssetPaths.MODEL_PATH + modelFile;
         AIScene aiScene = aiImportFile(path, 0);
@@ -71,8 +70,8 @@ public class ModelLoader {
         int numMeshes = aiScene.mNumMeshes();
 
         String currentName = "";
-        List<BaseModel> result = new ArrayList<>();
-        List<BaseModel> currentSubModels = new ArrayList<>();
+        List<ModelBase> result = new ArrayList<>();
+        List<ModelBase> currentSubModels = new ArrayList<>();
 
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
@@ -92,16 +91,16 @@ public class ModelLoader {
         return result;
     }
 
-    private static void mergeModels(String name, List<BaseModel> input, List<BaseModel> output) {
+    private static void mergeModels(String name, List<ModelBase> input, List<ModelBase> output) {
         if (input.size() != 0) {
-            BaseModel model = input.size() == 1 ? input.get(0) : new CompositeModel(name, new ArrayList<>(input));
+            ModelBase model = input.size() == 1 ? input.get(0) : new CompositeModelBase(name, new ArrayList<>(input));
             Log.d("Merged " + input.size() + " parts into model " + name);
             output.add(model);
             input.clear();
         }
     }
 
-    private static BaseModel convert(String name, AIMesh aiMesh, List<Material> mats) {
+    private static ModelBase convert(String name, AIMesh aiMesh, List<Material> mats) {
         Mesh mesh = Mesh.create(aiMesh.mNumVertices(), 3)
                 .withTexCoords()
                 .withNormals();
@@ -123,7 +122,7 @@ public class ModelLoader {
             mesh.putTexCoord(aiTexCoord.x(), 1 - aiTexCoord.y());
         }
 
-        ModelPart model = mesh.bake(name, GL_TRIANGLES);
+        ModelBasePart model = mesh.bake(name, GL_TRIANGLES);
         model.setMaterial(mats.get(aiMesh.mMaterialIndex()));
         return model;
     }
