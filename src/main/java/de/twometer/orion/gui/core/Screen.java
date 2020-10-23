@@ -10,6 +10,10 @@ public abstract class Screen extends ContainerBase {
 
     private boolean isLoaded = false;
 
+    public Screen() {
+        maximumSize = onComputeSize();
+    }
+
     public final void load() throws IOException {
         if (isLoaded) return;
         isLoaded = true;
@@ -23,6 +27,7 @@ public abstract class Screen extends ContainerBase {
         var child = singleChild();
         child.setPosition(new Point(getPadding().getWidth(), getPadding().getHeight()));
         child.setMaximumSize(getInternalSize());
+        relayoutChildren();
     }
 
     @Override

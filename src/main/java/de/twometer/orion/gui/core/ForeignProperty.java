@@ -4,6 +4,8 @@ import de.twometer.orion.gui.widget.WidgetBase;
 
 public class ForeignProperty {
 
+    public static ForeignProperty EMPTY = new ForeignProperty(null, null, null);
+
     private final Class<? extends WidgetBase> foreignWidget;
 
     private final String key;
@@ -26,5 +28,9 @@ public class ForeignProperty {
 
     public String getValue() {
         return value;
+    }
+
+    public int intValue(int defaultVal) {
+        return value == null ? defaultVal : Integer.parseInt(value);
     }
 }

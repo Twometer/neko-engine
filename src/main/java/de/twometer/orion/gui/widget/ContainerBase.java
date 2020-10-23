@@ -7,11 +7,9 @@ public abstract class ContainerBase extends WidgetBase {
 
     private final List<WidgetBase> children = new ArrayList<>();
 
-    @Override
-    public void onRelayout() {
+    protected void relayoutChildren() {
         for (var child : children)
             child.onRelayout();
-        super.onRelayout();
     }
 
     public List<WidgetBase> getChildren() {

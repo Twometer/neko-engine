@@ -4,6 +4,7 @@ import de.twometer.orion.gui.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public abstract class WidgetBase {
 
@@ -33,7 +34,7 @@ public abstract class WidgetBase {
 
     protected Size internalSize;
     protected Size externalSize;
-    protected Size maximumSize;
+    protected Size maximumSize = new Size(0,0);
 
     protected boolean hasFocus = false;
 
@@ -107,6 +108,13 @@ public abstract class WidgetBase {
 
     public List<ForeignProperty> getForeignProperties() {
         return foreignProperties;
+    }
+
+    public ForeignProperty getForeignProperty(Class<?> owner, String key) {
+        for (var prop : foreignProperties)
+            if (prop.getForeignWidget() == owner && key.equalsIgnoreCase(prop.getKey()))
+                return prop;
+        return ForeignProperty.EMPTY;
     }
 
     public void setSize(Size size) {
