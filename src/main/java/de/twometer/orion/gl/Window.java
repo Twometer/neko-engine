@@ -1,6 +1,7 @@
 package de.twometer.orion.gl;
 
 import de.twometer.orion.event.*;
+import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.EventBus;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
@@ -9,6 +10,8 @@ import org.lwjgl.glfw.GLFWScrollCallbackI;
 import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
 import org.lwjgl.opengl.GL;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -27,6 +30,8 @@ public class Window {
     private int height;
 
     private float scale;
+
+    private final Map<Integer, Long> cursors = new HashMap<>();
 
     public Window(String title, int width, int height) {
         this.title = title;
@@ -158,6 +163,20 @@ public class Window {
 
     public void setClipboardContent(String str) {
         glfwSetClipboardString(handle, str);
+    }
+
+    public void setCursor(int cursor) {
+        if (cursor != 0) {
+            var cursorObj = cursors.get(cursor);
+            if (cursorObj == null) {
+                Log.d("Loading cursor " + cursor);
+                cursorObj = glfwCreateStandardCursor(cursor);
+                cursors.put(cursor, cursorObj);
+            }
+            glfwSetCursor(handle, cursorObj);
+        } else
+            glfwSetCursor(handle, cursor);
+
     }
 
 }

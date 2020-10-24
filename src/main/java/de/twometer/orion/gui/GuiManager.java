@@ -76,6 +76,7 @@ public class GuiManager {
         renderer.logMemoryUsage();
 
         view = renderer.createView(window.getWidth(), window.getHeight(), true);
+        view.setViewListener(new GuiViewListener());
 
         var adapter = new InputAdapter(view);
         adapter.attach();
@@ -103,14 +104,13 @@ public class GuiManager {
         if (currentPage == null) { // On close, restore cursor state
             OrionApp.get().getWindow().setCursorVisible(wasCursorVisible);
         } else {
-            showPage(page.getPath());
+            showPage("file:///" + page.getPath().replace("\\", "/"));
             // Apply cursor state
             OrionApp.get().getWindow().setCursorVisible(currentPage.isCursorVisible());
         }
     }
 
-    public void showPage(String path) {
-        var url = "file:///" + path.replace("\\", "/");
+    public void showPage(String url) {
         Log.i("Navigating to " + url);
         this.view.loadURL(url);
     }
