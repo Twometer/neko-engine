@@ -4,8 +4,13 @@ LWJGL 3D game engine
 ## Features
 - Deferred rendering pipeline
 - Integrated [Ultralight](https://ultralig.ht) GUI framework
+  - HTML GUIs
+  - Custom CSS styles
+  - Easy JS/Java interop
+  - I18n support
 - Integrated Assimp model loader
-- Post processing
+- Integrated OpenAL 3D sound engine
+- Post processing effects
   - SSAO
   - Bloom
   - Vignette
@@ -15,6 +20,11 @@ LWJGL 3D game engine
 1. Import the latest jar file from the Maven repo
 2. Download base assets from [here](https://github.com/Twometer/orion-engine/releases/latest) and put the assets folder in your working directory
 3. Download the Ultralight binaries from [here](https://github.com/ultralight-ux/Ultralight/blob/master/README.md#getting-the-latest-sdk) and put them into `assets/Natives/Ultralight`.
+  
+## Examples
+Example code can be found [here](https://github.com/Twometer/orion-engine/tree/main/src/main/java/example)
+
+For an actual game made with Orion, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
   
 ## Asset folder structure
 - `assets/`
@@ -36,8 +46,3 @@ LWJGL 3D game engine
 - [ultralight-java](https://github.com/LabyMod/ultralight-java)
 - [kryonet](https://github.com/EsotericSoftware/kryonet)
 - [GSON](https://github.com/google/gson)
-  
-## Examples
-Example code can be found [here](https://github.com/Twometer/orion-engine/tree/main/src/main/java/example)
-
-For an actual game made with Orion, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
