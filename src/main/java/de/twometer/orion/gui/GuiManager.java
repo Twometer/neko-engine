@@ -74,7 +74,6 @@ public class GuiManager implements UltralightLoadListener {
         platform.setClipboard(new GuiClipboard());
 
         renderer = UltralightRenderer.create();
-        renderer.logMemoryUsage();
 
         view = renderer.createView(window.getWidth(), window.getHeight(), true);
         view.setViewListener(new GuiViewListener());

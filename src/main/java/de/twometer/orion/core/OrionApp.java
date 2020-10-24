@@ -14,6 +14,7 @@ import de.twometer.orion.render.pipeline.DeferredPipeline;
 import de.twometer.orion.render.pipeline.PostRenderer;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
+import de.twometer.orion.sound.SoundFX;
 import de.twometer.orion.util.*;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -41,6 +42,7 @@ public abstract class OrionApp {
     private final FxManager fxManager = new FxManager();
     private final OverlayManager overlayManager = new OverlayManager();
     private final PostRenderer postRenderer = new PostRenderer();
+    private final SoundFX soundFX = new SoundFX();
 
     /* Singleton */
     public OrionApp() {
@@ -92,6 +94,7 @@ public abstract class OrionApp {
         fxManager.create();
         overlayManager.create();
         guiManager.create();
+        soundFX.create();
 
         // Initial events
         Events.post(new SizeChangedEvent(window.getWidth(), window.getHeight()));
@@ -116,6 +119,7 @@ public abstract class OrionApp {
             }
 
             camera.update();
+            soundFX.update();
             renderManager.update();
 
             pipeline.render();
@@ -135,6 +139,7 @@ public abstract class OrionApp {
         Log.i("Shutting down...");
 
         window.destroy();
+        soundFX.destroy();
         onDestroy();
         System.exit(0);
     }
@@ -224,6 +229,10 @@ public abstract class OrionApp {
         return guiManager;
     }
 
+    public SoundFX getSoundFX() {
+        return soundFX;
+    }
+
     public IPlayerController getPlayerController() {
         return playerController;
     }
@@ -231,4 +240,5 @@ public abstract class OrionApp {
     public void setPlayerController(IPlayerController playerController) {
         this.playerController = playerController;
     }
+
 }
