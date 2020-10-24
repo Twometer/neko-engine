@@ -14,7 +14,7 @@ LWJGL 3D game engine
 ## Engine setup
 1. Import the latest jar file from the Maven repo
 2. Download base assets from [here](https://github.com/Twometer/orion-engine/releases/latest) and put the assets folder in your working directory
-3. Download the Ultralight binaries from [here]() and put them into `assets/Natives/Ultralight`.
+3. Download the Ultralight binaries from [here](https://github.com/ultralight-ux/Ultralight/blob/master/README.md#getting-the-latest-sdk) and put them into `assets/Natives/Ultralight`.
   
 ## Asset folder structure
 - `assets/`
@@ -34,7 +34,7 @@ LWJGL 3D game engine
 - [EventBus](https://github.com/greenrobot/EventBus)
 - [Ultralight](https://ultralig.ht)
 - [ultralight-java](https://github.com/LabyMod/ultralight-java)
-- [Kryonet](https://github.com/EsotericSoftware/kryonet)
+- [kryonet](https://github.com/EsotericSoftware/kryonet)
   
 ## Screenshots
 tbd
