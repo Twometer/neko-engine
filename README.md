@@ -37,8 +37,7 @@ LWJGL 3D game engine
 - [kryonet](https://github.com/EsotericSoftware/kryonet)
 - [GSON](https://github.com/google/gson)
   
-## Screenshots
-tbd
-
 ## Examples
-tbd
+Example code can be found [here](https://github.com/Twometer/orion-engine/tree/main/src/main/java/example)
+
+For an actual game made with Orion, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)

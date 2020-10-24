@@ -25,24 +25,44 @@ public class PageContext implements ContextProvider, ContextProviderFactory {
         this.view = view;
     }
 
+    private String escape(String s) {
+        return s.replace("'", "\\'").replace("\"", "\\\"");
+    }
+
     public void setElementText(String elementId, String text) {
-        var escaped = text.replace("'", "\\'");
+        var escaped = escape(text);
         var script = "document.getElementById('" + elementId + "').innerText = '" + escaped + "';";
         runScript(script);
     }
 
-    public void call(String function, Object... args) {
+    public void setElementProperty(String elementId, String property, String value) {
+        var escaped = escape(value);
+        var script = "document.getElementById('" + elementId + "')[\"" + property + "\"] = '" + escaped + "';";
+        runScript(script);
+    }
+
+    public String getElementProperty(String elementId, String property) {
+        var script = "document.getElementById('" + elementId + "')[\"" + property + "\"]";
+        return runScript(script);
+    }
+
+    public <T> T getProperty(String s, Class<T> clazz) {
+        return gson.fromJson(s, clazz);
+    }
+
+    public String call(String function, Object... args) {
         var serializedArgs = Arrays.stream(args)
                 .map(gson::toJson)
                 .collect(Collectors.joining(", "));
-        runScript(function + "(" + serializedArgs + ");");
+        return runScript(function + "(" + serializedArgs + ");");
     }
 
-    public void runScript(String script) {
+    public String runScript(String script) {
         try {
-            view.evaluateScript(script);
+            return view.evaluateScript(script);
         } catch (JavascriptEvaluationException e) {
             Log.e(e.getMessage());
+            return null;
         }
     }
 
