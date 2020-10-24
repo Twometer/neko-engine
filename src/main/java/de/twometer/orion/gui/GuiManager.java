@@ -21,7 +21,6 @@ import org.joml.Matrix4f;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
@@ -110,13 +109,13 @@ public class GuiManager implements UltralightLoadListener {
         if (currentPage == null) { // On close, restore cursor state
             OrionApp.get().getWindow().setCursorVisible(wasCursorVisible);
         } else {
-            showPage("file:///" + page.getPath().replace("\\", "/"));
+            showUrl("file:///" + page.getPath().replace("\\", "/"));
             // Apply cursor state
             OrionApp.get().getWindow().setCursorVisible(currentPage.isCursorVisible());
         }
     }
 
-    public void showPage(String url) {
+    public void showUrl(String url) {
         Log.i("Navigating to " + url);
         this.view.loadURL(url);
     }
