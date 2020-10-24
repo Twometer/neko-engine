@@ -26,6 +26,7 @@ public abstract class OrionApp {
     private Window window;
     private Timer timer;
     private Scene scene;
+    private IPlayerController playerController = new DefaultPlayerController(0.125f);
 
     private final Camera camera = new Camera();
     private final FpsCounter fpsCounter = new FpsCounter();
@@ -110,6 +111,7 @@ public abstract class OrionApp {
             if (timer.elapsed()) {
                 timer.reset();
                 camera.tick();
+                playerController.update(window, camera);
                 onTick();
             }
 
@@ -222,4 +224,11 @@ public abstract class OrionApp {
         return guiManager;
     }
 
+    public IPlayerController getPlayerController() {
+        return playerController;
+    }
+
+    public void setPlayerController(IPlayerController playerController) {
+        this.playerController = playerController;
+    }
 }
