@@ -119,6 +119,7 @@ public abstract class OrionApp {
             pipeline.render();
             getScene().getSkybox().render();
             onRender();
+            getGuiManager().render();
 
             fpsCounter.count();
             window.update();

@@ -6,6 +6,8 @@ import de.twometer.orion.res.cache.TextureProvider;
 
 public interface IShadingStrategy {
 
+    IShadingStrategy NOP = new NopShadingStrategy();
+
     boolean prepareRender(ModelBasePart part, ShaderProvider shaders, TextureProvider textures);
 
     default void finishRender() {

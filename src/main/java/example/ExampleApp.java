@@ -43,7 +43,7 @@ public class ExampleApp extends OrionApp {
         getScene().getSkybox().setActive(true);
         getScene().getSkybox().setTexture(skyboxCubemap);
 
-        getGuiManager().showScreen(new ExampleScreen());
+        getGuiManager().showPage("MainScreen.html");
     }
 
     @Override

@@ -1,5 +1,0 @@
-<Screen Background="#EFEFEF">
-    <Grid Rows="*" Cols="Auto,*,*">
-        <Button Name="TestButton" Grid.Row="0" Grid.Col="0" Text="{button.test}"/>
-    </Grid>
-</Screen>

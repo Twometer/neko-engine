@@ -168,4 +168,13 @@ public class Window {
     public int getHeight() {
         return height;
     }
+
+    public String getClipboardContent() {
+        return glfwGetClipboardString(handle);
+    }
+
+    public void setClipboardContent(String str) {
+        glfwSetClipboardString(handle, str);
+    }
+
 }
