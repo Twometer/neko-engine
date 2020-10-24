@@ -26,7 +26,7 @@ import static org.lwjgl.opengl.GL12.*;
 
 public class GuiManager {
 
-    private I18n i18n;
+    private I18n i18n = new I18n();
 
     private Matrix4f guiMatrix;
 
@@ -40,7 +40,8 @@ public class GuiManager {
     private ModelBase quadModel;
 
     public void create() {
-        Log.d("Creating ultralight gui renderer");
+        Log.d("Initializing gui system");
+        i18n.load();
 
         var ultralightPath = AssetPaths.NATIVE_PATH + "Ultralight/";
         var resourcePath = ultralightPath + "resources/";
@@ -54,8 +55,6 @@ public class GuiManager {
         } catch (UltralightLoadException e) {
             CrashHandler.fatal(e);
         }
-
-        i18n = new I18n();
 
         var window = OrionApp.get().getWindow();
         platform = UltralightPlatform.instance();
@@ -91,7 +90,7 @@ public class GuiManager {
 
     public void showPage(String path) {
         var url = "file:///" + path.replace("\\", "/");
-        Log.d("Navigating to " + url);
+        Log.i("Navigating to " + url);
         this.view.loadURL(url);
     }
 
