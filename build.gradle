@@ -30,6 +30,7 @@ dependencies {
     implementation 'kryonet:kryonet:2.21'
     implementation 'com.labymedia:ultralight-java-base:0.3.0'
     implementation 'com.labymedia:ultralight-java-databind:0.3.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"

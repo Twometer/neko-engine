@@ -35,6 +35,7 @@ LWJGL 3D game engine
 - [Ultralight](https://ultralig.ht)
 - [ultralight-java](https://github.com/LabyMod/ultralight-java)
 - [kryonet](https://github.com/EsotericSoftware/kryonet)
+- [GSON](https://github.com/google/gson)
   
 ## Screenshots
 tbd

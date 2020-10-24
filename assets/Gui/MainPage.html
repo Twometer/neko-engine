@@ -1,7 +1,7 @@
 <html>
 <body style="background: white; font-family: Arial;-webkit-user-select: none">
-<h1>Your game</h1>
-<button>Test button!</button>
+<h1 id="header">Your game</h1>
+<button onclick="_remote.testButtonClicked()">Test button!</button>
 <p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p>
 <p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p><p>Test</p>
 <label>
@@ -9,4 +9,17 @@
     <input type="text">
 </label>
 </body>
+<script>
+    function OnLoaded() {
+        console.log("text from remote: " + _remote.test);
+        console.log("Hello from JavaScript!");
+    }
+
+    function Helo(these, are, some, args) {
+        console.log(these);
+        console.log(are);
+        console.log(some);
+        console.log(args);
+    }
+</script>
 </html>

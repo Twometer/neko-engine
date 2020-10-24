@@ -5,6 +5,7 @@ import com.labymedia.ultralight.bitmap.UltralightBitmapSurface;
 import com.labymedia.ultralight.config.FontHinting;
 import com.labymedia.ultralight.config.UltralightConfig;
 import com.labymedia.ultralight.math.IntRect;
+import com.labymedia.ultralight.plugin.loading.UltralightLoadListener;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.event.Events;
 import de.twometer.orion.event.SizeChangedEvent;
@@ -20,11 +21,12 @@ import org.joml.Matrix4f;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 
-public class GuiManager {
+public class GuiManager implements UltralightLoadListener {
 
     private I18n i18n = new I18n();
 
@@ -77,6 +79,7 @@ public class GuiManager {
 
         view = renderer.createView(window.getWidth(), window.getHeight(), true);
         view.setViewListener(new GuiViewListener());
+        view.setLoadListener(this);
 
         var adapter = new InputAdapter(view);
         adapter.attach();
@@ -98,6 +101,9 @@ public class GuiManager {
     public void showPage(Page page) {
         if (currentPage == null) // On open, save cursor state
             wasCursorVisible = OrionApp.get().getWindow().isCursorVisible();
+
+        if (currentPage != null && page == null)
+            currentPage.setContext(null);
 
         currentPage = page;
 
@@ -185,4 +191,43 @@ public class GuiManager {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     }
 
+    @Override
+    public void onBeginLoading(long frameId, boolean isMainFrame, String url) {
+
+    }
+
+    @Override
+    public void onFinishLoading(long frameId, boolean isMainFrame, String url) {
+
+    }
+
+    @Override
+    public void onFailLoading(long frameId, boolean isMainFrame, String url, String description, String errorDomain, int errorCode) {
+
+    }
+
+    @Override
+    public void onUpdateHistory() {
+
+    }
+
+    @Override
+    public void onWindowObjectReady(long frameId, boolean isMainFrame, String url) {
+
+    }
+
+    @Override
+    public void onDOMReady(long frameId, boolean isMainFrame, String url) {
+        if (currentPage != null) {
+            var pageCtx = new PageContext(view);
+            pageCtx.runInJsContext(js -> {
+                var databind = new Databind(DatabindConfiguration.builder().contextProviderFactory(pageCtx).build());
+                var remote = js.makeObject(databind.toJavascript(currentPage.getClass()), new DatabindJavascriptClass.Data(currentPage, null));
+                js.getGlobalContext().getGlobalObject().setProperty("_remote", remote, 0);
+            });
+            currentPage.setContext(pageCtx);
+            currentPage.onDomReady();
+            pageCtx.runScript("OnLoaded()");
+        }
+    }
 }

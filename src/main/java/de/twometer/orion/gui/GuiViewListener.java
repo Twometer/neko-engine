@@ -8,6 +8,7 @@ import com.labymedia.ultralight.plugin.view.MessageSource;
 import com.labymedia.ultralight.plugin.view.UltralightViewListener;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.gl.Window;
+import de.twometer.orion.util.Log;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -60,7 +61,22 @@ public class GuiViewListener implements UltralightViewListener {
 
     @Override
     public void onAddConsoleMessage(MessageSource source, MessageLevel level, String message, long lineNumber, long columnNumber, String sourceId) {
-
+        var formatted = String.format("[JavaScript] [%s] [%d:%d] %s", sourceId, lineNumber, columnNumber, message);
+        switch (level) {
+            case ERROR:
+                Log.e(formatted);
+                break;
+            case DEBUG:
+                Log.d(formatted);
+                break;
+            case INFO:
+            case LOG:
+                Log.i(formatted);
+                break;
+            case WARNING:
+                Log.w(formatted);
+                break;
+        }
     }
 
     @Override

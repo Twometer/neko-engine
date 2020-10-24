@@ -1,8 +1,10 @@
 package de.twometer.orion.gui;
 
-public class Page {
+public abstract class Page {
 
     private final String path;
+
+    protected PageContext context;
 
     public Page(String path) {
         this.path = path;
@@ -14,5 +16,13 @@ public class Page {
 
     public String getPath() {
         return path;
+    }
+
+    public void onDomReady() {
+
+    }
+
+    public void setContext(PageContext context) {
+        this.context = context;
     }
 }
