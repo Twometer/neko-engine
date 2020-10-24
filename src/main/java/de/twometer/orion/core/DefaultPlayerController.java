@@ -19,6 +19,9 @@ public class DefaultPlayerController implements IPlayerController {
 
     @Override
     public void update(Window window, Camera camera) {
+        if (window.isCursorVisible())
+            return;
+
         float yaw = MathF.toRadians(camera.getAngle().x);
         Vector3f fwd = new Vector3f(MathF.sin(yaw), 0, MathF.cos(yaw)).normalize(speed);
         Vector3f left = new Vector3f(MathF.sin(yaw + MathF.PI / 2), 0, MathF.cos(yaw + MathF.PI / 2)).normalize(speed);

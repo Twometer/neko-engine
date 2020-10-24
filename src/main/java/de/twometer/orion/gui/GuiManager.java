@@ -39,6 +39,9 @@ public class GuiManager {
     private GuiShader guiShader;
     private ModelBase quadModel;
 
+    private boolean wasCursorVisible = false;
+    private Page currentPage;
+
     public void create() {
         Log.d("Initializing gui system");
         i18n.load();
@@ -74,6 +77,9 @@ public class GuiManager {
 
         view = renderer.createView(window.getWidth(), window.getHeight(), true);
 
+        var adapter = new InputAdapter(view);
+        adapter.attach();
+
         quadModel = Mesh.create(4, 2)
                 .putVertex(0, 0)
                 .putVertex(1, 0)
@@ -88,6 +94,21 @@ public class GuiManager {
         Log.i("Gui System initialized");
     }
 
+    public void showPage(Page page) {
+        if (currentPage == null) // On open, save cursor state
+            wasCursorVisible = OrionApp.get().getWindow().isCursorVisible();
+
+        currentPage = page;
+
+        if (currentPage == null) { // On close, restore cursor state
+            OrionApp.get().getWindow().setCursorVisible(wasCursorVisible);
+        } else {
+            showPage(page.getPath());
+            // Apply cursor state
+            OrionApp.get().getWindow().setCursorVisible(currentPage.isCursorVisible());
+        }
+    }
+
     public void showPage(String path) {
         var url = "file:///" + path.replace("\\", "/");
         Log.i("Navigating to " + url);
@@ -96,6 +117,7 @@ public class GuiManager {
 
     public void render() {
         if (texture == -1) genTexture();
+        if (currentPage == null) return;
 
         renderer.update();
         renderer.render();
@@ -151,6 +173,7 @@ public class GuiManager {
         view.resize(e.width, e.height);
         guiMatrix = new Matrix4f().ortho2D(0, 1.0f, 1.0f, 0);
     }
+
 
     private void genTexture() {
         Log.d("Creating GUI texture");

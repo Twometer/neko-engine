@@ -3,7 +3,10 @@ package de.twometer.orion.gl;
 import de.twometer.orion.event.*;
 import org.greenrobot.eventbus.EventBus;
 import org.joml.Vector2f;
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWScrollCallbackI;
+import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
 import org.lwjgl.opengl.GL;
 
 import java.util.Objects;
@@ -25,44 +28,18 @@ public class Window {
 
     private float scale;
 
-    private SizeCallback sizeCallback;
-
-    private ClickCallback clickCallback;
-
-    private CharTypedCallback charTypedCallback;
-
-    public interface SizeCallback {
-        void sizeChanged(int width, int height);
-    }
-
-    public interface ClickCallback {
-        void onClick(int button);
-    }
-
-    public interface CharTypedCallback {
-        void onChar(char c);
-    }
-
     public Window(String title, int width, int height) {
         this.title = title;
         this.width = width;
         this.height = height;
     }
 
-    public void setSizeCallback(SizeCallback sizeCallback) {
-        this.sizeCallback = sizeCallback;
-    }
-
-    public void setCharTypedCallback(CharTypedCallback charTypedCallback) {
-        this.charTypedCallback = charTypedCallback;
-    }
-
-    public void setClickCallback(ClickCallback clickCallback) {
-        this.clickCallback = clickCallback;
-    }
-
     public void setCursorVisible(boolean visible) {
         glfwSetInputMode(handle, GLFW_CURSOR, visible ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
+
+    public boolean isCursorVisible() {
+        return glfwGetInputMode(handle, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
     }
 
     public void create() {
@@ -103,16 +80,18 @@ public class Window {
         glfwSetMouseButtonCallback(handle, (window, button, action, mods) -> {
             if (action == GLFW_RELEASE)
                 Events.post(new MouseClickedEvent(button));
-        });
-
-        glfwSetCharCallback(handle, (window, codepoint) -> {
-            Events.post(new CharTypedEvent((char) codepoint));
+            Events.post(new MouseButtonEvent(button, action, mods));
         });
 
         glfwSetKeyCallback(handle, (window, key, scancode, action, mods) -> {
             if (action == GLFW_REPEAT || action == GLFW_PRESS)
                 Events.post(new KeyPressedEvent(key));
+            Events.post(new KeyEvent(key, scancode, action, mods));
         });
+        glfwSetCharCallback(handle, (window, codepoint) -> Events.post(new CharTypedEvent((char) codepoint, codepoint)));
+        glfwSetCursorPosCallback(handle, (window, xpos, ypos) -> Events.post(new MousePosEvent((int) xpos, (int) ypos)));
+        glfwSetScrollCallback(handle, (window, xoffset, yoffset) -> Events.post(new ScrollEvent((int) xoffset, (int) yoffset)));
+        glfwSetWindowFocusCallback(handle, (window, focused) -> Events.post(new WindowFocusEvent(focused)));
     }
 
     public void update() {
@@ -146,6 +125,10 @@ public class Window {
 
     public boolean isKeyPressed(int key) {
         return glfwGetKey(handle, key) == GLFW_PRESS;
+    }
+
+    public boolean isMouseButtonPressed(int key) {
+        return glfwGetMouseButton(handle, key) == GLFW_PRESS;
     }
 
     public Vector2f getCursorPosition() {
