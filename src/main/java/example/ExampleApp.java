@@ -8,6 +8,7 @@ import de.twometer.orion.render.overlay.FXAAOverlay;
 import de.twometer.orion.render.overlay.VignetteOverlay;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.res.TextureLoader;
+import de.twometer.orion.util.Log;
 import org.joml.Vector3f;
 
 public class ExampleApp extends OrionApp {
@@ -56,6 +57,10 @@ public class ExampleApp extends OrionApp {
         // Make some noise
         getSoundFX().addAmbiance("ambiancetest.ogg", new Vector3f(0,4,0));
         getSoundFX().play("sfxtest.ogg");
+
+        // I18n
+        var testMsg = getI18n().resolve("Test message: {message.test}");
+        Log.i(testMsg);
     }
 
 

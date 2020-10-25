@@ -31,7 +31,31 @@ public class I18n {
     }
 
     public String resolve(String str) {
-        return str;
+        var resultBuilder = new StringBuilder();
+        var keyBuilder = new StringBuilder();
+        var input = str.toCharArray();
+        for (int i = 0; i < input.length; i++) {
+            if (str.charAt(i) == '{') {
+                String key = null;
+                for (int j = i + 1; j < input.length; j++)
+                    if (str.charAt(j) != '}') {
+                        keyBuilder.append(str.charAt(j));
+                    } else {
+                        key = keyBuilder.toString();
+                        keyBuilder.setLength(0);
+                        break;
+                    }
+
+                if (key == null)
+                    throw new RuntimeException("Malformed i18n string! Missing '}'");
+                i += key.length() + 1;
+                resultBuilder.append(resolveKey(key));
+            } else {
+                resultBuilder.append(str.charAt(i));
+            }
+        }
+
+        return resultBuilder.toString();
     }
 
     private String resolveKey(String key) {

@@ -5,6 +5,7 @@ import de.twometer.orion.event.SizeChangedEvent;
 import de.twometer.orion.gl.Framebuffer;
 import de.twometer.orion.gl.Window;
 import de.twometer.orion.gui.GuiManager;
+import de.twometer.orion.gui.I18n;
 import de.twometer.orion.render.Camera;
 import de.twometer.orion.render.RenderManager;
 import de.twometer.orion.render.Scene;
@@ -231,6 +232,10 @@ public abstract class OrionApp {
 
     public SoundFX getSoundFX() {
         return soundFX;
+    }
+
+    public I18n getI18n() {
+        return guiManager.getI18n();
     }
 
     public IPlayerController getPlayerController() {

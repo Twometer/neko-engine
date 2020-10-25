@@ -178,6 +178,9 @@ public class GuiManager implements UltralightLoadListener {
         guiMatrix = new Matrix4f().ortho2D(0, 1.0f, 1.0f, 0);
     }
 
+    public I18n getI18n() {
+        return i18n;
+    }
 
     private void genTexture() {
         Log.d("Creating GUI texture");
