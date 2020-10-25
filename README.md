@@ -18,6 +18,16 @@ LWJGL-based 3D game/rendering engine
   
 ## Engine setup
 1. Import the latest jar file from the Maven repo
+```
+repositories {
+    ...
+    maven { url 'https://cloud.twometer.de/nexus/repository/maven-releases' }
+    ...
+}
+
+implementation 'de.twometer.neko:neko-engine:<version-here>'
+
+```
 2. Download base assets from [here](https://github.com/Twometer/neko-engine/releases/latest) and put the assets folder in your working directory
 3. Download the Ultralight binaries from [here](https://github.com/ultralight-ux/Ultralight/blob/master/README.md#getting-the-latest-sdk) and put them into `assets/Natives/Ultralight`.
   

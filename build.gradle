@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 group 'de.twometer.neko'
@@ -39,6 +40,37 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
 
     testCompile 'junit:junit:4.12'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'neko-engine'
+            from components.java
+            pom {
+                name = 'neko-engine'
+                description = 'Neko is a 3D LWJGL game engine'
+                url = 'https://github.com/Twometer/neko-engine'
+                licenses {
+                    license {
+                        name = 'GNU Lesser General Public License v3.0'
+                        url = 'https://github.com/Twometer/neko-engine/blob/main/LICENSE'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "Nexus"
+            url = "https://cloud.twometer.de/nexus/repository/maven-releases"
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
+    }
 }
 
 jar {
