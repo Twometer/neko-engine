@@ -20,8 +20,8 @@ public class Transform {
                 .rotateLocal(rotation.y, 0, 1, 0)
                 .rotateLocal(rotation.z, 0, 0, 1)
                 .translateLocal(rotationOrigin)
-                .translateLocal(translation)
-                .scaleLocal(scale.x, scale.y, scale.z);
+                .scaleLocal(scale.x, scale.y, scale.z)
+                .translateLocal(translation);
     }
 
     public Vector3f getTranslation() {
@@ -65,7 +65,7 @@ public class Transform {
 
     public Vector3f transform(Vector3f vec) {
         Vector3f projected = new Vector3f();
-        vec.mulProject(getMatrix(), vec);
+        vec.mulProject(getMatrix(), projected);
         return projected;
     }
 }

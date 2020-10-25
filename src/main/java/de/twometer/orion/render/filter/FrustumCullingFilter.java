@@ -19,7 +19,7 @@ public class FrustumCullingFilter implements IModelFilter {
 
     @Override
     public boolean shouldRender(ModelPart part) {
-        return insideFrustum(part.getCenter(), part.getSize().length());
+        return insideFrustum(part.getTransformedCenter(), part.getSize().length());
     }
 
     @Override

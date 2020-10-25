@@ -46,6 +46,14 @@ public class ExampleApp extends OrionApp {
         // Adding the model to the scene
         getScene().addModel(skeld);
 
+        // Importing a transformed model
+        var astro = ModelLoader.loadModel("Astronaut.obj");
+        astro.getTransform().setScale(new Vector3f(0.25f,0.25f,0.25f));
+        astro.getTransform().setTranslation(new Vector3f(23,0,-15));
+        astro.getTransform().setRotationOrigin(astro.getCenter());
+        astro.getTransform().setRotation(new Vector3f(0,-2f,0));
+        getScene().addModel(astro);
+
         // Load the skybox from a cubemap texture
         var skyboxCubemap = TextureLoader.loadCubemap("Sky/right.png", "Sky/left.png", "Sky/top.png", "Sky/bottom.png", "Sky/front.png", "Sky/back.png");
         getScene().getSkybox().setActive(true);

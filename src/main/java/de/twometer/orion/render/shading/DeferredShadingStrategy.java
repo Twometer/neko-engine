@@ -27,7 +27,7 @@ public class DeferredShadingStrategy implements IShadingStrategy {
 
         shader.bind();
         shader.modelColor.set(mat.getDiffuseColor());
-        shader.modelMatrix.set(new Matrix4f());
+        shader.modelMatrix.set(part.getTransform().getMatrix());
         shader.hasTexture.set(mat.hasTexture());
 
         return true;
