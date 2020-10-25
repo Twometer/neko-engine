@@ -71,5 +71,8 @@ public class ExampleApp extends OrionApp {
         Log.i(testMsg);
     }
 
-
+    @Override
+    protected void onPreLoad() {
+        getGuiManager().setLoadingScreen(new LoadingPage());
+    }
 }

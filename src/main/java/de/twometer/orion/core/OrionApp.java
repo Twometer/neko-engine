@@ -100,6 +100,15 @@ public abstract class OrionApp {
         // Initial events
         Events.post(new SizeChangedEvent(window.getWidth(), window.getHeight()));
 
+        onPreLoad();
+        if (guiManager.getLoadingScreen() != null) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            guiManager.showPage(guiManager.getLoadingScreen());
+            guiManager.render();
+            guiManager.showPage(null);
+            window.update();
+        }
+
         // User's init
         onInitialize();
 
@@ -152,6 +161,10 @@ public abstract class OrionApp {
     }
 
     /* Callbacks */
+    protected void onPreLoad() {
+
+    }
+
     protected void onInitialize() {
 
     }
@@ -189,60 +202,60 @@ public abstract class OrionApp {
         return textureProvider;
     }
 
-    public void setScene(Scene scene) {
+    public final void setScene(Scene scene) {
         this.scene = scene;
         scene.initialize();
     }
 
-    public Scene getScene() {
+    public final Scene getScene() {
         return scene;
     }
 
-    public DeferredPipeline getPipeline() {
+    public final DeferredPipeline getPipeline() {
         return pipeline;
     }
 
-    public FxManager getFxManager() {
+    public final FxManager getFxManager() {
         return fxManager;
     }
 
-    public PostRenderer getPostRenderer() {
+    public final PostRenderer getPostRenderer() {
         return postRenderer;
     }
 
-    public RenderManager getRenderManager() {
+    public final RenderManager getRenderManager() {
         return renderManager;
     }
 
-    public OverlayManager getOverlayManager() {
+    public final OverlayManager getOverlayManager() {
         return overlayManager;
     }
 
-    public FpsLimiter getFpsLimiter() {
+    public final FpsLimiter getFpsLimiter() {
         return fpsLimiter;
     }
 
-    public FpsCounter getFpsCounter() {
+    public final FpsCounter getFpsCounter() {
         return fpsCounter;
     }
 
-    public GuiManager getGuiManager() {
+    public final GuiManager getGuiManager() {
         return guiManager;
     }
 
-    public SoundFX getSoundFX() {
+    public final SoundFX getSoundFX() {
         return soundFX;
     }
 
-    public I18n getI18n() {
+    public final I18n getI18n() {
         return guiManager.getI18n();
     }
 
-    public IPlayerController getPlayerController() {
+    public final IPlayerController getPlayerController() {
         return playerController;
     }
 
-    public void setPlayerController(IPlayerController playerController) {
+    public final void setPlayerController(IPlayerController playerController) {
         this.playerController = playerController;
     }
 

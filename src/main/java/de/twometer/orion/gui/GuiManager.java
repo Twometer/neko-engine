@@ -41,6 +41,7 @@ public class GuiManager implements UltralightLoadListener {
     private ModelBase quadModel;
 
     private boolean wasCursorVisible = false;
+    private Page loadingScreen;
     private Page currentPage;
 
     public void create() {
@@ -230,5 +231,13 @@ public class GuiManager implements UltralightLoadListener {
             currentPage.onDomReady();
             pageCtx.runScript("OnLoaded()");
         }
+    }
+
+    public void setLoadingScreen(Page loadingScreen) {
+        this.loadingScreen = loadingScreen;
+    }
+
+    public Page getLoadingScreen() {
+        return loadingScreen;
     }
 }
