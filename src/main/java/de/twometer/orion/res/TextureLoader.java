@@ -39,7 +39,7 @@ public class TextureLoader {
 
             for (int i = 0; i < textures.length; i++) {
                 var image = ResourceLoader.loadImage(AssetPaths.TEXTURE_PATH + textures[i]);
-                var pixels = loadPixels(image);
+                var pixels = ResourceLoader.loadPixels(image);
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
             }
 
@@ -62,7 +62,7 @@ public class TextureLoader {
         var path = AssetPaths.TEXTURE_PATH + name;
         try {
             BufferedImage image = ResourceLoader.loadImage(path);
-            ByteBuffer buffer = loadPixels(image);
+            ByteBuffer buffer = ResourceLoader.loadPixels(image);
 
             int textureId = glGenTextures();
             glBindTexture(GL_TEXTURE_2D, textureId);
@@ -82,19 +82,6 @@ public class TextureLoader {
         }
     }
 
-    private static ByteBuffer loadPixels(BufferedImage image) {
-        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                Color color = new Color(image.getRGB(x, y), true);
-                buffer.put((byte) color.getRed());
-                buffer.put((byte) color.getGreen());
-                buffer.put((byte) color.getBlue());
-                buffer.put((byte) color.getAlpha());
-            }
-        }
-        buffer.flip();
-        return buffer;
-    }
+
 
 }

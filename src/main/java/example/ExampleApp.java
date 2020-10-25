@@ -19,6 +19,7 @@ public class ExampleApp extends OrionApp {
     public void onInitialize() {
         // Configure window properties
         getWindow().setCursorVisible(false);
+        getWindow().setIcon("icon.png");
 
         // Enable frustum culling
         getRenderManager().addModelFilter(new FrustumCullingFilter());

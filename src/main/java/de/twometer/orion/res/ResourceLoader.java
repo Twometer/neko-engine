@@ -1,8 +1,12 @@
 package de.twometer.orion.res;
 
+import org.lwjgl.BufferUtils;
+
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class ResourceLoader {
@@ -14,6 +18,21 @@ public class ResourceLoader {
         while ((line = reader.readLine()) != null)
             builder.append(line).append("\n");
         return builder.toString();
+    }
+
+    public static ByteBuffer loadPixels(BufferedImage image) {
+        ByteBuffer buffer = BufferUtils.createByteBuffer(image.getWidth() * image.getHeight() * 4);
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                Color color = new Color(image.getRGB(x, y), true);
+                buffer.put((byte) color.getRed());
+                buffer.put((byte) color.getGreen());
+                buffer.put((byte) color.getBlue());
+                buffer.put((byte) color.getAlpha());
+            }
+        }
+        buffer.flip();
+        return buffer;
     }
 
     public static byte[] loadBytes(String path) throws IOException {

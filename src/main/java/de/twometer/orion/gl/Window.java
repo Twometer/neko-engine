@@ -1,15 +1,16 @@
 package de.twometer.orion.gl;
 
 import de.twometer.orion.event.*;
+import de.twometer.orion.res.AssetPaths;
+import de.twometer.orion.res.ResourceLoader;
+import de.twometer.orion.util.CrashHandler;
 import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.EventBus;
 import org.joml.Vector2f;
-import org.lwjgl.glfw.GLFWCursorPosCallbackI;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWScrollCallbackI;
-import org.lwjgl.glfw.GLFWWindowFocusCallbackI;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -57,7 +58,6 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_SAMPLES, 4);
 
         handle = glfwCreateWindow(width, height, title, NULL, NULL);
         if (handle == NULL)
@@ -177,6 +177,20 @@ public class Window {
         } else
             glfwSetCursor(handle, cursor);
 
+    }
+
+    public void setIcon(String path) {
+        try {
+            var img = ResourceLoader.loadImage(AssetPaths.TEXTURE_PATH + path);
+            var pix = ResourceLoader.loadPixels(img);
+            var buf = GLFWImage.malloc(1);
+            var glfwImg = GLFWImage.malloc();
+            glfwImg.set(img.getWidth(), img.getHeight(), pix);
+            buf.put(0, glfwImg);
+            glfwSetWindowIcon(handle, buf);
+        } catch (IOException e) {
+            CrashHandler.fatal(e);
+        }
     }
 
 }
