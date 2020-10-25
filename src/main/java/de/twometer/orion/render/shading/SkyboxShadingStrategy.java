@@ -1,7 +1,7 @@
 package de.twometer.orion.render.shading;
 
 import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.render.model.ModelBasePart;
+import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.render.sky.SkyboxShader;
 import de.twometer.orion.res.cache.ShaderProvider;
 import de.twometer.orion.res.cache.TextureProvider;
@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class SkyboxShadingStrategy implements IShadingStrategy {
 
     @Override
-    public boolean prepareRender(ModelBasePart part, ShaderProvider shaders, TextureProvider textures) {
+    public boolean prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures) {
         var shader = shaders.getShader(SkyboxShader.class);
         shader.bind();
 

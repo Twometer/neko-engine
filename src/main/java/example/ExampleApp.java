@@ -3,11 +3,12 @@ package example;
 import de.twometer.orion.core.OrionApp;
 import de.twometer.orion.render.filter.FrustumCullingFilter;
 import de.twometer.orion.render.light.LightSource;
-import de.twometer.orion.render.model.ModelBasePart;
+import de.twometer.orion.render.model.ModelPart;
 import de.twometer.orion.render.overlay.FXAAOverlay;
 import de.twometer.orion.render.overlay.VignetteOverlay;
 import de.twometer.orion.res.ModelLoader;
 import de.twometer.orion.res.TextureLoader;
+import org.joml.Vector3f;
 
 public class ExampleApp extends OrionApp {
 
@@ -38,7 +39,7 @@ public class ExampleApp extends OrionApp {
 
         // Scanning the model for "Luces" (Lights, my obj file was spanish) and adding light sources there
         skeld.streamTree()
-                .filter(m -> m instanceof ModelBasePart && m.getName().contains("Luces"))
+                .filter(m -> m instanceof ModelPart && m.getName().contains("Luces"))
                 .forEach(m -> getScene().addLight(new LightSource(m.getCenter())));
 
         // Adding the model to the scene
@@ -51,6 +52,10 @@ public class ExampleApp extends OrionApp {
 
         // Show our test "main menu" UI page on screen
         getGuiManager().showPage(new MainPage());
+
+        // Make some noise
+        getSoundFX().addAmbiance("ambiancetest.ogg", new Vector3f(0,4,0));
+        getSoundFX().play("sfxtest.ogg");
     }
 
 

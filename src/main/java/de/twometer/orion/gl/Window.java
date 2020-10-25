@@ -3,6 +3,7 @@ package de.twometer.orion.gl;
 import de.twometer.orion.event.*;
 import de.twometer.orion.res.AssetPaths;
 import de.twometer.orion.res.ResourceLoader;
+import de.twometer.orion.util.Cache;
 import de.twometer.orion.util.CrashHandler;
 import de.twometer.orion.util.Log;
 import org.greenrobot.eventbus.EventBus;
@@ -32,7 +33,12 @@ public class Window {
 
     private float scale;
 
-    private final Map<Integer, Long> cursors = new HashMap<>();
+    private final Cache<Integer, Long> cursorCache = new Cache<>() {
+        @Override
+        protected Long create(Integer integer) {
+            return glfwCreateStandardCursor(integer);
+        }
+    };
 
     public Window(String title, int width, int height) {
         this.title = title;
@@ -166,17 +172,8 @@ public class Window {
     }
 
     public void setCursor(int cursor) {
-        if (cursor != 0) {
-            var cursorObj = cursors.get(cursor);
-            if (cursorObj == null) {
-                Log.d("Loading cursor " + cursor);
-                cursorObj = glfwCreateStandardCursor(cursor);
-                cursors.put(cursor, cursorObj);
-            }
-            glfwSetCursor(handle, cursorObj);
-        } else
-            glfwSetCursor(handle, cursor);
-
+        var cursorObj = cursor == 0 ? 0 : cursorCache.get(cursor);
+        glfwSetCursor(handle, cursorObj);
     }
 
     public void setIcon(String path) {

@@ -62,8 +62,8 @@ public abstract class ModelBase {
     }
 
     public void traverseTree(Consumer<ModelBase> consumer) {
-        if (this instanceof CompositeModelBase) {
-            var model = (CompositeModelBase) this;
+        if (this instanceof CompositeModel) {
+            var model = (CompositeModel) this;
             for (var child : model.getChildren())
                 child.traverseTree(consumer);
         } else {

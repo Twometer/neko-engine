@@ -9,35 +9,23 @@ public class SoundSource {
 
     private final int sourceId;
 
-    public SoundSource(SoundBuffer buffer, boolean loop, boolean relative) {
-        this(loop, relative);
-        setBuffer(buffer.getBufferId());
-    }
-
-    public SoundSource(boolean loop, boolean relative) {
+    SoundSource(int bufferId) {
         this.sourceId = alGenSources();
-
-        if (loop) {
-            alSourcei(sourceId, AL_LOOPING, AL_TRUE);
-        }
-        if (relative) {
-            alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_TRUE);
-        } else {
-            alSourcei(sourceId, AL_SOURCE_ABSOLUTE, AL_TRUE);
-        }
-    }
-
-    public void setBuffer(int bufferId) {
         stop();
         alSourcei(sourceId, AL_BUFFER, bufferId);
     }
 
-    public void setPosition(Vector3f position) {
-        alSource3f(sourceId, AL_POSITION, position.x, position.y, position.z);
+    public SoundSource setAbsolute(boolean absolute) {
+        if (absolute)
+            alSourcei(sourceId, AL_SOURCE_ABSOLUTE, AL_TRUE);
+        else
+            alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_TRUE);
+        return this;
     }
 
-    public void setSpeed(Vector3f speed) {
-        alSource3f(sourceId, AL_VELOCITY, speed.x, speed.y, speed.z);
+    public SoundSource setLooping(boolean looping) {
+        alSourcei(sourceId, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+        return this;
     }
 
     public SoundSource setGain(float gain) {
@@ -45,16 +33,29 @@ public class SoundSource {
         return this;
     }
 
-    public void setRolloffFactor(float d) {
+    public SoundSource setRolloffFactor(float d) {
         alSourcef(sourceId, AL_ROLLOFF_FACTOR, d);
+        return this;
     }
 
-    public void setProperty(int param, float value) {
+    public SoundSource setSpeed(Vector3f speed) {
+        alSource3f(sourceId, AL_VELOCITY, speed.x, speed.y, speed.z);
+        return this;
+    }
+
+    public SoundSource setPosition(Vector3f position) {
+        alSource3f(sourceId, AL_POSITION, position.x, position.y, position.z);
+        return this;
+    }
+
+    public SoundSource setProperty(int param, float value) {
         alSourcef(sourceId, param, value);
+        return this;
     }
 
-    public void play() {
+    public SoundSource play() {
         alSourcePlay(sourceId);
+        return this;
     }
 
     public boolean isPlaying() {
@@ -69,10 +70,9 @@ public class SoundSource {
         alSourceStop(sourceId);
     }
 
-    public void cleanup() {
+    public void destroy() {
         stop();
         alDeleteSources(sourceId);
     }
-
 
 }

@@ -4,7 +4,7 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-public class CompositeModelBase extends ModelBase {
+public class CompositeModel extends ModelBase {
 
     private final List<ModelBase> children;
 
@@ -12,7 +12,7 @@ public class CompositeModelBase extends ModelBase {
     private Vector3f maximum;
     private Vector3f center;
 
-    public CompositeModelBase(String name, List<ModelBase> children) {
+    public CompositeModel(String name, List<ModelBase> children) {
         super(name);
         this.children = children;
     }

@@ -1,16 +1,21 @@
 package de.twometer.orion.sound;
 
 import de.twometer.orion.core.OrionApp;
+import de.twometer.orion.util.Cache;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 
 public class SoundFX {
 
     private final OpenAL openAL = new OpenAL();
 
-    private final Map<String, SoundBuffer> bufferCache = new HashMap<>();
+    private final Cache<String, SoundBuffer> bufferCache = new Cache<>() {
+        @Override
+        public SoundBuffer create(String s) throws IOException {
+            return new SoundBuffer(s);
+        }
+    };
 
     public void create() {
         openAL.create();
@@ -28,19 +33,31 @@ public class SoundFX {
         openAL.setOrientation(at, up);
     }
 
-    public SoundSource newAmbiance(String sound, Vector3f pos) {
-        // TODO
-        return null;
-    }
-
     public SoundSource play3d(String sound, Vector3f pos) {
-        // TODO
-        return null;
+        return sourceBuilder(sound)
+                .setAbsolute(true)
+                .setPosition(pos)
+                .play();
     }
 
     public SoundSource play(String sound) {
-        // TODO
-        return null;
+        return sourceBuilder(sound)
+                .setAbsolute(false)
+                .setPosition(new Vector3f(0, 0, 0))
+                .play();
+    }
+
+    public SoundSource addAmbiance(String sound, Vector3f pos) {
+        return sourceBuilder(sound)
+                .setAbsolute(true)
+                .setLooping(true)
+                .setPosition(pos)
+                .play();
+    }
+
+    public SoundSource sourceBuilder(String sound) {
+        var buffer = bufferCache.get(sound);
+        return new SoundSource(buffer.getBufferId());
     }
 
     public void destroy() {

@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 public class ModelLoader {
 
     public static ModelBase loadModel(String modelFile) {
-        return new CompositeModelBase(modelFile, loadModels(modelFile));
+        return new CompositeModel(modelFile, loadModels(modelFile));
     }
 
     public static List<ModelBase> loadModels(String modelFile) {
@@ -56,7 +56,7 @@ public class ModelLoader {
 
 
             var texturePath = texpath.dataString();
-            var texture = !texturePath.isEmpty() ? OrionApp.get().getTextureProvider().getTexture(texturePath) : null;
+            var texture = !texturePath.isEmpty() ? OrionApp.get().getTextureProvider().get(texturePath) : null;
 
             materials.add(new Material(matname.dataString(), texture, diffuseColor, emissiveColor));
 
@@ -93,7 +93,7 @@ public class ModelLoader {
 
     private static void mergeModels(String name, List<ModelBase> input, List<ModelBase> output) {
         if (input.size() != 0) {
-            ModelBase model = input.size() == 1 ? input.get(0) : new CompositeModelBase(name, new ArrayList<>(input));
+            ModelBase model = input.size() == 1 ? input.get(0) : new CompositeModel(name, new ArrayList<>(input));
             Log.d("Merged " + input.size() + " parts into model " + name);
             output.add(model);
             input.clear();
@@ -122,7 +122,7 @@ public class ModelLoader {
             mesh.putTexCoord(aiTexCoord.x(), 1 - aiTexCoord.y());
         }
 
-        ModelBasePart model = mesh.bake(name, GL_TRIANGLES);
+        ModelPart model = mesh.bake(name, GL_TRIANGLES);
         model.setMaterial(mats.get(aiMesh.mMaterialIndex()));
         return model;
     }

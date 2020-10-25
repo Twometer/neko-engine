@@ -1,5 +1,6 @@
 package de.twometer.orion.sound;
 
+import de.twometer.orion.res.AssetPaths;
 import de.twometer.orion.util.Log;
 import org.lwjgl.stb.STBVorbisInfo;
 import org.lwjgl.system.MemoryStack;
@@ -25,7 +26,7 @@ public class SoundBuffer {
 
     private ByteBuffer vorbis = null;
 
-    public SoundBuffer(String file) throws Exception {
+    public SoundBuffer(String file) throws IOException {
         this.bufferId = alGenBuffers();
         try (STBVorbisInfo info = STBVorbisInfo.malloc()) {
             ShortBuffer pcm = readVorbis(file, 32 * 1024, info);
@@ -39,16 +40,16 @@ public class SoundBuffer {
         return this.bufferId;
     }
 
-    public void cleanup() {
+    public void destroy() {
         alDeleteBuffers(this.bufferId);
         if (pcm != null) {
             MemoryUtil.memFree(pcm);
         }
     }
 
-    private ShortBuffer readVorbis(String resource, int bufferSize, STBVorbisInfo info) throws Exception {
+    private ShortBuffer readVorbis(String resource, int bufferSize, STBVorbisInfo info) throws IOException {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            vorbis = ioResourceToByteBuffer(resource, bufferSize);
+            vorbis = loadToBuffer(resource, bufferSize);
 
             IntBuffer error = stack.mallocInt(1);
             long decoder = stb_vorbis_open_memory(vorbis, error, null);
@@ -71,11 +72,11 @@ public class SoundBuffer {
         }
     }
 
-    private static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
+    private static ByteBuffer loadToBuffer(String resource, int bufferSize) throws IOException {
         Log.d("Loading sound file " + resource);
-        ByteBuffer buffer = null;
+        ByteBuffer buffer;
 
-        Path path = Paths.get("assets/" + resource);
+        Path path = Paths.get(AssetPaths.SOUND_PATH + resource);
         if (Files.isReadable(path)) {
             try (SeekableByteChannel fc = Files.newByteChannel(path)) {
                 buffer = MemoryUtil.memAlloc((int) fc.size() + 1);
@@ -83,7 +84,7 @@ public class SoundBuffer {
             }
             buffer.flip();
         } else {
-            Log.e("not valid file " + path);
+            throw new IOException("Cannot read sound file " + path);
         }
 
 

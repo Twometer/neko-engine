@@ -25,10 +25,16 @@ public class CrashHandler {
     public static void fatal(Throwable t) {
         Log.e("The game has crashed!", t);
         t.printStackTrace();
+        if (t.getCause() != null) {
+            System.err.println("Caused by:");
+            t.getCause().printStackTrace();
+        }
 
         try {
             OrionApp.get().getWindow().destroy();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Log.e("Subsequent error during crash handling: Failed to destroy window");
+            e.printStackTrace();
         }
 
         var writer = new StringWriter();
