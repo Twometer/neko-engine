@@ -2,8 +2,8 @@ plugins {
     id 'java'
 }
 
-group 'de.twometer'
-version '1.0-SNAPSHOT'
+group 'de.twometer.neko'
+version '1.0.0'
 
 project.ext.lwjglVersion = "3.2.3"
 project.ext.lwjglNatives = "natives-windows"

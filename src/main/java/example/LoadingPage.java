@@ -1,6 +1,6 @@
 package example;
 
-import de.twometer.orion.gui.Page;
+import de.twometer.neko.gui.Page;
 
 public class LoadingPage extends Page {
     public LoadingPage() {

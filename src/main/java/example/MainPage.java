@@ -1,8 +1,8 @@
 package example;
 
-import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.gui.Page;
-import de.twometer.orion.util.Log;
+import de.twometer.neko.core.NekoApp;
+import de.twometer.neko.gui.Page;
+import de.twometer.neko.util.Log;
 
 public class MainPage extends Page {
 
@@ -26,7 +26,7 @@ public class MainPage extends Page {
 
     // All methods in this class are automatically exposed to JavaScript
     public void closeClicked() {
-        OrionApp.get().getGuiManager().showPage(null);
+        NekoApp.get().getGuiManager().showPage(null);
     }
 
     public void testButtonClicked() {

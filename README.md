@@ -1,5 +1,5 @@
-# Orion Engine
-LWJGL 3D game engine
+# Neko Engine
+LWJGL-based 3D game/rendering engine
 
 ## Features
 - Deferred rendering pipeline
@@ -18,13 +18,13 @@ LWJGL 3D game engine
   
 ## Engine setup
 1. Import the latest jar file from the Maven repo
-2. Download base assets from [here](https://github.com/Twometer/orion-engine/releases/latest) and put the assets folder in your working directory
+2. Download base assets from [here](https://github.com/Twometer/neko-engine/releases/latest) and put the assets folder in your working directory
 3. Download the Ultralight binaries from [here](https://github.com/ultralight-ux/Ultralight/blob/master/README.md#getting-the-latest-sdk) and put them into `assets/Natives/Ultralight`.
   
 ## Examples
-Example code can be found [here](https://github.com/Twometer/orion-engine/tree/main/src/main/java/example)
+Example code can be found [here](https://github.com/Twometer/neko-engine/tree/main/src/main/java/example)
 
-For an actual game made with Orion, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
+For an actual game made with Neko, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
   
 ## Asset folder structure
 - `assets/`

@@ -1,17 +1,17 @@
 package example;
 
-import de.twometer.orion.core.OrionApp;
-import de.twometer.orion.render.filter.FrustumCullingFilter;
-import de.twometer.orion.render.light.LightSource;
-import de.twometer.orion.render.model.ModelPart;
-import de.twometer.orion.render.overlay.FXAAOverlay;
-import de.twometer.orion.render.overlay.VignetteOverlay;
-import de.twometer.orion.res.ModelLoader;
-import de.twometer.orion.res.TextureLoader;
-import de.twometer.orion.util.Log;
+import de.twometer.neko.core.NekoApp;
+import de.twometer.neko.render.filter.FrustumCullingFilter;
+import de.twometer.neko.render.light.LightSource;
+import de.twometer.neko.render.model.ModelPart;
+import de.twometer.neko.render.overlay.FXAAOverlay;
+import de.twometer.neko.render.overlay.VignetteOverlay;
+import de.twometer.neko.res.ModelLoader;
+import de.twometer.neko.res.TextureLoader;
+import de.twometer.neko.util.Log;
 import org.joml.Vector3f;
 
-public class ExampleApp extends OrionApp {
+public class ExampleApp extends NekoApp {
 
     public static void main(String[] args) {
         (new ExampleApp()).launch("Example app", 1280, 720);
