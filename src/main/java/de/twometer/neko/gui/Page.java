@@ -19,7 +19,9 @@ public abstract class Page {
     }
 
     public void onDomReady() {
+    }
 
+    public void onUnload() {
     }
 
     public void setContext(PageContext context) {

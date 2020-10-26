@@ -48,6 +48,11 @@ public class SoundSource {
         return this;
     }
 
+    public SoundSource setPitch(float pitch) {
+        alSourcef(sourceId, AL_PITCH, pitch);
+        return this;
+    }
+
     public SoundSource setProperty(int param, float value) {
         alSourcef(sourceId, param, value);
         return this;

@@ -101,8 +101,10 @@ public class GuiManager implements UltralightLoadListener {
         if (currentPage == null) // On open, save cursor state
             wasCursorVisible = NekoApp.get().getWindow().isCursorVisible();
 
-        if (currentPage != null && page == null)
+        if (currentPage != null && page == null) {
+            currentPage.onUnload();
             currentPage.setContext(null);
+        }
 
         currentPage = page;
 
@@ -123,6 +125,9 @@ public class GuiManager implements UltralightLoadListener {
     public void render() {
         if (texture == -1) genTexture();
         if (currentPage == null) return;
+
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
 
         renderer.update();
         renderer.render();
@@ -171,6 +176,9 @@ public class GuiManager implements UltralightLoadListener {
         guiShader.bind();
         guiShader.guiMatrix.set(guiMatrix);
         quadModel.render();
+
+        glDepthMask(true);
+        glEnable(GL_DEPTH_TEST);
     }
 
     @Subscribe
@@ -239,5 +247,9 @@ public class GuiManager implements UltralightLoadListener {
 
     public Page getLoadingScreen() {
         return loadingScreen;
+    }
+
+    public Page getCurrentPage() {
+        return currentPage;
     }
 }
