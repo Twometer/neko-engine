@@ -69,6 +69,8 @@ public class ExampleApp extends NekoApp {
         // I18n
         var testMsg = getI18n().resolve("Test message: {message.test}");
         Log.i(testMsg);
+
+        getGuiManager().registerGlobalJsObject("_example", new ExampleJsApi());
     }
 
     @Override

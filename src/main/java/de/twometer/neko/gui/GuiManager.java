@@ -4,6 +4,7 @@ import com.labymedia.ultralight.*;
 import com.labymedia.ultralight.bitmap.UltralightBitmapSurface;
 import com.labymedia.ultralight.config.FontHinting;
 import com.labymedia.ultralight.config.UltralightConfig;
+import com.labymedia.ultralight.javascript.JavascriptContext;
 import com.labymedia.ultralight.math.IntRect;
 import com.labymedia.ultralight.plugin.loading.UltralightLoadListener;
 import de.twometer.neko.core.NekoApp;
@@ -21,6 +22,8 @@ import org.joml.Matrix4f;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
@@ -44,6 +47,10 @@ public class GuiManager implements UltralightLoadListener {
     private Page loadingScreen;
     private Page currentPage;
 
+    private final Map<String, Object> globalJsObjects = new HashMap<>();
+
+    private final UltralightConfig ultralightConfig = new UltralightConfig().fontHinting(FontHinting.NORMAL);
+
     public void create() {
         Log.d("Initializing gui system");
         i18n.load();
@@ -64,9 +71,8 @@ public class GuiManager implements UltralightLoadListener {
         var window = NekoApp.get().getWindow();
         platform = UltralightPlatform.instance();
         platform.setConfig(
-                new UltralightConfig()
+                ultralightConfig
                         .resourcePath(resourcePath)
-                        .fontHinting(FontHinting.NORMAL)
                         .deviceScale(window.getScale())
         );
         platform.usePlatformFileSystem(AssetPaths.GUI_PATH);
@@ -232,13 +238,23 @@ public class GuiManager implements UltralightLoadListener {
             var pageCtx = new PageContext(view);
             pageCtx.runInJsContext(js -> {
                 var databind = new Databind(DatabindConfiguration.builder().contextProviderFactory(pageCtx).build());
-                var remote = js.makeObject(databind.toJavascript(currentPage.getClass()), new DatabindJavascriptClass.Data(currentPage, null));
-                js.getGlobalContext().getGlobalObject().setProperty("_remote", remote, 0);
+                registerObject(js, databind, "_remote", currentPage);
+                registerObject(js, databind, "_i18n", i18n);
+                for (var entry : globalJsObjects.entrySet()) {
+                    if (entry.getKey().equalsIgnoreCase("_remote"))
+                        continue;
+                    registerObject(js, databind, entry.getKey(), entry.getValue());
+                }
             });
             currentPage.setContext(pageCtx);
             currentPage.onDomReady();
             pageCtx.runScript("OnLoaded()");
         }
+    }
+
+    private void registerObject(JavascriptContext js, Databind databind, String name, Object obj) {
+        var jsObj = js.makeObject(databind.toJavascript(obj.getClass()), new DatabindJavascriptClass.Data(obj, null));
+        js.getGlobalContext().getGlobalObject().setProperty(name, jsObj, 0);
     }
 
     public void setLoadingScreen(Page loadingScreen) {
@@ -251,5 +267,13 @@ public class GuiManager implements UltralightLoadListener {
 
     public Page getCurrentPage() {
         return currentPage;
+    }
+
+    public UltralightConfig getUltralightConfig() {
+        return ultralightConfig;
+    }
+
+    public void registerGlobalJsObject(String name, Object obj) {
+        globalJsObjects.put(name, obj);
     }
 }
