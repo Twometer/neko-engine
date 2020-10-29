@@ -72,4 +72,10 @@ public class MathF {
         return random.nextFloat();
     }
 
+    public static float clamp(float min, float max, float f) {
+        if (f < min) f = min;
+        if (f > max) f = max;
+        return f;
+    }
+
 }

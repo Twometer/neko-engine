@@ -12,7 +12,7 @@ import java.util.List;
 
 public class OverlayManager {
 
-    private final List<IOverlay> fx = new ArrayList<>();
+    private final List<IOverlay> overlays = new ArrayList<>();
 
     private Framebuffer buf0;
     private Framebuffer buf1;
@@ -26,7 +26,7 @@ public class OverlayManager {
     public void render() {
         var post = NekoApp.get().getPostRenderer();
 
-        for (IOverlay fx : this.fx) {
+        for (IOverlay fx : this.overlays) {
             Framebuffer srcBuf = buf ? buf0 : buf1;
             Framebuffer dstBuf = buf ? buf1 : buf0;
 
@@ -57,12 +57,16 @@ public class OverlayManager {
         buf1 = Framebuffer.create().withColorTexture(0).finish();
     }
 
+    public void removeOverlay(Class<? extends IOverlay> overlay) {
+        overlays.removeIf(o -> o.getClass() == overlay);
+    }
+
     public void addOverlay(IOverlay effect) {
-        fx.add(effect);
+        overlays.add(effect);
     }
 
     public boolean isEmtpy() {
-        return fx.isEmpty();
+        return overlays.isEmpty();
     }
 
     public Framebuffer getBuf0() {
