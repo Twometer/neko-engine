@@ -21,6 +21,9 @@ LWJGL-based 3D game/rendering engine
 ```
 repositories {
     ...
+    mavenCentral()
+    maven { url 'http://clojars.org/repo/' }
+    maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/' }
     maven { url 'https://cloud.twometer.de/nexus/repository/maven-releases' }
     ...
 }
