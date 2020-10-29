@@ -107,7 +107,7 @@ public class GuiManager implements UltralightLoadListener {
         if (currentPage == null) // On open, save cursor state
             wasCursorVisible = NekoApp.get().getWindow().isCursorVisible();
 
-        if (currentPage != null && page == null) {
+        if (currentPage != null) { // Handle page unloading
             currentPage.onUnload();
             currentPage.setContext(null);
         }
