@@ -18,6 +18,10 @@ public final class Events {
         EventBus.getDefault().register(subscriber);
     }
 
+    public static void unregister(Object subscriber) {
+        EventBus.getDefault().unregister(subscriber);
+    }
+
     public static void post(Object o) {
         EventBus.getDefault().post(o);
     }

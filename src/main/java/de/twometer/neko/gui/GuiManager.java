@@ -20,6 +20,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joml.Matrix4f;
 
 import java.nio.ByteBuffer;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -63,6 +64,13 @@ public class GuiManager implements UltralightLoadListener {
                 throw new UltralightLoadException("Native ultralight libraries not found. Make sure you have the latest ultralight libraries in " + ultralightPath);
 
             UltralightJava.extractNativeLibrary(nativesDir);
+        } catch (UltralightLoadException e) {
+            if (e.getCause() instanceof AccessDeniedException) {
+                Log.w("Write access to the Ultralight natives directory is denied. This is probably due to the app already running, ignoring.");
+            } else CrashHandler.fatal(e);
+        }
+
+        try {
             UltralightJava.load(nativesDir);
         } catch (UltralightLoadException e) {
             CrashHandler.fatal(e);
