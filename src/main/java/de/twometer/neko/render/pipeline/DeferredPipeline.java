@@ -82,7 +82,7 @@ public class DeferredPipeline {
         ssao.render();
 
         lightingShader.bind();
-        lightingShader.viewPos.set(app.getCamera().getPosition());
+        lightingShader.viewPos.set(app.getCamera().getInterpolatedPosition(app.getTimer().getPartial()));
         postRenderer.bindTexture(3, ssao.getTexture());
         postRenderer.bindTexture(4, bloom.getTexture());
 

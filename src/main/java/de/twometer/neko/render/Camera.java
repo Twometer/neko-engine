@@ -31,7 +31,6 @@ public class Camera {
         var partial = NekoApp.get().getTimer().getPartial();
         Vector3f posInterpolated = getInterpolatedPosition(partial);
         Vector2f angInterpolated = getInterpolatedAngle(partial);
-        posInterpolated.add(offset);
 
         Window window = NekoApp.get().getWindow();
         float aspect = window.getWidth() / (float) window.getHeight();
@@ -61,7 +60,7 @@ public class Camera {
     }
 
     public Vector3f getInterpolatedPosition(float partial) {
-        return MathF.lerp(lastTickPosition, position, partial);
+        return MathF.lerp(lastTickPosition, position, partial).add(offset);
     }
 
     public Vector2f getInterpolatedAngle(float partial) {

@@ -23,7 +23,7 @@ public class SoundFX {
 
     public void update() {
         var camera = NekoApp.get().getCamera();
-        openAL.setPosition(camera.getPosition());
+        openAL.setPosition(camera.getInterpolatedPosition(NekoApp.get().getTimer().getPartial()));
 
         var mat = camera.getViewMatrix();
         var at = new Vector3f();
