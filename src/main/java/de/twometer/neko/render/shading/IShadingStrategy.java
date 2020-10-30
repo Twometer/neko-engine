@@ -10,6 +10,10 @@ public interface IShadingStrategy {
 
     boolean prepareRender(ModelPart part, ShaderProvider shaders, TextureProvider textures);
 
+    default boolean mayOverwrite() {
+        return true;
+    }
+
     default void finishRender() {
 
     }

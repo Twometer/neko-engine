@@ -139,7 +139,7 @@ public class ModelPart extends ModelBase {
         var shaderProvider = NekoApp.get().getShaderProvider();
         var textureProvider = NekoApp.get().getTextureProvider();
         var strategy = renderManager.getShadingStrategy();
-        if (overwrittenStrategy != null) strategy = overwrittenStrategy;
+        if (overwrittenStrategy != null && strategy.mayOverwrite()) strategy = overwrittenStrategy;
 
         var prepareOk = strategy.prepareRender(this, shaderProvider, textureProvider);
         if (!prepareOk)

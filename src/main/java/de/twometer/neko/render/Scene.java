@@ -35,6 +35,10 @@ public class Scene {
             model.render();
     }
 
+    public void removeModel(ModelBase model) {
+        models.remove(model);
+    }
+
     public void addModel(ModelBase model) {
         models.add(model);
     }
