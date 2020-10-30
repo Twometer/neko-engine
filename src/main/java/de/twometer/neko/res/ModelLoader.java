@@ -97,7 +97,7 @@ public class ModelLoader {
 
     private static void mergeModels(String name, List<ModelBase> input, List<ModelBase> output) {
         if (input.size() != 0) {
-            ModelBase model = input.size() == 1 ? input.get(0) : new CompositeModel(name, new ArrayList<>(input));
+            ModelBase model = new CompositeModel(name, new ArrayList<>(input));
             Log.d("Merged " + input.size() + " parts into model " + name);
             output.add(model);
             input.clear();
