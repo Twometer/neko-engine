@@ -15,6 +15,8 @@ public abstract class ModelBase {
 
     private boolean ignoreFilters;
 
+    private boolean cascadeTransforms;
+
     private Object tag;
 
     public ModelBase(String name) {
@@ -81,5 +83,13 @@ public abstract class ModelBase {
 
     public void setIgnoreFilters(boolean ignoreFilters) {
         this.ignoreFilters = ignoreFilters;
+    }
+
+    public boolean isCascadeTransforms() {
+        return cascadeTransforms;
+    }
+
+    public void setCascadeTransforms(boolean cascadeTransforms) {
+        this.cascadeTransforms = cascadeTransforms;
     }
 }

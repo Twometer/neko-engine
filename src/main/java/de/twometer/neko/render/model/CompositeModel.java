@@ -20,10 +20,16 @@ public class CompositeModel extends ModelBase {
 
     @Override
     public void render() {
-        Transform parentTransform = getTransform();
-        for (ModelBase child : children) {
-            child.getTransform().set(parentTransform);
-            child.render();
+        if (isCascadeTransforms()) {
+            Transform parentTransform = getTransform();
+            for (ModelBase child : children) {
+                child.getTransform().set(parentTransform);
+                child.render();
+            }
+        } else {
+            for (ModelBase child : children) {
+                child.render();
+            }
         }
     }
 
@@ -90,5 +96,12 @@ public class CompositeModel extends ModelBase {
 
     public List<ModelBase> getChildren() {
         return children;
+    }
+
+    @Override
+    public void setCascadeTransforms(boolean cascadeTransforms) {
+        super.setCascadeTransforms(cascadeTransforms);
+        for (var child : children)
+            child.setCascadeTransforms(cascadeTransforms);
     }
 }

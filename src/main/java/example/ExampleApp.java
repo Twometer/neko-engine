@@ -52,6 +52,7 @@ public class ExampleApp extends NekoApp {
         astro.getTransform().setTranslation(new Vector3f(23,0,-15));
         astro.getTransform().setRotationOrigin(astro.getCenter());
         astro.getTransform().setRotation(new Vector3f(0,-2f,0));
+        astro.setCascadeTransforms(true);
         getScene().addModel(astro);
 
         // Load the skybox from a cubemap texture
