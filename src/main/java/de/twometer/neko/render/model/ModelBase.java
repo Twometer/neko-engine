@@ -69,6 +69,7 @@ public abstract class ModelBase {
             var model = (CompositeModel) this;
             for (var child : model.getChildren())
                 child.traverseTree(consumer);
+            consumer.accept(model);
         } else {
             consumer.accept(this);
         }
