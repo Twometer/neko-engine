@@ -15,6 +15,8 @@ public class Camera {
     private final Vector2f lastTickAngle = new Vector2f();
     private final Vector2f angle = new Vector2f();
 
+    private final Vector3f offset = new Vector3f();
+
     private Matrix4f viewMatrix;
 
     private Matrix4f projectionMatrix;
@@ -29,6 +31,7 @@ public class Camera {
         var partial = NekoApp.get().getTimer().getPartial();
         Vector3f posInterpolated = getInterpolatedPosition(partial);
         Vector2f angInterpolated = getInterpolatedAngle(partial);
+        posInterpolated.add(offset);
 
         Window window = NekoApp.get().getWindow();
         float aspect = window.getWidth() / (float) window.getHeight();
@@ -79,6 +82,10 @@ public class Camera {
 
     public Vector2f getAngle() {
         return angle;
+    }
+
+    public Vector3f getOffset() {
+        return offset;
     }
 
     public void setFov(float fov) {

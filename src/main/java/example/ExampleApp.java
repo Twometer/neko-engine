@@ -70,6 +70,9 @@ public class ExampleApp extends NekoApp {
         var testMsg = getI18n().resolve("Test message: {message.test}");
         Log.i(testMsg);
 
+        // Camera should have eye height
+        getCamera().getOffset().y = 0.75f;
+
         getGuiManager().registerGlobalJsObject("_example", new ExampleJsApi());
     }
 
