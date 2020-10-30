@@ -51,5 +51,9 @@ public class ModelInstance extends ModelBase {
         return base.getSize();
     }
 
-
+    @Override
+    public void setCascadeTransforms(boolean cascadeTransforms) {
+        super.setCascadeTransforms(cascadeTransforms);
+        base.setCascadeTransforms(cascadeTransforms);
+    }
 }
