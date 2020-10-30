@@ -1,6 +1,7 @@
 package de.twometer.neko.render.model;
 
 import de.twometer.neko.core.NekoApp;
+import de.twometer.neko.render.shading.IShadingStrategy;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -29,6 +30,8 @@ public class ModelPart extends ModelBase {
     private final Vector3f centerOfMass;
 
     private Material material;
+
+    private IShadingStrategy overwrittenStrategy = null;
 
     private ModelPart(String name, int vao, int vertexBuffer, int colorBuffer, int normalBuffer, int texCoordBuffer, int dimensions, int vertices, int primitiveType, Vector3f min, Vector3f max, Vector3f com) {
         super(name);
@@ -135,7 +138,10 @@ public class ModelPart extends ModelBase {
 
         var shaderProvider = NekoApp.get().getShaderProvider();
         var textureProvider = NekoApp.get().getTextureProvider();
-        var prepareOk = renderManager.getShadingStrategy().prepareRender(this, shaderProvider, textureProvider);
+        var strategy = renderManager.getShadingStrategy();
+        if (overwrittenStrategy != null) strategy = overwrittenStrategy;
+
+        var prepareOk = strategy.prepareRender(this, shaderProvider, textureProvider);
         if (!prepareOk)
             return;
 
@@ -158,7 +164,7 @@ public class ModelPart extends ModelBase {
         glDisableVertexAttribArray(0);
 
         glBindVertexArray(0);
-        renderManager.getShadingStrategy().finishRender();
+        strategy.finishRender();
     }
 
     @Override
@@ -174,6 +180,11 @@ public class ModelPart extends ModelBase {
     @Override
     public Vector3f getMaximum() {
         return maximum;
+    }
+
+    @Override
+    public void overwriteShadingStrategy(IShadingStrategy shadingStrategy) {
+        this.overwrittenStrategy = shadingStrategy;
     }
 
     public Material getMaterial() {

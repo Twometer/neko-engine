@@ -1,5 +1,6 @@
 package de.twometer.neko.render.model;
 
+import de.twometer.neko.render.shading.IShadingStrategy;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public abstract class ModelBase {
     public abstract Vector3f getMinimum();
 
     public abstract Vector3f getMaximum();
+
+    public abstract void overwriteShadingStrategy(IShadingStrategy shadingStrategy);
 
     public Vector3f getTransformedCenter() {
         return transform.transform(getCenter());

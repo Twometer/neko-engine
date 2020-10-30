@@ -20,14 +20,18 @@ public class ModelLoader {
         return new CompositeModel(modelFile, loadModels(modelFile));
     }
 
-    public static List<ModelBase> loadModels(String modelFile) {
+    public static AIScene loadRaw(String modelFile) {
         Log.d("Loading model " + modelFile);
         String path = AssetPaths.MODEL_PATH + modelFile;
         AIScene aiScene = aiImportFile(path, 0);
         if (aiScene == null) {
             throw new IllegalStateException(aiGetErrorString());
         }
+        return aiScene;
+    }
 
+    public static List<ModelBase> loadModels(String modelFile) {
+        var aiScene = loadRaw(modelFile);
         int numMaterials = aiScene.mNumMaterials();
         PointerBuffer aiMaterials = aiScene.mMaterials();
         List<Material> materials = new ArrayList<>();

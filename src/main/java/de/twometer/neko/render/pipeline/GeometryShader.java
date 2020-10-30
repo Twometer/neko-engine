@@ -8,7 +8,7 @@ import de.twometer.neko.gl.Uniform;
 import de.twometer.neko.render.Color;
 import org.joml.Matrix4f;
 
-public class DeferredShader extends Shader {
+public class GeometryShader extends Shader {
 
     @Inject(UniformInject.ViewMatrix)
     public Uniform<Matrix4f> viewMatrix;
@@ -23,8 +23,8 @@ public class DeferredShader extends Shader {
 
     public Uniform<Boolean> hasTexture;
 
-    public DeferredShader() {
-        super("Deferred");
+    public GeometryShader() {
+        super("Geometry");
     }
 
 }

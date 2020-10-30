@@ -4,8 +4,10 @@ import de.twometer.neko.core.NekoApp;
 import de.twometer.neko.event.Events;
 import de.twometer.neko.event.SizeChangedEvent;
 import de.twometer.neko.gl.GBuffer;
+import de.twometer.neko.render.filter.RenderPassFilter;
 import de.twometer.neko.render.light.LightSource;
-import de.twometer.neko.render.shading.DeferredShadingStrategy;
+import de.twometer.neko.render.shading.DefaultGeometryShadingStrategy;
+import de.twometer.neko.render.shading.RenderPass;
 import de.twometer.neko.util.Log;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -15,15 +17,19 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class DeferredPipeline {
 
+    private final RenderPassFilter filter = new RenderPassFilter();
+
     private LightingShader lightingShader;
 
     private GBuffer gBuffer;
 
-    private final DeferredShadingStrategy strategy = new DeferredShadingStrategy();
+    private final DefaultGeometryShadingStrategy strategy = new DefaultGeometryShadingStrategy();
 
     public void create() {
         Log.d("Creating deferred rendering pipeline");
         Events.register(this);
+
+        NekoApp.get().getRenderManager().addModelFilter(filter);
 
         lightingShader = NekoApp.get().getShaderProvider().getShader(LightingShader.class);
     }
@@ -56,11 +62,13 @@ public class DeferredPipeline {
         var scene = app.getScene();
         app.getRenderManager().setShadingStrategy(strategy);
 
-        strategy.setPass(DeferredShadingStrategy.RenderPass.Opaque);
+        filter.setRenderPass(RenderPass.Opaque);
         scene.render();
 
-        strategy.setPass(DeferredShadingStrategy.RenderPass.Translucent);
+        filter.setRenderPass(RenderPass.Translucent);
         scene.render();
+
+        filter.setRenderPass(RenderPass.All);
 
         var bloom = app.getFxManager().getBloom();
         bloom.render();

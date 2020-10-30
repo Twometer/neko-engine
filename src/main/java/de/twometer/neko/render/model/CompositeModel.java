@@ -1,5 +1,6 @@
 package de.twometer.neko.render.model;
 
+import de.twometer.neko.render.shading.IShadingStrategy;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -72,6 +73,12 @@ public class CompositeModel extends ModelBase {
             }
         }
         return maximum;
+    }
+
+    @Override
+    public void overwriteShadingStrategy(IShadingStrategy shadingStrategy) {
+        for (var child : children)
+            child.overwriteShadingStrategy(shadingStrategy);
     }
 
     @Override
