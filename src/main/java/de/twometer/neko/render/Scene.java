@@ -48,6 +48,10 @@ public class Scene {
         NekoApp.get().getPipeline().reloadLights();
     }
 
+    public void reloadLights() {
+        NekoApp.get().getPipeline().reloadLights();
+    }
+
     public List<LightSource> getLights() {
         return lights;
     }

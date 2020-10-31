@@ -7,6 +7,7 @@ import de.twometer.neko.gl.GBuffer;
 import de.twometer.neko.render.filter.RenderPassFilter;
 import de.twometer.neko.render.light.LightSource;
 import de.twometer.neko.render.shading.DefaultGeometryShadingStrategy;
+import de.twometer.neko.render.shading.IShadingStrategy;
 import de.twometer.neko.render.shading.RenderPass;
 import de.twometer.neko.util.Log;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,7 +24,7 @@ public class DeferredPipeline {
 
     private GBuffer gBuffer;
 
-    private final DefaultGeometryShadingStrategy strategy = new DefaultGeometryShadingStrategy();
+    private IShadingStrategy strategy = new DefaultGeometryShadingStrategy();
 
     public void create() {
         Log.d("Creating deferred rendering pipeline");
@@ -46,9 +47,15 @@ public class DeferredPipeline {
         List<LightSource> lights = NekoApp.get().getScene().getLights();
 
         lightingShader.bind();
-        lightingShader.numLights.set(lights.size());
-        for (int i = 0; i < lights.size(); i++)
-            lightingShader.lights.set(i, lights.get(i).getPosition());
+
+        var i = 0;
+        for (var light : lights) {
+            if (light.isOn()) {
+                lightingShader.lights.set(i, light.getPosition());
+                i++;
+            }
+        }
+        lightingShader.numLights.set(i);
     }
 
     public void render() {
@@ -102,4 +109,7 @@ public class DeferredPipeline {
         return gBuffer;
     }
 
+    public void setDefaultGeometryShadingStrategy(IShadingStrategy strategy) {
+        this.strategy = strategy;
+    }
 }
