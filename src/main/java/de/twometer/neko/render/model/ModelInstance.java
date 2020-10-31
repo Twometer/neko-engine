@@ -42,11 +42,6 @@ public class ModelInstance extends ModelBase {
     }
 
     @Override
-    public Vector3f getTransformedCenter() {
-        return base.getTransformedCenter();
-    }
-
-    @Override
     public Vector3f getSize() {
         return base.getSize();
     }
