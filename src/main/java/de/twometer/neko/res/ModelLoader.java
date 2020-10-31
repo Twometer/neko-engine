@@ -115,16 +115,18 @@ public class ModelLoader {
         }
 
         AIVector3D.Buffer aiNormals = aiMesh.mNormals();
-        while (aiNormals.remaining() > 0) {
-            AIVector3D aiNormal = aiNormals.get();
-            mesh.putNormal(aiNormal.x(), aiNormal.y(), aiNormal.z());
-        }
+        if (aiNormals != null)
+            while (aiNormals.remaining() > 0) {
+                AIVector3D aiNormal = aiNormals.get();
+                mesh.putNormal(aiNormal.x(), aiNormal.y(), aiNormal.z());
+            }
 
         AIVector3D.Buffer aiTexCoords = aiMesh.mTextureCoords(0);
-        while (aiTexCoords.remaining() > 0) {
-            AIVector3D aiTexCoord = aiTexCoords.get();
-            mesh.putTexCoord(aiTexCoord.x(), 1 - aiTexCoord.y());
-        }
+        if (aiTexCoords != null)
+            while (aiTexCoords.remaining() > 0) {
+                AIVector3D aiTexCoord = aiTexCoords.get();
+                mesh.putTexCoord(aiTexCoord.x(), 1 - aiTexCoord.y());
+            }
 
         ModelPart model = mesh.bake(name, GL_TRIANGLES);
         model.setMaterial(mats.get(aiMesh.mMaterialIndex()));
