@@ -45,11 +45,6 @@ public class Scene {
 
     public void addLight(LightSource light) {
         lights.add(light);
-        NekoApp.get().getPipeline().reloadLights();
-    }
-
-    public void reloadLights() {
-        NekoApp.get().getPipeline().reloadLights();
     }
 
     public List<LightSource> getLights() {

@@ -9,6 +9,7 @@ import de.twometer.neko.gui.I18n;
 import de.twometer.neko.render.Camera;
 import de.twometer.neko.render.RenderManager;
 import de.twometer.neko.render.Scene;
+import de.twometer.neko.render.filter.FrustumCulling;
 import de.twometer.neko.render.fx.FxManager;
 import de.twometer.neko.render.overlay.OverlayManager;
 import de.twometer.neko.render.pipeline.DeferredPipeline;
@@ -44,6 +45,7 @@ public abstract class NekoApp {
     private final OverlayManager overlayManager = new OverlayManager();
     private final PostRenderer postRenderer = new PostRenderer();
     private final SoundFX soundFX = new SoundFX();
+    private final FrustumCulling frustumCulling = new FrustumCulling();
 
     /* Singleton */
     public NekoApp() {
@@ -96,6 +98,7 @@ public abstract class NekoApp {
         overlayManager.create();
         guiManager.create();
         soundFX.create();
+        frustumCulling.create();
 
         // Initial events
         Events.post(new SizeChangedEvent(window.getWidth(), window.getHeight()));
@@ -131,6 +134,7 @@ public abstract class NekoApp {
             camera.update();
             soundFX.update();
             renderManager.update();
+            frustumCulling.update();
 
             pipeline.render();
             getScene().getSkybox().render();
@@ -259,4 +263,7 @@ public abstract class NekoApp {
         this.playerController = playerController;
     }
 
+    public FrustumCulling getFrustumCulling() {
+        return frustumCulling;
+    }
 }

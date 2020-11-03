@@ -26,6 +26,9 @@ public class DeferredPipeline {
 
     private IShadingStrategy strategy = new DefaultGeometryShadingStrategy();
 
+    private int perLightCullingRadius = 15;
+    private int globalLightCullingRadius = 30;
+
     public void create() {
         Log.d("Creating deferred rendering pipeline");
         Events.register(this);
@@ -43,14 +46,18 @@ public class DeferredPipeline {
         gBuffer = GBuffer.create();
     }
 
-    public void reloadLights() {
+    private void bindLights() {
         List<LightSource> lights = NekoApp.get().getScene().getLights();
 
         lightingShader.bind();
 
+        var radSq = globalLightCullingRadius * globalLightCullingRadius;
+
         var i = 0;
         for (var light : lights) {
-            if (light.isOn()) {
+            if (light.isOn()
+                    && NekoApp.get().getFrustumCulling().insideFrustum(light.getPosition(), perLightCullingRadius)
+                    && light.getPosition().distanceSquared(NekoApp.get().getCamera().getPosition()) < radSq) {
                 lightingShader.lights.set(i, light.getPosition());
                 i++;
             }
@@ -88,7 +95,7 @@ public class DeferredPipeline {
         var ssao = app.getFxManager().getSsao();
         ssao.render();
 
-        lightingShader.bind();
+        bindLights();
         lightingShader.viewPos.set(app.getCamera().getInterpolatedPosition(app.getTimer().getPartial()));
         postRenderer.bindTexture(3, ssao.getTexture());
         postRenderer.bindTexture(4, bloom.getTexture());
@@ -111,5 +118,13 @@ public class DeferredPipeline {
 
     public void setDefaultGeometryShadingStrategy(IShadingStrategy strategy) {
         this.strategy = strategy;
+    }
+
+    public void setPerLightCullingRadius(int perLightCullingRadius) {
+        this.perLightCullingRadius = perLightCullingRadius;
+    }
+
+    public void setGlobalLightCullingRadius(int globalLightCullingRadius) {
+        this.globalLightCullingRadius = globalLightCullingRadius;
     }
 }

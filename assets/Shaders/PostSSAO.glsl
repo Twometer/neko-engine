@@ -14,7 +14,7 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform int kernelSize;
 
-const float radius = 0.5;
+const float radius = 0.25;
 const float bias = 0.025;
 
 vec3 samplePositionTex(vec2 coords) {
