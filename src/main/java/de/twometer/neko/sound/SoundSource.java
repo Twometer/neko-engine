@@ -11,12 +11,22 @@ import static org.lwjgl.openal.AL10.*;
 public class SoundSource {
 
     private final int sourceId;
+
     private static final List<Integer> soundSources = new ArrayList<>();
 
     SoundSource(int bufferId) {
         this.sourceId = newSoundSource();
         stop();
         alSourcei(sourceId, AL_BUFFER, bufferId);
+
+        // Reset source
+        alSourcei(sourceId, AL_SOURCE_ABSOLUTE, AL_FALSE);
+        alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_TRUE);
+        alSourcei(sourceId, AL_LOOPING, AL_FALSE);
+        alSourcef(sourceId, AL_GAIN, 1.0f);
+        alSourcef(sourceId, AL_PITCH, 1.0f);
+        alSourcef(sourceId, AL_ROLLOFF_FACTOR, 1.0f);
+        alSource3f(sourceId, AL_POSITION, 0, 0, 0);
     }
 
     public SoundSource setAbsolute(boolean absolute) {
