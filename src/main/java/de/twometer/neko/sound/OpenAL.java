@@ -11,11 +11,13 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.openal.ALC10.*;
+import static org.lwjgl.openal.ALC11.ALC_MONO_SOURCES;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class OpenAL {
 
     private long device;
+    private int maxSources;
 
     public void create() {
         Log.d("Creating sound system");
@@ -30,6 +32,8 @@ public class OpenAL {
         }
         alcMakeContextCurrent(context);
         AL.createCapabilities(deviceCaps);
+
+        maxSources = alcGetInteger(device, ALC_MONO_SOURCES);
     }
 
     public void setPosition(Vector3f pos) {
@@ -51,5 +55,7 @@ public class OpenAL {
         alcCloseDevice(device);
     }
 
-
+    public int getMaxSources() {
+        return maxSources;
+    }
 }

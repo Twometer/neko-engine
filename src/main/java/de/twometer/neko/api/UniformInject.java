@@ -4,5 +4,6 @@ public enum UniformInject {
     None,
     ProjMatrix,
     ViewMatrix,
-    ViewportSize
+    ViewportSize,
+    CameraPosition
 }

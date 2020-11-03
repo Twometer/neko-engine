@@ -1,16 +1,20 @@
 package de.twometer.neko.sound;
 
+import de.twometer.neko.core.NekoApp;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lwjgl.openal.AL10.*;
-import static org.lwjgl.openal.AL10.alDeleteSources;
 
 public class SoundSource {
 
     private final int sourceId;
+    private static final List<Integer> soundSources = new ArrayList<>();
 
     SoundSource(int bufferId) {
-        this.sourceId = alGenSources();
+        this.sourceId = newSoundSource();
         stop();
         alSourcei(sourceId, AL_BUFFER, bufferId);
     }
@@ -78,6 +82,21 @@ public class SoundSource {
     public void destroy() {
         stop();
         alDeleteSources(sourceId);
+    }
+
+    private static int newSoundSource() {
+        for (var src : soundSources) {
+            if (alGetSourcei(src, AL_SOURCE_STATE) != AL_PLAYING)
+                return src;
+        }
+
+        // We have to create a new one
+        if (soundSources.size() >= NekoApp.get().getSoundFX().getOpenAL().getMaxSources()) {
+            throw new IllegalStateException("Maximum number of concurrent sound sources exceeded.");
+        }
+        var src = alGenSources();
+        soundSources.add(src);
+        return src;
     }
 
 }

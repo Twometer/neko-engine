@@ -82,6 +82,9 @@ public abstract class Shader {
                 case ViewportSize:
                     u.set(new Vector2f(win.getWidth(), win.getHeight()));
                     break;
+                case CameraPosition:
+                    u.set(cam.getPosition());
+                    break;
                 case None:
                     break;
                 default:

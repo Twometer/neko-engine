@@ -33,7 +33,7 @@ void main(void){
     vec3 Bloom = texture(bloom, TexCoords).rgb;
 
     // then calculate lighting as usual
-    vec3 lighting = 0.3 * Diffuse;// hard-coded ambient component
+    vec3 lighting = 0.3 * Diffuse; // hard-coded ambient component
     vec3 viewDir  = normalize(viewPos - FragPos);
     for (int i = 0; i < numLights; ++i)
     {

@@ -64,5 +64,7 @@ public class SoundFX {
         openAL.destroy();
     }
 
-
+    public OpenAL getOpenAL() {
+        return openAL;
+    }
 }

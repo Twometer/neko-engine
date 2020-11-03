@@ -17,6 +17,6 @@ void main() {
         }
     }
 
-    FragColor.r = result / (4.0 * 4.0);
+    FragColor.r = result / 16;
     FragColor.a = 1.0;
 }
