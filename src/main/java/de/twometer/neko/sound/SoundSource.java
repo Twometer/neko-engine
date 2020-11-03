@@ -22,7 +22,7 @@ public class SoundSource {
 
         // Reset source
         alSourcei(sourceId, AL_SOURCE_ABSOLUTE, AL_FALSE);
-        alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_TRUE);
+        alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_FALSE);
         alSourcei(sourceId, AL_LOOPING, AL_FALSE);
         alSourcef(sourceId, AL_GAIN, 1.0f);
         alSourcef(sourceId, AL_PITCH, 1.0f);
@@ -31,10 +31,13 @@ public class SoundSource {
     }
 
     public SoundSource setAbsolute(boolean absolute) {
-        if (absolute)
+        if (absolute) {
             alSourcei(sourceId, AL_SOURCE_ABSOLUTE, AL_TRUE);
-        else
+            alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_FALSE);
+        } else {
+            alSourcei(sourceId, AL_SOURCE_ABSOLUTE, AL_FALSE);
             alSourcei(sourceId, AL_SOURCE_RELATIVE, AL_TRUE);
+        }
         return this;
     }
 
