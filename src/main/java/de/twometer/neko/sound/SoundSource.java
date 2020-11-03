@@ -1,6 +1,7 @@
 package de.twometer.neko.sound;
 
 import de.twometer.neko.core.NekoApp;
+import de.twometer.neko.util.Log;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class SoundSource {
 
     SoundSource(int bufferId) {
         this.sourceId = newSoundSource();
-        stop();
+        pause();
         alSourcei(sourceId, AL_BUFFER, bufferId);
 
         // Reset source
@@ -96,9 +97,10 @@ public class SoundSource {
 
     private static int newSoundSource() {
         for (var src : soundSources) {
-            if (alGetSourcei(src, AL_SOURCE_STATE) != AL_PLAYING)
+            if (alGetSourcei(src, AL_SOURCE_STATE) == AL_STOPPED)
                 return src;
         }
+        Log.d("Generating new source...");
 
         // We have to create a new one
         if (soundSources.size() >= NekoApp.get().getSoundFX().getOpenAL().getMaxSources()) {

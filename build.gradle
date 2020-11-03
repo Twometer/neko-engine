@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'de.twometer.neko'
-version '1.6.2'
+version '1.6.3'
 
 project.ext.lwjglVersion = "3.2.3"
 project.ext.lwjglNatives = "natives-windows"
