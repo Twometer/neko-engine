@@ -1,4 +1,7 @@
 package de.twometer.neko
 
-class Neko {
+object Neko {
+
+    const val VERSION = "2.0.0-alpha"
+
 }
