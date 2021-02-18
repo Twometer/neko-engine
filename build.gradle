@@ -1,80 +1,14 @@
 plugins {
-    id 'java'
-    id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
 }
 
 group 'de.twometer.neko'
-version '1.6.4'
-
-project.ext.lwjglVersion = "3.2.3"
-project.ext.lwjglNatives = "natives-windows"
+version '2.0.0-alpha'
 
 repositories {
     mavenCentral()
-    maven { url 'http://clojars.org/repo/' }
-    maven { url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/' }
 }
 
 dependencies {
-    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
-    implementation "org.lwjgl:lwjgl"
-    implementation "org.lwjgl:lwjgl-glfw"
-    implementation "org.lwjgl:lwjgl-openal"
-    implementation "org.lwjgl:lwjgl-opengl"
-    implementation "org.lwjgl:lwjgl-assimp"
-    implementation "org.lwjgl:lwjgl-stb"
-    implementation "org.joml:joml:1.9.12"
-    implementation 'org.greenrobot:eventbus:3.2.0'
-    implementation 'com.esotericsoftware:kryo:5.0.0-RC9'
-    implementation 'kryonet:kryonet:2.21'
-    implementation 'com.labymedia:ultralight-java-base:0.3.0'
-    implementation 'com.labymedia:ultralight-java-databind:0.3.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
-
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-
-    testCompile 'junit:junit:4.12'
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'neko-engine'
-            from components.java
-            pom {
-                name = 'neko-engine'
-                description = 'Neko is a 3D LWJGL game engine'
-                url = 'https://github.com/Twometer/neko-engine'
-                licenses {
-                    license {
-                        name = 'GNU Lesser General Public License v3.0'
-                        url = 'https://github.com/Twometer/neko-engine/blob/main/LICENSE'
-                    }
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            name = "Nexus"
-            url = "https://cloud.twometer.de/nexus/repository/maven-releases"
-            credentials {
-                username = System.getenv("MAVEN_USER")
-                password = System.getenv("MAVEN_PASS")
-            }
-        }
-    }
-}
-
-jar {
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
