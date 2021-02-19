@@ -1,0 +1,26 @@
+Shader 330 core {
+
+    Shared {
+        vec2 TexCoords;
+    }
+
+    Vertex {
+        layout(location = 0) in vec2 vertexPosition;
+        uniform mat4 guiMatrix;
+
+        void main() {
+            gl_Position = guiMatrix * vec4(vertexPosition, 0.0f, 1.0f);
+            TexCoords = vertexPosition;
+        }
+    }
+
+    Fragment {
+        out vec4 FragColor;
+        uniform sampler2D texSampler;
+
+        void main() {
+            FragColor = texture(texSampler, TexCoords);
+        }
+    }
+
+}

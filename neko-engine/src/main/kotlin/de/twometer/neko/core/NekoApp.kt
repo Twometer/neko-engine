@@ -2,6 +2,7 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.res.ShaderLoader
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
@@ -26,6 +27,8 @@ open class NekoApp(config: AppConfig) {
         logger.info { "Detected OpenGL $version ($vendor)" }
 
         onPostInit()
+
+        ShaderLoader.load("assets/shaders/gui.nks")
 
         while (!window.isCloseRequested()) {
             onRenderFrame()
