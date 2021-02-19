@@ -1,29 +1,33 @@
 package de.twometer.neko.core
 
 import de.twometer.neko.Neko
+import de.twometer.neko.events.Events
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
 
 private val logger = KotlinLogging.logger {}
 
-open class NekoApp {
+open class NekoApp(config: AppConfig) {
 
-    private val window = Window(1024, 768, "Neko Engine")
+    protected val window = Window(config)
 
-    fun start() {
+    fun run() {
+        println("Starting Neko Engine v${Neko.VERSION}")
+        Events.setup()
         window.create()
 
         val version = glGetString(GL_VERSION)
         val vendor = glGetString(GL_VENDOR)
-        println("Starting Neko Engine v${Neko.VERSION}")
         println("Detected OpenGL $version ($vendor)")
 
-        while (!window.closeRequested()) {
+        while (!window.isCloseRequested()) {
 
 
             window.update()
         }
+
         println("Shutting down...")
+        window.destroy()
     }
 
 }
