@@ -12,13 +12,13 @@ open class NekoApp(config: AppConfig) {
     protected val window = Window(config)
 
     fun run() {
-        println("Starting Neko Engine v${Neko.VERSION}")
+        logger.info { "Starting Neko Engine v${Neko.VERSION}" }
         Events.setup()
         window.create()
 
         val version = glGetString(GL_VERSION)
         val vendor = glGetString(GL_VENDOR)
-        println("Detected OpenGL $version ($vendor)")
+        logger.info { "Detected OpenGL $version ($vendor)" }
 
         while (!window.isCloseRequested()) {
 
@@ -26,7 +26,7 @@ open class NekoApp(config: AppConfig) {
             window.update()
         }
 
-        println("Shutting down...")
+        logger.info { "Shutting down..." }
         window.destroy()
     }
 
