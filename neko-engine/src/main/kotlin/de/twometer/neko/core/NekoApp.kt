@@ -2,6 +2,7 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.model.Scene
 import de.twometer.neko.res.ShaderLoader
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
@@ -13,6 +14,7 @@ open class NekoApp(config: AppConfig) {
 
     protected val window = Window(config)
     protected val timer = Timer(config.timerSpeed)
+    protected val scene = Scene()
 
     fun run() {
         logger.info { "Starting Neko Engine v${Neko.VERSION}" }
