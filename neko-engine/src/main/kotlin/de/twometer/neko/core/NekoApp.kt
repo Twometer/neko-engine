@@ -28,7 +28,7 @@ open class NekoApp(config: AppConfig) {
 
         onPostInit()
 
-        ShaderLoader.load("assets/shaders/gui.nks")
+        ShaderLoader.loadFromFile("assets/shaders/gui.nks")
 
         while (!window.isCloseRequested()) {
             onRenderFrame()

@@ -1,0 +1,7 @@
+#version 330 core
+
+#include testinclude.nks
+
+#begin fragment
+
+#end fragment

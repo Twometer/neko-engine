@@ -1,0 +1,11 @@
+#version 330 core
+
+#begin shared
+    vec2 TexCoords;
+#end shared
+
+#begin vertex
+    void main() {
+
+    }
+#end vertex
