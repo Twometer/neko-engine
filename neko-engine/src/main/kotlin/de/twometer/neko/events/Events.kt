@@ -4,11 +4,12 @@ import org.greenrobot.eventbus.EventBus
 
 object Events {
 
-    fun setup() =
+    fun setup() {
         EventBus.builder()
             .logNoSubscriberMessages(false)
             .sendNoSubscriberEvent(false)
             .installDefaultEventBus()
+    }
 
     fun register(subscriber: Any) = EventBus.getDefault().register(subscriber)
 
