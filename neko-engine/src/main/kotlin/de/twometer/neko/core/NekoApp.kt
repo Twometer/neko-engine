@@ -2,7 +2,7 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
-import de.twometer.neko.model.Scene
+import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging

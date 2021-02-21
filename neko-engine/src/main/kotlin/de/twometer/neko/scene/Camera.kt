@@ -1,4 +1,4 @@
-package de.twometer.neko.model
+package de.twometer.neko.scene
 
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.util.MathF

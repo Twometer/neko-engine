@@ -1,4 +1,4 @@
-package de.twometer.neko.model
+package de.twometer.neko.scene
 
 open class Node(
     val transform: Transform = Transform(),
