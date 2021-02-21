@@ -3,7 +3,6 @@ package de.twometer.neko.core
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
 import de.twometer.neko.model.Scene
-import de.twometer.neko.res.ShaderLoader
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
@@ -12,11 +11,19 @@ private val logger = KotlinLogging.logger {}
 
 open class NekoApp(config: AppConfig) {
 
-    protected val window = Window(config)
-    protected val timer = Timer(config.timerSpeed)
-    protected val scene = Scene()
+    companion object {
+        var the: NekoApp? = null
+    }
+
+    val window = Window(config)
+    val timer = Timer(config.timerSpeed)
+    val scene = Scene()
 
     fun run() {
+        if (the != null)
+            error("Only one NekoApp instance is allowed")
+        else the = this
+
         logger.info { "Starting Neko Engine v${Neko.VERSION}" }
         Events.setup()
 
@@ -30,9 +37,9 @@ open class NekoApp(config: AppConfig) {
 
         onPostInit()
 
-        ShaderLoader.loadFromFile("assets/shaders/gui.nks")
-
         while (!window.isCloseRequested()) {
+            scene.camera.update()
+
             onRenderFrame()
 
             if (timer.elapsed()) {
