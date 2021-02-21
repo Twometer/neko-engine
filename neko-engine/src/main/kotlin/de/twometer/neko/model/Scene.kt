@@ -1,4 +1,8 @@
 package de.twometer.neko.model
 
-class Scene {
+class Scene() {
+
+    val camera = Camera()
+    val rootNode = Node(0)
+
 }
