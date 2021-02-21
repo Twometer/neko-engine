@@ -42,6 +42,9 @@ class Window(private val config: AppConfig) {
     }
 
     fun destroy() {
+        if (handle == 0L)
+            return
+
         cursorCache.map().forEach { glfwDestroyCursor(it.value) }
         glfwFreeCallbacks(handle)
         glfwDestroyWindow(handle)

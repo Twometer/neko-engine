@@ -1,5 +1,6 @@
 package de.twometer.neko.res
 
+import de.twometer.neko.util.CrashHandler
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL20.*
 import java.io.File
@@ -62,7 +63,6 @@ object ShaderLoader {
     private fun loadIncludes(basePath: String, nodes: List<Node>, depth: Int = 0): List<Node> {
         if (depth > 10)
             error("Maximum include depth exceeded")
-
         val result = ArrayList<Node>()
         nodes.forEach {
             if (it is Directive && it.type == DirectiveType.Include) {
@@ -143,7 +143,7 @@ object ShaderLoader {
         )
     }
 
-    fun loadGlsl(vertexSrc: String, fragmentSrc: String): Int {
+    private fun loadGlsl(vertexSrc: String, fragmentSrc: String): Int {
         val vertexShaderId = glCreateShader(GL_VERTEX_SHADER)
         val fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER)
 
@@ -176,8 +176,7 @@ object ShaderLoader {
     }
 
     private fun failure(message: String): Nothing {
-        logger.error { "Shader compilation error: $message" }
-        error("Shader failed to compile")
+        error("Shader compilation error: $message")
     }
 
 }

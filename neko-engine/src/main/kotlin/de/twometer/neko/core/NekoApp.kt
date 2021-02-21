@@ -3,6 +3,7 @@ package de.twometer.neko.core
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
 import de.twometer.neko.model.Scene
+import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
@@ -25,6 +26,7 @@ open class NekoApp(config: AppConfig) {
         else the = this
 
         logger.info { "Starting Neko Engine v${Neko.VERSION}" }
+        CrashHandler.register()
         Events.setup()
 
         onPreInit()
