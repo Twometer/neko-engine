@@ -1,6 +1,5 @@
 package de.twometer.neko.res
 
-import de.twometer.neko.util.CrashHandler
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL20.*
 import java.io.File
