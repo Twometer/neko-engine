@@ -36,17 +36,17 @@ object ShaderLoader {
         else -> failure("Unknown directive $name")
     }
 
-    private fun parseShader(path: String): List<Node> {
+    private fun parseShader(file: File): List<Node> {
         val result = ArrayList<Node>()
 
         var line = 0
-        File(path).forEachLine {
+        file.forEachLine {
             line++
             if (it.startsWith('#')) {
                 if (it.length <= 1)
-                    failure("Shader parser error ($path:$line): expected instruction")
+                    failure("Shader parser error (${file.name}:$line): expected instruction")
                 if (!it.contains(' '))
-                    failure("Shader parser error ($path:$line): expected parameter")
+                    failure("Shader parser error (${file.name}:$line): expected parameter")
 
                 val content = it.substring(1)
                 val directive = parseDirectiveType(content.substringBefore(' '))
@@ -66,8 +66,8 @@ object ShaderLoader {
         val result = ArrayList<Node>()
         nodes.forEach {
             if (it is Directive && it.type == DirectiveType.Include) {
-                val path = File(basePath, it.argument).absolutePath
-                result.addAll(loadIncludes(basePath, parseShader(path), depth + 1))
+                val file = File(basePath, it.argument)
+                result.addAll(loadIncludes(basePath, parseShader(file), depth + 1))
             } else
                 result.add(it)
         }
@@ -75,8 +75,8 @@ object ShaderLoader {
     }
 
     private fun buildShaderAst(path: String): ShaderAst {
-        val basePath = File(path).parent
-        val nodes = loadIncludes(basePath, parseShader(path))
+        val shaderFile = AssetFiles.resolve(path)
+        val nodes = loadIncludes(shaderFile.parent, parseShader(shaderFile))
 
         var version = "330 core"
         val sections = HashMap<String, List<Node>>()
