@@ -2,6 +2,7 @@ package de.twometer.neko.scene
 
 import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
+import java.nio.IntBuffer
 
 class Mesh(private val capacity: Int, val dimensions: Int) {
 
@@ -9,6 +10,7 @@ class Mesh(private val capacity: Int, val dimensions: Int) {
     var normals: FloatBuffer? = null
     var colors: FloatBuffer? = null
     var texCoords: FloatBuffer? = null
+    var indices: IntBuffer? = null
 
     var numVertices = 0
         private set

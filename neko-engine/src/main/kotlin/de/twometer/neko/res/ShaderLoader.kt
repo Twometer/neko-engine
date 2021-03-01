@@ -74,7 +74,7 @@ object ShaderLoader {
     }
 
     private fun buildShaderAst(path: String): ShaderAst {
-        val shaderFile = AssetFiles.resolve(path)
+        val shaderFile = AssetManager.resolve(path)
         val nodes = loadIncludes(shaderFile.parent, parseShader(shaderFile))
 
         var version = "330 core"

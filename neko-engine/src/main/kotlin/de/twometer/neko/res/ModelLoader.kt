@@ -2,10 +2,7 @@ package de.twometer.neko.res
 
 import de.twometer.neko.scene.Node
 import mu.KotlinLogging
-import org.lwjgl.assimp.AIAnimation
-import org.lwjgl.assimp.AIMaterial
-import org.lwjgl.assimp.AIMesh
-import org.lwjgl.assimp.AIString
+import org.lwjgl.assimp.*
 import org.lwjgl.assimp.Assimp.*
 
 
@@ -16,8 +13,21 @@ object ModelLoader {
     fun loadFromFile(path: String): Node {
         logger.info { "Loading model $path" }
 
-        val file = AssetFiles.resolve(path)
-        val aiScene = aiImportFile(file.absolutePath, 0) ?: failure()
+        val file = AssetManager.resolve(path)
+        val flags = aiProcess_Triangulate or
+                aiProcess_JoinIdenticalVertices or
+                aiProcess_RemoveRedundantMaterials or
+                aiProcess_ImproveCacheLocality or
+                aiProcess_FixInfacingNormals or
+                aiProcess_FindInvalidData or
+                aiProcess_LimitBoneWeights or
+                aiProcess_SortByPType or
+                aiProcess_GenBoundingBoxes or
+                aiProcess_GenSmoothNormals or
+                aiProcess_GenUVCoords
+        val aiScene = aiImportFile(file.absolutePath, flags) ?: failure()
+
+        val node = Node()
 
         aiScene.mAnimations()?.also {
             val aiNumAnimations = aiScene.mNumAnimations()
@@ -42,12 +52,15 @@ object ModelLoader {
             val aiNumMeshes = aiScene.mNumMeshes()
             for (i in 0 until aiNumMeshes) {
                 val aiMesh = AIMesh.create(it[i])
-                logger.debug { "Loading mesh ${aiMesh.mName().dataString()} (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)" }
+                logger.debug {
+                    "Loading mesh ${
+                        aiMesh.mName().dataString()
+                    } (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
+                }
             }
         }
 
-
-        return Node()
+        return node
     }
 
     private fun failure(): Nothing {

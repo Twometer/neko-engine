@@ -2,7 +2,7 @@ package de.twometer.neko.res
 
 import java.io.File
 
-object AssetFiles {
+object AssetManager {
 
     private val paths = ArrayList<String>()
 
