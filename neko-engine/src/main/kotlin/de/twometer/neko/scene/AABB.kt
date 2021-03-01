@@ -1,4 +1,4 @@
-package de.twometer.neko.model
+package de.twometer.neko.scene
 
 import org.joml.Vector3f
 

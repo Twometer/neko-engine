@@ -1,9 +1,14 @@
 package de.twometer.neko.res
 
+import de.twometer.neko.scene.Color
+import de.twometer.neko.scene.MatKey
+import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Node
 import mu.KotlinLogging
+import org.lwjgl.PointerBuffer
 import org.lwjgl.assimp.*
 import org.lwjgl.assimp.Assimp.*
+import java.nio.IntBuffer
 
 
 private val logger = KotlinLogging.logger {}
@@ -41,10 +46,8 @@ object ModelLoader {
             val aiNumMaterials = aiScene.mNumMaterials()
             for (i in 0 until aiNumMaterials) {
                 val aiMaterial = AIMaterial.create(it[i])
-
-                val aiMatName = AIString.calloc()
-                aiGetMaterialString(aiMaterial, AI_MATKEY_NAME, 0, 0, aiMatName)
-                logger.debug { "Loading material ${aiMatName.dataString()}" }
+                val material = createMaterial(aiMaterial)
+                println(material.toString())
             }
         }
 
@@ -63,8 +66,59 @@ object ModelLoader {
         return node
     }
 
+    private fun createMaterial(aiMaterial: AIMaterial): Material {
+        val aiMatName = AIString.calloc()
+        aiGetMaterialString(aiMaterial, AI_MATKEY_NAME, 0, 0, aiMatName)
+
+        val material = Material(aiMatName.dataString())
+        logger.debug { "Loading material ${material.name}" }
+
+        material[MatKey.ColorAmbient] = aiMaterial.getColor(AI_MATKEY_COLOR_AMBIENT)
+        material[MatKey.ColorDiffuse] = aiMaterial.getColor(AI_MATKEY_COLOR_DIFFUSE)
+        material[MatKey.ColorEmissive] = aiMaterial.getColor(AI_MATKEY_COLOR_EMISSIVE)
+        material[MatKey.ColorSpecular] = aiMaterial.getColor(AI_MATKEY_COLOR_SPECULAR)
+
+        material[MatKey.TextureAmbient] = aiMaterial.getTexture(aiTextureType_AMBIENT)
+        material[MatKey.TextureDiffuse] = aiMaterial.getTexture(aiTextureType_DIFFUSE)
+        material[MatKey.TextureDisplacement] = aiMaterial.getTexture(aiTextureType_DISPLACEMENT)
+        material[MatKey.TextureEmissive] = aiMaterial.getTexture(aiTextureType_EMISSIVE)
+        material[MatKey.TextureNormals] = aiMaterial.getTexture(aiTextureType_NORMALS)
+
+        material[MatKey.Reflectivity] = aiMaterial.getFloat(AI_MATKEY_REFLECTIVITY)
+        material[MatKey.Opacity] = aiMaterial.getFloat(AI_MATKEY_OPACITY)
+        material[MatKey.RefractionIndex] = aiMaterial.getFloat(AI_MATKEY_REFRACTI)
+        material[MatKey.Shininess] = aiMaterial.getFloat(AI_MATKEY_SHININESS)
+
+        return material
+    }
+
     private fun failure(): Nothing {
         error(aiGetErrorString() ?: "Unknown Assimp error")
+    }
+
+    private fun AIMaterial.getColor(matKey: String): Color {
+        val color = AIColor4D.create()
+        aiGetMaterialColor(this, matKey, aiTextureType_NONE, 0, color)
+        return Color(color.r(), color.g(), color.b(), color.a())
+    }
+
+    private fun AIMaterial.getTexture(textureType: Int): String {
+        val path = AIString.calloc()
+        aiGetMaterialTexture(this, textureType, 0, path, null as IntBuffer?, null, null, null, null, null)
+        return path.dataString()
+    }
+
+    private fun AIMaterial.getFloat(matKey: String): Float {
+        val pointerBuffer = PointerBuffer.allocateDirect(1)
+        aiGetMaterialProperty(this, matKey, pointerBuffer)
+        val property = AIMaterialProperty.create(pointerBuffer.get())
+
+        // Ignore null pointer addresses
+        if (property.address() == 0L) return 0F
+
+        // Read the float
+        val floatBuffer = property.mData().asFloatBuffer()
+        return floatBuffer.get()
     }
 
 }
