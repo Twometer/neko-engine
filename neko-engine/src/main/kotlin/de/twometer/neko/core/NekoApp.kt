@@ -35,7 +35,8 @@ open class NekoApp(config: AppConfig) {
 
         val version = glGetString(GL_VERSION)
         val vendor = glGetString(GL_VENDOR)
-        logger.info { "Detected OpenGL $version ($vendor)" }
+        val os = System.getProperty("os.name>")
+        logger.info { "Detected OpenGL $version ($vendor) on $os" }
 
         onPostInit()
 
