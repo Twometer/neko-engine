@@ -20,6 +20,14 @@ object MatKey {
 
 data class Material(val name: String, private val props: HashMap<String, Any> = HashMap()) {
 
+    companion object {
+        val Default = Material(
+            "Default", hashMapOf(
+                MatKey.ColorDiffuse to Color(1.0f, 1.0f, 1.0f)
+            )
+        )
+    }
+
     operator fun set(key: String, value: Any) {
         if (key.isBlank())
             return

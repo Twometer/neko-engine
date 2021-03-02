@@ -1,9 +1,6 @@
 package de.twometer.neko.res
 
-import de.twometer.neko.scene.Color
-import de.twometer.neko.scene.MatKey
-import de.twometer.neko.scene.Material
-import de.twometer.neko.scene.Node
+import de.twometer.neko.scene.*
 import mu.KotlinLogging
 import org.lwjgl.PointerBuffer
 import org.lwjgl.assimp.*
@@ -27,12 +24,13 @@ object ModelLoader {
                 aiProcess_FindInvalidData or
                 aiProcess_LimitBoneWeights or
                 aiProcess_SortByPType or
-                aiProcess_GenBoundingBoxes or
                 aiProcess_GenSmoothNormals or
                 aiProcess_GenUVCoords
+
         val aiScene = aiImportFile(file.absolutePath, flags) ?: failure()
 
         val node = Node()
+        val materials = ArrayList<Material>()
 
         aiScene.mAnimations()?.also {
             val aiNumAnimations = aiScene.mNumAnimations()
@@ -47,7 +45,7 @@ object ModelLoader {
             for (i in 0 until aiNumMaterials) {
                 val aiMaterial = AIMaterial.create(it[i])
                 val material = createMaterial(aiMaterial)
-                println(material.toString())
+                materials.add(material)
             }
         }
 
@@ -55,15 +53,56 @@ object ModelLoader {
             val aiNumMeshes = aiScene.mNumMeshes()
             for (i in 0 until aiNumMeshes) {
                 val aiMesh = AIMesh.create(it[i])
-                logger.debug {
-                    "Loading mesh ${
-                        aiMesh.mName().dataString()
-                    } (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
-                }
+                val material = materials[aiMesh.mMaterialIndex()]
+                val geometry = Geometry(createMesh(aiMesh), material)
+
+                node.attachChild(geometry)
             }
         }
 
         return node
+    }
+
+    private fun createMesh(aiMesh: AIMesh): Mesh {
+        val name = aiMesh.mName().dataString()
+        logger.debug {
+            "Loading mesh ${
+                aiMesh.mName().dataString()
+            } (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
+        }
+
+        val mesh = Mesh(aiMesh.mNumVertices(), 3, name)
+            .addTexCoords()
+            .addNormals()
+            .addIndices(aiMesh.mNumFaces() * 3)
+
+        aiMesh.mVertices().forEach {
+            mesh.putVertex(it.x(), it.y(), it.z())
+        }
+
+        aiMesh.mTextureCoords(0)?.forEach {
+            mesh.putTexCoord(it.x(), 1 - it.y())
+        }
+
+        aiMesh.mNormals()?.forEach {
+            mesh.putNormal(it.x(), it.y(), it.z())
+        }
+
+        val aiBones = aiMesh.mBones()
+        aiBones?.apply {
+            while (aiBones.hasRemaining())
+                AIBone.create(aiBones.get()).also {
+                    // TODO Parse bones
+                }
+        }
+
+        val aiFaces = aiMesh.mFaces()
+        while (aiFaces.hasRemaining())
+            aiFaces.get().also {
+                mesh.putIndices(it.mIndices()[0], it.mIndices()[1], it.mIndices()[2])
+            }
+
+        return mesh
     }
 
     private fun createMaterial(aiMaterial: AIMaterial): Material {

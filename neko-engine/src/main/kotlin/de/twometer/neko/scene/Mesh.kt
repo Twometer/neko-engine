@@ -4,7 +4,7 @@ import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Mesh(private val capacity: Int, val dimensions: Int) {
+class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "") {
 
     val vertices: FloatBuffer = MemoryUtil.memAllocFloat(capacity * dimensions)
     var normals: FloatBuffer? = null
@@ -20,6 +20,8 @@ class Mesh(private val capacity: Int, val dimensions: Int) {
         private set
     var numTexCoords = 0
         private set
+    var numIndices = 0
+        private set
 
     fun addNormals(): Mesh {
         normals = MemoryUtil.memAllocFloat(capacity * dimensions)
@@ -33,6 +35,11 @@ class Mesh(private val capacity: Int, val dimensions: Int) {
 
     fun addTexCoords(dim: Int = 2): Mesh {
         texCoords = MemoryUtil.memAllocFloat(capacity * dim)
+        return this
+    }
+
+    fun addIndices(capacity: Int): Mesh {
+        indices = MemoryUtil.memAllocInt(capacity)
         return this
     }
 
@@ -73,6 +80,26 @@ class Mesh(private val capacity: Int, val dimensions: Int) {
         texCoords?.put(y)
         texCoords?.put(z)
         numTexCoords++
+    }
+
+    fun putColor(r: Float, g: Float, b: Float) {
+        colors?.put(r)
+        colors?.put(g)
+        colors?.put(b)
+        numColors++
+    }
+
+    fun putColor(r: Float, g: Float, b: Float, a: Float) {
+        colors?.put(r)
+        colors?.put(g)
+        colors?.put(b)
+        colors?.put(a)
+        numColors++
+    }
+
+    fun putIndices(vararg indices: Int) {
+        this.indices?.put(indices)
+        numIndices += indices.size
     }
 
     fun destroy() {
