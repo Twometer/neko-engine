@@ -8,12 +8,12 @@ object MatKey {
 
     const val TextureAmbient = "_TextureAmbient"
     const val TextureDiffuse = "_TextureDiffuse"
-    const val TextureDisplacement = "_TextureDisplacement"
     const val TextureEmissive = "_TextureEmissive"
+    const val TextureSpecular = "_TextureSpecular"
+    const val TextureDisplacement = "_TextureDisplacement"
     const val TextureNormals = "_TextureNormals"
 
     const val Reflectivity = "_Reflectivity"
-    const val RefractionIndex = "_RefractionIndex"
     const val Opacity = "_Opacity"
     const val Shininess = "_Shininess"
 }
@@ -23,7 +23,7 @@ data class Material(val name: String, private val props: HashMap<String, Any> = 
     companion object {
         val Default = Material(
             "Default", hashMapOf(
-                MatKey.ColorDiffuse to Color(1.0f, 1.0f, 1.0f)
+                MatKey.ColorDiffuse to Color(0.9f, 0.9f, 0.9f)
             )
         )
     }

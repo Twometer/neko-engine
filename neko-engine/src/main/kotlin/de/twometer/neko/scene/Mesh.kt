@@ -23,6 +23,11 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
     var numIndices = 0
         private set
 
+    var dimColors = 0
+        private set
+    var dimTexCoords = 0
+        private set
+
     fun addNormals(): Mesh {
         normals = MemoryUtil.memAllocFloat(capacity * dimensions)
         return this
@@ -30,11 +35,13 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
 
     fun addColors(dim: Int = 3): Mesh {
         colors = MemoryUtil.memAllocFloat(capacity * dim)
+        dimColors = dim
         return this
     }
 
     fun addTexCoords(dim: Int = 2): Mesh {
         texCoords = MemoryUtil.memAllocFloat(capacity * dim)
+        dimTexCoords = dim
         return this
     }
 
@@ -109,8 +116,8 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
         texCoords?.apply(MemoryUtil::memFree)
     }
 
-    fun toGeometry(): Geometry {
-        return Geometry(this).also { destroy() }
+    fun toGeometry(material: Material = Material.Default): Geometry {
+        return Geometry(this, material).also { destroy() }
     }
 
 }

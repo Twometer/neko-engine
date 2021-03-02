@@ -54,7 +54,7 @@ object ModelLoader {
             for (i in 0 until aiNumMeshes) {
                 val aiMesh = AIMesh.create(it[i])
                 val material = materials[aiMesh.mMaterialIndex()]
-                val geometry = Geometry(createMesh(aiMesh), material)
+                val geometry = createMesh(aiMesh).toGeometry(material)
 
                 node.attachChild(geometry)
             }
@@ -90,10 +90,9 @@ object ModelLoader {
 
         val aiBones = aiMesh.mBones()
         aiBones?.apply {
+            // TODO Parse bones
             while (aiBones.hasRemaining())
-                AIBone.create(aiBones.get()).also {
-                    // TODO Parse bones
-                }
+                AIBone.create(aiBones.get())
         }
 
         val aiFaces = aiMesh.mFaces()
@@ -119,13 +118,13 @@ object ModelLoader {
 
         material[MatKey.TextureAmbient] = aiMaterial.getTexture(aiTextureType_AMBIENT)
         material[MatKey.TextureDiffuse] = aiMaterial.getTexture(aiTextureType_DIFFUSE)
-        material[MatKey.TextureDisplacement] = aiMaterial.getTexture(aiTextureType_DISPLACEMENT)
         material[MatKey.TextureEmissive] = aiMaterial.getTexture(aiTextureType_EMISSIVE)
+        material[MatKey.TextureSpecular] = aiMaterial.getTexture(aiTextureType_SPECULAR)
+        material[MatKey.TextureDisplacement] = aiMaterial.getTexture(aiTextureType_DISPLACEMENT)
         material[MatKey.TextureNormals] = aiMaterial.getTexture(aiTextureType_NORMALS)
 
         material[MatKey.Reflectivity] = aiMaterial.getFloat(AI_MATKEY_REFLECTIVITY)
         material[MatKey.Opacity] = aiMaterial.getFloat(AI_MATKEY_OPACITY)
-        material[MatKey.RefractionIndex] = aiMaterial.getFloat(AI_MATKEY_REFRACTI)
         material[MatKey.Shininess] = aiMaterial.getFloat(AI_MATKEY_SHININESS)
 
         return material

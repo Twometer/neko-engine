@@ -25,4 +25,9 @@ open class Node(
         parent = null
     }
 
+    fun scanTree(consumer: (Node) -> Unit) {
+        children.forEach { it.scanTree(consumer) }
+        consumer(this)
+    }
+
 }

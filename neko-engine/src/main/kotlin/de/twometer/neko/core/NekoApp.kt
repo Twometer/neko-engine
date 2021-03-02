@@ -2,6 +2,7 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.scene.Geometry
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Timer
@@ -43,6 +44,7 @@ open class NekoApp(config: AppConfig) {
         while (!window.isCloseRequested()) {
             scene.camera.update()
 
+            renderScene()
             onRenderFrame()
 
             if (timer.elapsed()) {
@@ -56,6 +58,19 @@ open class NekoApp(config: AppConfig) {
         logger.info { "Shutting down..." }
         onShutdown()
         window.destroy()
+    }
+
+    private fun renderScene() {
+        val (width, height) = window.getSize()
+        glViewport(0, 0, width, height)
+        glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+
+        scene.rootNode.scanTree {
+            if (it is Geometry) {
+                it.render()
+            }
+        }
     }
 
     open fun onPreInit() = Unit
