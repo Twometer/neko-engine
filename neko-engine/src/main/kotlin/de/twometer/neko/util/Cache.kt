@@ -4,7 +4,7 @@ abstract class Cache<K, V> {
 
     private val map = HashMap<K, V>()
 
-    abstract fun create(key: K): V
+    protected abstract fun create(key: K): V
 
     fun get(key: K): V {
         var result = map[key]

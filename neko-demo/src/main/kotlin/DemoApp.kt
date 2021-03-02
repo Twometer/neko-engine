@@ -12,7 +12,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     }
 
     override fun onPostInit() {
-        ShaderLoader.loadFromFile("base/shaders/gui.nks")
+        ShaderLoader.loadFromFile("base/shaders/simple.nks")
         val model = ModelLoader.loadFromFile("demo/models/animegirl.fbx")
         scene.rootNode.attachChild(model)
     }

@@ -41,11 +41,10 @@ class Geometry(private val mesh: Mesh, val material: Material = Material.Default
     fun render() {
         glBindVertexArray(vao)
 
-        if (indexBuffer != null) {
+        if (indexBuffer != null)
             glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, 0)
-        } else {
+        else
             glDrawArrays(GL_TRIANGLES, 0, mesh.numVertices)
-        }
 
         glBindVertexArray(0)
     }

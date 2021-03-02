@@ -2,12 +2,16 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.scene.Geometry
+import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.GL_TEXTURE0
+import org.lwjgl.opengl.GL13.glActiveTexture
 
 private val logger = KotlinLogging.logger {}
 
@@ -68,6 +72,10 @@ open class NekoApp(config: AppConfig) {
 
         scene.rootNode.scanTree {
             if (it is Geometry) {
+                val shader = ShaderCache.get(it.material.shader)
+                shader.bind()
+                shader["viewMatrix"] = scene.camera.viewMatrix
+                shader["projectionMatrix"] = scene.camera.projectionMatrix
                 it.render()
             }
         }

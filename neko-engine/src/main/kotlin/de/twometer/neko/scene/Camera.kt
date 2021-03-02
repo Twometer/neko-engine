@@ -21,6 +21,13 @@ class Camera {
     var zNear = 0.1f
     var zFar = 150.0f
 
+    lateinit var direction: Vector3f
+        private set
+    lateinit var right: Vector3f
+        private set
+    lateinit var up: Vector3f
+        private set
+
     fun update() {
         val (width, height) = NekoApp.the?.window?.getSize()!!
         val aspect = width.toFloat() / height.toFloat()
@@ -28,21 +35,21 @@ class Camera {
         val yaw = rotation.x
         val pitch = rotation.y
 
-        val direction = Vector3f(
+        direction = Vector3f(
             cos(pitch) * sin(yaw),
             sin(pitch),
             cos(pitch) * cos(yaw)
         )
 
-        val right = Vector3f(
+        right = Vector3f(
             sin(yaw - MathF.PI / 2.0f),
             0.0f,
             cos(yaw - MathF.PI / 2.0f)
         )
 
-        val up = Vector3f(right).cross(direction)
+        up = Vector3f(right).cross(direction)
 
-        viewMatrix.lookAt(position, direction.add(position), up)
+        viewMatrix.lookAt(position, position.add(direction), up)
         projectionMatrix.perspective(fov, aspect, zNear, zFar)
     }
 

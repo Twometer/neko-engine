@@ -1,0 +1,35 @@
+#version 330 core
+
+#begin shared
+    vec3 fragmentColor;
+    vec3 fragmentNormal;
+    vec2 fragmentTexCoords;
+#end shared
+
+#begin vertex
+    layout(location = 0) in vec3 vertexPosition;
+    layout(location = 1) in vec3 vertexColor;
+    layout(location = 2) in vec3 vertexNormal;
+    layout(location = 3) in vec2 vertexTexCoords;
+
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
+
+    void main() {
+        gl_Position = projectionMatrix * viewMatrix * vec4(vertexPosition, 1.0f);
+
+        fragmentColor = vertexColor;
+        fragmentNormal = vertexNormal;
+        fragmentTexCoords = vertexTexCoords;
+    }
+#end vertex
+
+#begin fragment
+    out vec4 color;
+
+    uniform sampler2D textureSampler;
+
+    void main() {
+        color = texture(textureSampler, fragmentTexCoords) * vec4(fragmentColor, 1.0);
+    }
+#end fragment

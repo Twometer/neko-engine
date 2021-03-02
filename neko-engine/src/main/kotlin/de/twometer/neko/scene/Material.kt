@@ -16,6 +16,7 @@ object MatKey {
     const val Reflectivity = "_Reflectivity"
     const val Opacity = "_Opacity"
     const val Shininess = "_Shininess"
+    const val TwoSided = "_TwoSided"
 }
 
 data class Material(val name: String, private val props: HashMap<String, Any> = HashMap()) {
@@ -27,6 +28,8 @@ data class Material(val name: String, private val props: HashMap<String, Any> = 
             )
         )
     }
+
+    var shader = "base/shaders/simple.nks"
 
     operator fun set(key: String, value: Any) {
         if (key.isBlank())
