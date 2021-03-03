@@ -72,10 +72,10 @@ open class NekoApp(private val config: AppConfig) {
     }
 
     private fun renderScene() {
-        val (width, height) = window.getSize()
-        glViewport(0, 0, width, height)
-        glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        //val (width, height) = window.getSize()
+        //glViewport(0, 0, width, height)
+        //glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
+        //glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         scene.rootNode.scanTree {
             if (it is Geometry) {

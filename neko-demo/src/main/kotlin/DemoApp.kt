@@ -2,7 +2,6 @@ import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.ModelLoader
-import de.twometer.neko.res.ShaderLoader
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = true)) {
 

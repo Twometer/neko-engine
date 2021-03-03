@@ -31,6 +31,8 @@ class Window(private val config: AppConfig) {
 
         handle = glfwCreateWindow(config.windowWidth, config.windowHeight, config.windowTitle, 0, 0)
         glfwMakeContextCurrent(handle)
+        glfwSwapInterval(1)
+
         GL.createCapabilities()
 
         glfwSetFramebufferSizeCallback(handle) { _, width, height -> Events.post(ResizeEvent(width, height)) }

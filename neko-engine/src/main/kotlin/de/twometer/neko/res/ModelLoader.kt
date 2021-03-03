@@ -100,7 +100,6 @@ object ModelLoader {
             aiFaces.get().also {
                 mesh.putIndices(it.mIndices()[0], it.mIndices()[1], it.mIndices()[2])
             }
-
         return mesh
     }
 

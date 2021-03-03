@@ -11,7 +11,9 @@ import org.joml.Vector3f
 
 class Camera {
 
-    val position = Vector3f()
+    val position = Vector3f(2f, 2f, 2f)
+
+    //val position = Vector3f()
     val rotation = Vector2f()
 
     val viewMatrix = Matrix4f()
@@ -49,7 +51,8 @@ class Camera {
 
         up = Vector3f(right).cross(direction)
 
-        viewMatrix.lookAt(position, position.add(direction), up)
+        viewMatrix.lookAt(position, Vector3f(0f, 0f, 0f), up)
+        //viewMatrix.lookAt(position, position.add(direction), up)
         projectionMatrix.perspective(fov, aspect, zNear, zFar)
     }
 
