@@ -3,6 +3,7 @@ package de.twometer.neko.core
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
 import de.twometer.neko.res.ShaderCache
+import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.Geometry
 import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.Scene
@@ -73,9 +74,13 @@ open class NekoApp(config: AppConfig) {
         scene.rootNode.scanTree {
             if (it is Geometry) {
                 val shader = ShaderCache.get(it.material.shader)
+                //val texture = TextureCache.get(it.material[MatKey.TextureDiffuse] as String)
+
+                //texture.bind()
                 shader.bind()
                 shader["viewMatrix"] = scene.camera.viewMatrix
                 shader["projectionMatrix"] = scene.camera.projectionMatrix
+
                 it.render()
             }
         }

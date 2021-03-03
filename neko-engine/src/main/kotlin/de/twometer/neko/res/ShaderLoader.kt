@@ -134,14 +134,6 @@ object ShaderLoader {
         return loadGlsl(vertexShader!!, fragmentShader!!)
     }
 
-    fun loadFromFiles(vertex: String, fragment: String): Int {
-        logger.info { "Loading glsl shader $vertex $fragment" }
-        return loadGlsl(
-            File(vertex).readText(),
-            File(fragment).readText()
-        )
-    }
-
     private fun loadGlsl(vertexSrc: String, fragmentSrc: String): Int {
         val vertexShaderId = glCreateShader(GL_VERTEX_SHADER)
         val fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER)
