@@ -13,10 +13,11 @@ import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
+import org.lwjgl.opengl.GLUtil
 
 private val logger = KotlinLogging.logger {}
 
-open class NekoApp(config: AppConfig) {
+open class NekoApp(private val config: AppConfig) {
 
     companion object {
         var the: NekoApp? = null
@@ -43,6 +44,11 @@ open class NekoApp(config: AppConfig) {
         val vendor = glGetString(GL_VENDOR)
         val os = System.getProperty("os.name>")
         logger.info { "Detected OpenGL $version ($vendor) on $os" }
+
+        if (config.debugMode) {
+            GLUtil.setupDebugMessageCallback()
+            logger.info { "Enabled debug messages" }
+        }
 
         onPostInit()
 
