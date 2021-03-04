@@ -7,7 +7,7 @@ import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11.GL_TRUE
+import org.lwjgl.system.MemoryUtil.NULL
 
 
 class Window(private val config: AppConfig) {
@@ -26,10 +26,13 @@ class Window(private val config: AppConfig) {
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.glMajor)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.glMinor)
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE)
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
 
         handle = glfwCreateWindow(config.windowWidth, config.windowHeight, config.windowTitle, 0, 0)
+        if (handle == NULL)
+            error("GLFW window creation failed")
+
         glfwMakeContextCurrent(handle)
         glfwSwapInterval(1)
 
@@ -44,7 +47,7 @@ class Window(private val config: AppConfig) {
     }
 
     fun destroy() {
-        if (handle == 0L)
+        if (handle == NULL)
             return
 
         cursorCache.map().forEach { glfwDestroyCursor(it.value) }

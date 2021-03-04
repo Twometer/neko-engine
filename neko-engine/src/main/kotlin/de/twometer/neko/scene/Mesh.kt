@@ -114,6 +114,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
         colors?.apply(MemoryUtil::memFree)
         normals?.apply(MemoryUtil::memFree)
         texCoords?.apply(MemoryUtil::memFree)
+        indices?.apply(MemoryUtil::memFree)
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {

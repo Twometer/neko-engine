@@ -35,13 +35,11 @@ class Geometry(private val mesh: Mesh, val material: Material = Material.Default
         normalBuffer = mesh.normals?.let { createArrayBuffer(NormalIdx, mesh.dimensions, it) }
         texCoordBuffer = mesh.texCoords?.let { createArrayBuffer(TexCoordIdx, mesh.dimTexCoords, it) }
         indexBuffer = mesh.indices?.let { createIndexBuffer(it) }
-
         glBindVertexArray(0)
     }
 
     fun render() {
         glBindVertexArray(vao)
-
         if (indexBuffer != null) {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)
             glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, 0)

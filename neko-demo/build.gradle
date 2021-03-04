@@ -9,4 +9,5 @@ repositories {
 dependencies {
     implementation project(':neko-engine')
     implementation 'org.slf4j:slf4j-log4j12:1.7.30'
+    implementation "org.joml:joml:1.10.0"
 }

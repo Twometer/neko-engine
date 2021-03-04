@@ -11,8 +11,6 @@ import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL13.GL_TEXTURE0
-import org.lwjgl.opengl.GL13.glActiveTexture
 import org.lwjgl.opengl.GLUtil
 
 private val logger = KotlinLogging.logger {}
@@ -50,6 +48,8 @@ open class NekoApp(private val config: AppConfig) {
             logger.info { "Enabled debug messages" }
         }
 
+        glEnable(GL_DEPTH_TEST)
+
         onPostInit()
 
         while (!window.isCloseRequested()) {
@@ -72,10 +72,10 @@ open class NekoApp(private val config: AppConfig) {
     }
 
     private fun renderScene() {
-        //val (width, height) = window.getSize()
-        //glViewport(0, 0, width, height)
-        //glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
-        //glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        val (width, height) = window.getSize()
+        glViewport(0, 0, width, height)
+        glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         scene.rootNode.scanTree {
             if (it is Geometry) {
