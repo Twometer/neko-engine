@@ -51,12 +51,10 @@ class Camera {
 
         up = Vector3f(right).cross(direction)
 
-        viewMatrix.identity()
-        viewMatrix.lookAt(position, Vector3f(0f, 0f, 0f), up)
+        viewMatrix.identity().lookAt(position, Vector3f(0f, 0f, 0f), up)
         //viewMatrix.lookAt(position, position.add(direction), up)
 
-        projectionMatrix.identity()
-        projectionMatrix.perspective(fov, aspect, zNear, zFar)
+        projectionMatrix.identity().perspective(fov, aspect, zNear, zFar)
     }
 
 }

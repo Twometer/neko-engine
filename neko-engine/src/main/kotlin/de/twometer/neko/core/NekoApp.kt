@@ -2,6 +2,7 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.Geometry
@@ -40,7 +41,7 @@ open class NekoApp(private val config: AppConfig) {
 
         val version = glGetString(GL_VERSION)
         val vendor = glGetString(GL_VENDOR)
-        val os = System.getProperty("os.name>")
+        val os = System.getProperty("os.name")
         logger.info { "Detected OpenGL $version ($vendor) on $os" }
 
         if (config.debugMode) {
@@ -79,10 +80,15 @@ open class NekoApp(private val config: AppConfig) {
 
         scene.rootNode.scanTree {
             if (it is Geometry) {
+                // TODO: Asset finding system
                 val shader = ShaderCache.get(it.material.shader)
-                //val texture = TextureCache.get(it.material[MatKey.TextureDiffuse] as String)
+                val tex = "demo/textures/" + it.material[MatKey.TextureDiffuse].toString()
 
-                //texture.bind()
+                if (AssetManager.exists(tex)) {
+                    val texture = TextureCache.get(tex)
+                    texture.bind()
+                }
+
                 shader.bind()
                 shader["viewMatrix"] = scene.camera.viewMatrix
                 shader["projectionMatrix"] = scene.camera.projectionMatrix

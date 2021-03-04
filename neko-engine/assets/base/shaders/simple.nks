@@ -18,6 +18,8 @@
     void main() {
         gl_Position = projectionMatrix * viewMatrix * vec4(vertexPosition, 1.0f);
 
+        // TODO: Zero vertex colors should be ignored if no color data is loaded
+
         fragmentColor = vertexColor;
         fragmentNormal = vertexNormal;
         fragmentTexCoords = vertexTexCoords;
@@ -30,6 +32,11 @@
     uniform sampler2D textureSampler;
 
     void main() {
-        color = vec4(1,1,1,1); //texture(textureSampler, fragmentTexCoords) * vec4(fragmentColor, 1.0);
+        vec4 baseColor = texture(textureSampler, fragmentTexCoords); // * vec4(fragmentColor, 1.0);
+        vec3 lightPos = vec3(0, 1, 0);
+        float diffuse = max(dot(fragmentNormal, lightPos), 0.0);
+        float ambient = 0.15;
+
+        color = ambient + baseColor * diffuse;
     }
 #end fragment

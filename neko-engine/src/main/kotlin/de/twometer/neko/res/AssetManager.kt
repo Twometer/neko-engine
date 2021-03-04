@@ -13,6 +13,20 @@ object AssetManager {
         paths.add(file.absolutePath)
     }
 
+    fun exists(path: String): Boolean {
+        val file = File(path)
+        if (file.isAbsolute && file.exists())
+            return true
+
+        paths.forEach {
+            val candidate = File(it, path)
+            if (candidate.exists())
+                return true
+        }
+
+        return false
+    }
+
     fun resolve(path: String): File {
         val file = File(path)
         if (file.isAbsolute && file.exists())
