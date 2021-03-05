@@ -8,9 +8,7 @@ import org.lwjgl.assimp.Assimp.*
 import java.io.File
 import java.nio.IntBuffer
 
-
 private val logger = KotlinLogging.logger {}
-
 object ModelLoader {
 
     fun loadFromFile(path: String): Node {

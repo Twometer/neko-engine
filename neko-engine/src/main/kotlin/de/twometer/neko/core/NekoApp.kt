@@ -51,8 +51,10 @@ open class NekoApp(private val config: AppConfig) {
         }
 
         glEnable(GL_DEPTH_TEST)
-        glEnable(GL_CULL_FACE)
-        glCullFace(GL_BACK)
+        //glEnable(GL_CULL_FACE)
+        //glCullFace(GL_BACK)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         onPostInit()
 
@@ -91,6 +93,7 @@ open class NekoApp(private val config: AppConfig) {
                 shader.bind()
                 shader["viewMatrix"] = scene.camera.viewMatrix
                 shader["projectionMatrix"] = scene.camera.projectionMatrix
+                shader["modelMatrix"] = node.compositeTransform.matrix
 
                 node.render()
             }

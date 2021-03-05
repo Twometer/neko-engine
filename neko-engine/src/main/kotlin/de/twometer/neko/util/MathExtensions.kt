@@ -9,5 +9,6 @@ object MathExtensions {
     fun Vector4f.clone(): Vector4f = Vector4f(this)
     fun Matrix3f.clone(): Matrix3f = Matrix3f(this)
     fun Matrix4f.clone(): Matrix4f = Matrix4f(this)
+    fun Quaternionf.clone(): Quaternionf = Quaternionf(this)
 
 }

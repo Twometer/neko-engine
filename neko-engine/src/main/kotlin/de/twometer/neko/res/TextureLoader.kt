@@ -1,6 +1,7 @@
 package de.twometer.neko.res
 
 import de.twometer.neko.gl.Texture
+import mu.KotlinLogging
 import javax.imageio.ImageIO
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
@@ -9,7 +10,7 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
-
+private val logger = KotlinLogging.logger {}
 object TextureLoader {
 
     private fun loadPixels(image: BufferedImage): ByteBuffer {
@@ -31,6 +32,8 @@ object TextureLoader {
     fun load(path: String): Texture {
         val image = ImageIO.read(AssetManager.resolve(path, AssetType.Textures))
         val pixels = loadPixels(image)
+
+        logger.debug { "Loading texture $path" }
 
         val textureId = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, textureId)
