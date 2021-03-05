@@ -87,4 +87,8 @@ class Window(private val config: AppConfig) {
     fun isFocused() = glfwGetWindowAttrib(handle, GLFW_FOCUSED) == GLFW_TRUE
 
     fun isCloseRequested(): Boolean = glfwWindowShouldClose(handle)
+
+    fun isKeyDown(key: Int) =
+        glfwGetKey(handle, key) == GLFW_PRESS
+
 }

@@ -33,7 +33,7 @@
 
     void main() {
         vec4 baseColor = texture(textureSampler, fragmentTexCoords); // * vec4(fragmentColor, 1.0);
-        vec3 lightPos = vec3(0, -1, 0);
+        vec3 lightPos = vec3(1, 1, 0);
         float diffuse = max(dot(fragmentNormal, lightPos), 0.0);
         float ambient = 0.15;
 

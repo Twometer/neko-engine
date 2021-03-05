@@ -2,15 +2,16 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
-import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.Geometry
 import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
+import de.twometer.neko.util.MathExtensions.clone
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
+import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GLUtil
 
@@ -63,6 +64,7 @@ open class NekoApp(private val config: AppConfig) {
 
             if (timer.elapsed()) {
                 onTimerTick()
+                handleControls()
                 timer.reset()
             }
 
@@ -93,6 +95,40 @@ open class NekoApp(private val config: AppConfig) {
                 node.render()
             }
         }
+    }
+
+    private fun handleControls() {
+        val speed = 0.15f
+        val sensitivity = 0.002f
+
+        if (window.isKeyDown(GLFW_KEY_W)) {
+            scene.camera.position.add(scene.camera.direction.clone().mul(speed))
+        }
+        if (window.isKeyDown(GLFW_KEY_S)) {
+            scene.camera.position.sub(scene.camera.direction.clone().mul(speed))
+        }
+        if (window.isKeyDown(GLFW_KEY_A)) {
+            scene.camera.position.sub(scene.camera.right.clone().mul(speed))
+        }
+        if (window.isKeyDown(GLFW_KEY_D)) {
+            scene.camera.position.add(scene.camera.right.clone().mul(speed))
+        }
+        if (window.isKeyDown(GLFW_KEY_SPACE)) {
+            scene.camera.position.y += speed
+        }
+        if (window.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+            scene.camera.position.y -= speed
+        }
+
+        val pos = window.getCursorPosition()
+
+        val dx = 10 - pos.first
+        val dy = 10 - pos.second
+
+        scene.camera.rotation.x += dx.toFloat() * sensitivity
+        scene.camera.rotation.y += dy.toFloat() * sensitivity
+
+        window.setCursorPosition(10, 10)
     }
 
     open fun onPreInit() = Unit
