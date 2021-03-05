@@ -2,6 +2,14 @@ package de.twometer.neko.res
 
 import java.io.File
 
+enum class AssetType(val folderName: String) {
+    Any(""),
+    Textures("textures/"),
+    Models("models/"),
+    Shaders("shaders/"),
+    Gui("gui/")
+}
+
 object AssetManager {
 
     private val paths = ArrayList<String>()
@@ -13,31 +21,24 @@ object AssetManager {
         paths.add(file.absolutePath)
     }
 
-    fun exists(path: String): Boolean {
-        val file = File(path)
-        if (file.isAbsolute && file.exists())
-            return true
+    fun exists(path: String, type: AssetType = AssetType.Any): Boolean = tryResolve(path, type) != null
 
-        paths.forEach {
-            val candidate = File(it, path)
-            if (candidate.exists())
-                return true
-        }
+    fun resolve(path: String, type: AssetType = AssetType.Any): File =
+        tryResolve(path, type) ?: error("File $path not found")
 
-        return false
-    }
-
-    fun resolve(path: String): File {
+    private fun tryResolve(path: String, type: AssetType = AssetType.Any): File? {
         val file = File(path)
         if (file.isAbsolute && file.exists())
             return file
 
         paths.forEach {
-            val candidate = File(it, path)
+            val candidate = File(it, "${type.folderName}$path")
             if (candidate.exists())
                 return candidate
         }
-        error("File $path not found")
+
+        return null
     }
+
 
 }

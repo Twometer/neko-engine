@@ -50,6 +50,8 @@ open class NekoApp(private val config: AppConfig) {
         }
 
         glEnable(GL_DEPTH_TEST)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
 
         onPostInit()
 
@@ -78,22 +80,17 @@ open class NekoApp(private val config: AppConfig) {
         glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        scene.rootNode.scanTree {
-            if (it is Geometry) {
-                // TODO: Asset finding system
-                val shader = ShaderCache.get(it.material.shader)
-                val tex = "demo/textures/" + it.material[MatKey.TextureDiffuse].toString()
-
-                if (AssetManager.exists(tex)) {
-                    val texture = TextureCache.get(tex)
-                    texture.bind()
-                }
+        scene.rootNode.scanTree { node ->
+            if (node is Geometry) {
+                val shader = ShaderCache.get(node.material.shader)
+                val tex = node.material[MatKey.TextureDiffuse]
+                tex?.also { TextureCache.get(it.toString()).bind() }
 
                 shader.bind()
                 shader["viewMatrix"] = scene.camera.viewMatrix
                 shader["projectionMatrix"] = scene.camera.projectionMatrix
 
-                it.render()
+                node.render()
             }
         }
     }

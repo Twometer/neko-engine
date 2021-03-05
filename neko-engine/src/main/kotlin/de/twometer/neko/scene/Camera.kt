@@ -11,7 +11,7 @@ import org.joml.Vector3f
 
 class Camera {
 
-    val position = Vector3f(2f, 2f, 2f)
+    val position = Vector3f(2f, -2f, 2f)
 
     //val position = Vector3f()
     val rotation = Vector2f()

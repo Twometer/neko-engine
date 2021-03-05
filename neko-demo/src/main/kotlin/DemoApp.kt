@@ -3,7 +3,7 @@ import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.ModelLoader
 
-class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = true)) {
+class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = false)) {
 
     override fun onPreInit() {
         AssetManager.registerPath("./neko-engine/assets")
@@ -11,8 +11,9 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = 
     }
 
     override fun onPostInit() {
-        val model = ModelLoader.loadFromFile("demo/models/animegirl.fbx")
-        scene.rootNode.attachChild(model)
+        val model1 = ModelLoader.loadFromFile("rin.fbx")
+        val model2 = ModelLoader.loadFromFile("animegirl.fbx")
+        scene.rootNode.attachChild(model1)
     }
 
 }

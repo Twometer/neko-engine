@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import org.lwjgl.PointerBuffer
 import org.lwjgl.assimp.*
 import org.lwjgl.assimp.Assimp.*
+import java.io.File
 import java.nio.IntBuffer
 
 
@@ -15,7 +16,9 @@ object ModelLoader {
     fun loadFromFile(path: String): Node {
         logger.info { "Loading model $path" }
 
-        val file = AssetManager.resolve(path)
+        val modelFileName = File(path).name
+
+        val file = AssetManager.resolve(path, AssetType.Models)
         val flags = aiProcess_Triangulate or
                 aiProcess_JoinIdenticalVertices or
                 aiProcess_RemoveRedundantMaterials or
@@ -44,7 +47,7 @@ object ModelLoader {
             val aiNumMaterials = aiScene.mNumMaterials()
             for (i in 0 until aiNumMaterials) {
                 val aiMaterial = AIMaterial.create(it[i])
-                val material = createMaterial(aiMaterial)
+                val material = createMaterial(modelFileName, aiMaterial)
                 materials.add(material)
             }
         }
@@ -103,7 +106,7 @@ object ModelLoader {
         return mesh
     }
 
-    private fun createMaterial(aiMaterial: AIMaterial): Material {
+    private fun createMaterial(modelFile: String, aiMaterial: AIMaterial): Material {
         val aiMatName = AIString.calloc()
         aiGetMaterialString(aiMaterial, AI_MATKEY_NAME, 0, 0, aiMatName)
 
@@ -115,12 +118,12 @@ object ModelLoader {
         material[MatKey.ColorEmissive] = aiMaterial.getColor(AI_MATKEY_COLOR_EMISSIVE)
         material[MatKey.ColorSpecular] = aiMaterial.getColor(AI_MATKEY_COLOR_SPECULAR)
 
-        material[MatKey.TextureAmbient] = aiMaterial.getTexture(aiTextureType_AMBIENT)
-        material[MatKey.TextureDiffuse] = aiMaterial.getTexture(aiTextureType_DIFFUSE)
-        material[MatKey.TextureEmissive] = aiMaterial.getTexture(aiTextureType_EMISSIVE)
-        material[MatKey.TextureSpecular] = aiMaterial.getTexture(aiTextureType_SPECULAR)
-        material[MatKey.TextureDisplacement] = aiMaterial.getTexture(aiTextureType_DISPLACEMENT)
-        material[MatKey.TextureNormals] = aiMaterial.getTexture(aiTextureType_NORMALS)
+        material[MatKey.TextureAmbient] = aiMaterial.getTexture(modelFile, aiTextureType_AMBIENT)
+        material[MatKey.TextureDiffuse] = aiMaterial.getTexture(modelFile, aiTextureType_DIFFUSE)
+        material[MatKey.TextureEmissive] = aiMaterial.getTexture(modelFile, aiTextureType_EMISSIVE)
+        material[MatKey.TextureSpecular] = aiMaterial.getTexture(modelFile, aiTextureType_SPECULAR)
+        material[MatKey.TextureDisplacement] = aiMaterial.getTexture(modelFile, aiTextureType_DISPLACEMENT)
+        material[MatKey.TextureNormals] = aiMaterial.getTexture(modelFile, aiTextureType_NORMALS)
 
         material[MatKey.Reflectivity] = aiMaterial.getFloat(AI_MATKEY_REFLECTIVITY)
         material[MatKey.Opacity] = aiMaterial.getFloat(AI_MATKEY_OPACITY)
@@ -133,16 +136,30 @@ object ModelLoader {
         error(aiGetErrorString() ?: "Unknown Assimp error")
     }
 
+    private fun processTexturePath(modelFile: String, texturePath: String): String? {
+        if (texturePath.isBlank())
+            return null
+
+        val path = "$modelFile/${texturePath.substringAfterLast("/").substringAfterLast("\\")}"
+
+        return if (AssetManager.exists(path, AssetType.Textures)) {
+            path
+        } else {
+            logger.warn { "Cannot find texture for model $modelFile at $path" }
+            null
+        }
+    }
+
     private fun AIMaterial.getColor(matKey: String): Color {
         val color = AIColor4D.create()
         aiGetMaterialColor(this, matKey, aiTextureType_NONE, 0, color)
         return Color(color.r(), color.g(), color.b(), color.a())
     }
 
-    private fun AIMaterial.getTexture(textureType: Int): String {
+    private fun AIMaterial.getTexture(modelFile: String, textureType: Int): String? {
         val path = AIString.calloc()
         aiGetMaterialTexture(this, textureType, 0, path, null as IntBuffer?, null, null, null, null, null)
-        return path.dataString()
+        return processTexturePath(modelFile, path.dataString())
     }
 
     private fun AIMaterial.getFloat(matKey: String): Float {

@@ -29,7 +29,7 @@ object TextureLoader {
     }
 
     fun load(path: String): Texture {
-        val image = ImageIO.read(AssetManager.resolve(path))
+        val image = ImageIO.read(AssetManager.resolve(path, AssetType.Textures))
         val pixels = loadPixels(image)
 
         val textureId = glGenTextures()

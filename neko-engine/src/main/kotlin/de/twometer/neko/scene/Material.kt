@@ -29,13 +29,13 @@ data class Material(val name: String, private val props: HashMap<String, Any> = 
         )
     }
 
-    var shader = "base/shaders/simple.nks"
+    var shader = "base/simple.nks"
 
-    operator fun set(key: String, value: Any) {
+    operator fun set(key: String, value: Any?) {
         if (key.isBlank())
             return
 
-        if (value is String && value.isBlank()) {
+        if (value == null || (value is String && value.isBlank())) {
             props.remove(key)
             return
         }
