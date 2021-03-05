@@ -14,12 +14,12 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = 
     override fun onPostInit() {
         val model1 = ModelLoader.loadFromFile("rin.fbx")
         model1.transform.rotation.rotateX(toRadians(-90f))
+        model1.transform.translation.set(0f, 0f, 0f)
+        scene.rootNode.attachChild(model1)
 
         val model2 = ModelLoader.loadFromFile("animegirl.fbx")
         model2.transform.rotation.rotateX(toRadians(-90f))
-        model2.transform.translation.add(2f,0f,0f)
-
-        scene.rootNode.attachChild(model1)
+        model2.transform.translation.set(2f, 0f, 0f)
         scene.rootNode.attachChild(model2)
     }
 

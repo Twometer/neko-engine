@@ -37,11 +37,10 @@
         if (baseColor.a <= 0.15)
             discard;
 
-        vec3 lightPos = vec3(2,2,0);
+        vec3 lightPos = vec3(2, 2, 0);
         float diffuse = min(max(dot(fragmentNormal, lightPos), 0.0), 1.0);
-        float ambient = 0.15;
 
-        color = baseColor * (0.5 + diffuse*0.5);
-        color.a = 1.0f;
+        color = baseColor * (0.5 + diffuse * 0.5);
+        color.a = 1.0;
     }
 #end fragment
