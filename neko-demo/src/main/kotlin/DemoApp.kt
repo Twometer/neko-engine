@@ -20,7 +20,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = 
         model2.transform.translation.add(2f,0f,0f)
 
         scene.rootNode.attachChild(model1)
-       // scene.rootNode.attachChild(model2)
+        scene.rootNode.attachChild(model2)
     }
 
 }
