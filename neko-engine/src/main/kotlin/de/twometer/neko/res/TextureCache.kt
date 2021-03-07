@@ -1,6 +1,6 @@
 package de.twometer.neko.res
 
-import de.twometer.neko.gl.Texture
+import de.twometer.neko.render.Texture
 import de.twometer.neko.util.Cache
 
 object TextureCache : Cache<String, Texture>() {

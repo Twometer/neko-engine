@@ -1,4 +1,4 @@
-package de.twometer.neko.gl
+package de.twometer.neko.render
 
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL

@@ -1,4 +1,4 @@
-package de.twometer.neko.gl
+package de.twometer.neko.render
 
 import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
 import org.lwjgl.opengl.GL11.glBindTexture

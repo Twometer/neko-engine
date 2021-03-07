@@ -1,19 +1,12 @@
 package de.twometer.neko.res
 
-import de.twometer.neko.gl.Texture
+import de.twometer.neko.render.Texture
 import mu.KotlinLogging
-import javax.imageio.ImageIO
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.stb.STBImage
 import org.lwjgl.stb.STBImage.*
 import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.MemoryUtil
-import java.awt.Color
-import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
-import java.nio.IntBuffer
 
 private val logger = KotlinLogging.logger {}
 

@@ -1,4 +1,4 @@
-package de.twometer.neko.gl
+package de.twometer.neko.render
 
 import de.twometer.neko.scene.Color
 import de.twometer.neko.util.Cache
