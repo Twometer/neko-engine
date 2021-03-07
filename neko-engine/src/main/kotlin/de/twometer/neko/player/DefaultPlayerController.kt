@@ -7,9 +7,12 @@ import org.lwjgl.glfw.GLFW
 
 class DefaultPlayerController : PlayerController {
 
+    var speed = 0.15f
+    var sensitivity = 0.002f
+
     override fun updateCamera(window: Window, scene: Scene) {
-        val speed = 0.15f
-        val sensitivity = 0.002f
+        if (!window.isFocused())
+            return
 
         if (window.isKeyDown(GLFW.GLFW_KEY_W)) {
             scene.camera.position.add(scene.camera.direction.clone().mul(speed))
@@ -30,15 +33,16 @@ class DefaultPlayerController : PlayerController {
             scene.camera.position.y -= speed
         }
 
+        val (winW, winH) = window.getSize()
         val (curX, curY) = window.getCursorPosition()
 
-        val dx = 10 - curX
-        val dy = 10 - curY
+        val dx = winW / 2 - curX
+        val dy = winH / 2 - curY
 
         scene.camera.rotation.x += dx.toFloat() * sensitivity
         scene.camera.rotation.y += dy.toFloat() * sensitivity
 
-        window.setCursorPosition(10, 10)
+        window.setCursorPosition(winW / 2, winH / 2)
     }
 
 }
