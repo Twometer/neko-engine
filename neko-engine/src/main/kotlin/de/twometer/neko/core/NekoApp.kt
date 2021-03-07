@@ -2,6 +2,8 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.player.DefaultPlayerController
+import de.twometer.neko.player.PlayerController
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.Geometry
@@ -26,6 +28,7 @@ open class NekoApp(private val config: AppConfig) {
     val window = Window(config)
     val timer = Timer(config.timerSpeed)
     val scene = Scene()
+    var playerController: PlayerController = DefaultPlayerController()
 
     fun run() {
         if (the != null)
@@ -51,8 +54,8 @@ open class NekoApp(private val config: AppConfig) {
         }
 
         glEnable(GL_DEPTH_TEST)
-        //glEnable(GL_CULL_FACE)
-        //glCullFace(GL_BACK)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -66,7 +69,7 @@ open class NekoApp(private val config: AppConfig) {
 
             if (timer.elapsed()) {
                 onTimerTick()
-                handleControls()
+                playerController.updateCamera(window, scene)
                 timer.reset()
             }
 
@@ -87,6 +90,12 @@ open class NekoApp(private val config: AppConfig) {
         scene.rootNode.scanTree { node ->
             if (node is Geometry) {
                 val shader = ShaderCache.get(node.material.shader)
+
+                if (node.material[MatKey.TwoSided] == true)
+                    glDisable(GL_CULL_FACE)
+                else
+                    glEnable(GL_CULL_FACE)
+
                 val tex = node.material[MatKey.TextureDiffuse]
                 tex?.also { TextureCache.get(it.toString()).bind() }
 
@@ -98,40 +107,6 @@ open class NekoApp(private val config: AppConfig) {
                 node.render()
             }
         }
-    }
-
-    private fun handleControls() {
-        val speed = 0.15f
-        val sensitivity = 0.002f
-
-        if (window.isKeyDown(GLFW_KEY_W)) {
-            scene.camera.position.add(scene.camera.direction.clone().mul(speed))
-        }
-        if (window.isKeyDown(GLFW_KEY_S)) {
-            scene.camera.position.sub(scene.camera.direction.clone().mul(speed))
-        }
-        if (window.isKeyDown(GLFW_KEY_A)) {
-            scene.camera.position.sub(scene.camera.right.clone().mul(speed))
-        }
-        if (window.isKeyDown(GLFW_KEY_D)) {
-            scene.camera.position.add(scene.camera.right.clone().mul(speed))
-        }
-        if (window.isKeyDown(GLFW_KEY_SPACE)) {
-            scene.camera.position.y += speed
-        }
-        if (window.isKeyDown(GLFW_KEY_LEFT_SHIFT)) {
-            scene.camera.position.y -= speed
-        }
-
-        val pos = window.getCursorPosition()
-
-        val dx = 10 - pos.first
-        val dy = 10 - pos.second
-
-        scene.camera.rotation.x += dx.toFloat() * sensitivity
-        scene.camera.rotation.y += dy.toFloat() * sensitivity
-
-        window.setCursorPosition(10, 10)
     }
 
     open fun onPreInit() = Unit
