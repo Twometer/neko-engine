@@ -16,7 +16,7 @@ class Framebuffer(val width: Int, val height: Int) {
     var depthBuffer: Int = 0
         private set
 
-    fun bind() = glBindFramebuffer(GL_FRAMEBUFFER, framebufferId)
+    fun bind(bufType: Int = GL_FRAMEBUFFER) = glBindFramebuffer(bufType, framebufferId)
 
     fun unbind() = glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
@@ -71,5 +71,19 @@ class Framebuffer(val width: Int, val height: Int) {
     }
 
     fun getColorTexture(num: Int = 0) = colorTextures[num]
+
+    fun verify() {
+        bind()
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            error("Framebuffer not complete")
+        unbind()
+    }
+
+    fun destroy() {
+        glDeleteFramebuffers(framebufferId)
+        for (t in colorTextures) glDeleteTextures(t)
+        glDeleteTextures(depthTexture)
+        glDeleteRenderbuffers(depthBuffer)
+    }
 
 }

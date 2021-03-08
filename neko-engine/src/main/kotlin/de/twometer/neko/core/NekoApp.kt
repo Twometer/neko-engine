@@ -2,6 +2,7 @@ package de.twometer.neko.core
 
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
+import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.player.DefaultPlayerController
 import de.twometer.neko.player.PlayerController
 import de.twometer.neko.render.SceneRenderer
@@ -44,11 +45,11 @@ open class NekoApp(private val config: AppConfig) {
             logger.info { "Enabled debug messages" }
         }
 
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_CULL_FACE)
-        glCullFace(GL_BACK)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        renderer.setup()
+
+        // Initial resize event
+        val (width, height) = window.getSize()
+        Events.post(ResizeEvent(width, height))
         onPostInit()
 
         while (!window.isCloseRequested()) {
@@ -79,8 +80,6 @@ open class NekoApp(private val config: AppConfig) {
     }
 
     private fun renderFrame() {
-        val (width, height) = window.getSize()
-        glViewport(0, 0, width, height)
         glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
         renderer.renderFrame()
     }

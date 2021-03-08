@@ -15,7 +15,7 @@ object TextureLoader {
 
     fun load(path: String): Texture {
         val filename = AssetManager.resolve(path, AssetType.Textures).absolutePath
-        logger.debug { "Loading texture $filename" }
+        logger.debug { "Loading texture $path" }
 
         var pixels: ByteBuffer
         var width: Int
