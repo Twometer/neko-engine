@@ -8,7 +8,7 @@ class Framebuffer(val width: Int, val height: Int) {
     private val framebufferId: Int = glGenFramebuffers()
 
     private val colorAttachments = ArrayList<Int>()
-    private val colorTextures = ArrayList<Int>()
+    private val colorTextures = ArrayList<Texture>()
 
     var depthTexture: Int = 0
         private set
@@ -32,7 +32,7 @@ class Framebuffer(val width: Int, val height: Int) {
             error("Color attachment $attachmentNum defined twice on FBO #$framebufferId")
 
         val tex = glGenTextures()
-        colorTextures.add(tex)
+        colorTextures.add(Texture(width, height, tex))
         colorAttachments.add(attachment)
 
         bind()
@@ -81,7 +81,7 @@ class Framebuffer(val width: Int, val height: Int) {
 
     fun destroy() {
         glDeleteFramebuffers(framebufferId)
-        for (t in colorTextures) glDeleteTextures(t)
+        for (t in colorTextures) glDeleteTextures(t.textureId)
         glDeleteTextures(depthTexture)
         glDeleteRenderbuffers(depthBuffer)
     }

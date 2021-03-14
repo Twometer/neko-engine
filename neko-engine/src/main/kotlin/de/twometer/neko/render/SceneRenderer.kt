@@ -12,6 +12,9 @@ import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
 
+    private val POSITIONS = floatArrayOf(-1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f)
+    private var vao = 0
+
     private var gBuffer: Framebuffer? = null
     lateinit var lightingShader: Shader
 
@@ -25,6 +28,18 @@ class SceneRenderer(val scene: Scene) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         lightingShader = ShaderCache.get("base/deferred.lighting.nks")
+
+        // fullscreen quad code
+        vao = glGenVertexArrays()
+        glBindVertexArray(vao)
+
+        val vbo = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, vbo)
+        glBufferData(GL_ARRAY_BUFFER, POSITIONS, GL_STATIC_DRAW)
+        glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        glBindVertexArray(0)
     }
 
     @Subscribe
@@ -41,8 +56,23 @@ class SceneRenderer(val scene: Scene) {
     }
 
     fun renderFrame() {
-        // gBuffer!!.bind()
+        renderGBuffer()
 
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        lightingShader.bind()
+        bindGBuffer()
+        fullscreenQuad()
+        lightingShader.unbind()
+    }
+
+    private fun bindGBuffer() {
+        gBuffer!!.getColorTexture(0).bind(0)
+        gBuffer!!.getColorTexture(1).bind(1)
+        gBuffer!!.getColorTexture(2).bind(2)
+    }
+
+    private fun renderGBuffer() {
+        gBuffer!!.bind()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         scene.rootNode.scanTree { node ->
@@ -65,10 +95,13 @@ class SceneRenderer(val scene: Scene) {
                 node.render()
             }
         }
+        gBuffer!!.unbind()
+    }
 
-        // gBuffer!!.unbind()
-
-
+    private fun fullscreenQuad() {
+        glBindVertexArray(vao)
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
+        glBindVertexArray(0)
     }
 
 }

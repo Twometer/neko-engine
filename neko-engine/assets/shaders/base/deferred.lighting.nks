@@ -1,5 +1,27 @@
 #begin vertex
+#include post.base.nks
 #end vertex
 
 #begin fragment
+
+    out vec4 color;
+
+    in vec2 texCoords;
+
+    uniform sampler2D gPosition;
+    uniform sampler2D gNormal;
+    uniform sampler2D gAlbedo;
+
+    void main() {
+        vec3 position = texture(gPosition, texCoords).rgb;
+        vec3 normal = texture(gNormal, texCoords).rgb;
+        vec4 albedo = texture(gAlbedo, texCoords);
+
+        vec3 lightPos = vec3(0, 0, 0);
+        vec3 lightDir = normalize(lightPos - position);
+        float diffuse = dot(normal, lightDir);
+
+        color = vec4(albedo.rgb * diffuse, 1.0f);
+    }
+
 #end fragment
