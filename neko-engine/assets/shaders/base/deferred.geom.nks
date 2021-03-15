@@ -18,15 +18,14 @@
     uniform mat4 modelMatrix;
 
     void main() {
-        mat4 mvpMatrix = projectionMatrix * viewMatrix * modelMatrix;
-        mat3 normalMatrix = mat3(modelMatrix);
+        vec4 worldSpacePos = modelMatrix * vec4(vertexPosition, 1.0f);
+        gl_Position = projectionMatrix * viewMatrix * worldSpacePos;
 
-        vec4 pos = mvpMatrix * vec4(vertexPosition, 1.0f);
-        gl_Position = pos;
+        mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
 
-        fragmentPosition = pos.xyz;
+        fragmentPosition = worldSpacePos.xyz;
         fragmentColor = vertexColor;
-        fragmentNormal = normalize(vertexNormal * normalMatrix);
+        fragmentNormal = normalMatrix * vertexNormal;
         fragmentTexCoords = vertexTexCoords;
     }
 #end vertex
