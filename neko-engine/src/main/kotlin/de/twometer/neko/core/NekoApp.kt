@@ -55,7 +55,7 @@ open class NekoApp(private val config: AppConfig) {
         while (!window.isCloseRequested()) {
             scene.camera.update()
 
-            renderFrame()
+            renderer.renderFrame()
             onRenderFrame()
 
             if (timer.elapsed()) {
@@ -77,11 +77,6 @@ open class NekoApp(private val config: AppConfig) {
         val vendor = glGetString(GL_VENDOR)
         val os = System.getProperty("os.name")
         logger.info { "Detected OpenGL $version ($vendor) on $os" }
-    }
-
-    private fun renderFrame() {
-        glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
-        renderer.renderFrame()
     }
 
     open fun onPreInit() = Unit

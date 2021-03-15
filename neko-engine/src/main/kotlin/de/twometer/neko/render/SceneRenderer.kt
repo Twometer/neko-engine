@@ -12,34 +12,25 @@ import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
 
-    private val POSITIONS = floatArrayOf(-1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f)
-    private var vao = 0
-
     private var gBuffer: Framebuffer? = null
     lateinit var lightingShader: Shader
 
     fun setup() {
         Events.register(this)
 
+        // Basic OpenGL state
         glEnable(GL_DEPTH_TEST)
-        glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+        // Load and assign textures for lighting shader
         lightingShader = ShaderCache.get("base/deferred.lighting.nks")
-
-        // fullscreen quad code
-        vao = glGenVertexArrays()
-        glBindVertexArray(vao)
-
-        val vbo = glGenBuffers()
-        glBindBuffer(GL_ARRAY_BUFFER, vbo)
-        glBufferData(GL_ARRAY_BUFFER, POSITIONS, GL_STATIC_DRAW)
-        glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0)
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-        glBindVertexArray(0)
+        lightingShader.bind()
+        lightingShader["gPosition"] = 0
+        lightingShader["gNormal"] = 1
+        lightingShader["gAlbedo"] = 2
+        lightingShader.unbind()
     }
 
     @Subscribe
@@ -58,10 +49,14 @@ class SceneRenderer(val scene: Scene) {
     fun renderFrame() {
         renderGBuffer()
 
+        glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        lightingShader.bind()
+
         bindGBuffer()
-        fullscreenQuad()
+
+        lightingShader.bind()
+        glDisable(GL_CULL_FACE)
+        PostRenderer.fullscreenQuad()
         lightingShader.unbind()
     }
 
@@ -73,6 +68,7 @@ class SceneRenderer(val scene: Scene) {
 
     private fun renderGBuffer() {
         gBuffer!!.bind()
+        glClearColor(0f, 0f, 0f, 0f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         scene.rootNode.scanTree { node ->
@@ -96,12 +92,6 @@ class SceneRenderer(val scene: Scene) {
             }
         }
         gBuffer!!.unbind()
-    }
-
-    private fun fullscreenQuad() {
-        glBindVertexArray(vao)
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
-        glBindVertexArray(0)
     }
 
 }

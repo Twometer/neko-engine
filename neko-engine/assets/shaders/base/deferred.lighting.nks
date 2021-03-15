@@ -19,9 +19,16 @@
 
         vec3 lightPos = vec3(0, 0, 0);
         vec3 lightDir = normalize(lightPos - position);
-        float diffuse = dot(normal, lightDir);
+        float diffuse = max(dot(normal, lightDir), 0.0f) + 0.25;
+
+        if (albedo.a <= 0.15)
+            discard;
 
         color = vec4(albedo.rgb * diffuse, 1.0f);
+
+        // Gamma correction
+        float gamma = 1.5;
+        color.rgb = pow(color.rgb, vec3(1.0 / gamma));
     }
 
 #end fragment

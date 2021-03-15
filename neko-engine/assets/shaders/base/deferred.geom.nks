@@ -19,7 +19,7 @@
 
     void main() {
         mat4 mvpMatrix = projectionMatrix * viewMatrix * modelMatrix;
-        mat3 normalMatrix = transpose(inverse(mat3(mvpMatrix)));
+        mat3 normalMatrix = mat3(modelMatrix);
 
         vec4 pos = mvpMatrix * vec4(vertexPosition, 1.0f);
         gl_Position = pos;

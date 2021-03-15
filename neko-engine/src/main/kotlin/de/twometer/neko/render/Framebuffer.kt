@@ -32,7 +32,7 @@ class Framebuffer(val width: Int, val height: Int) {
             error("Color attachment $attachmentNum defined twice on FBO #$framebufferId")
 
         val tex = glGenTextures()
-        colorTextures.add(Texture(width, height, tex))
+        colorTextures.add(Texture(tex, width, height))
         colorAttachments.add(attachment)
 
         bind()
