@@ -2,6 +2,8 @@ package de.twometer.neko.render
 
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
+import org.w3c.dom.Text
+import javax.swing.plaf.TextUI
 
 class Framebuffer(val width: Int, val height: Int) {
 
@@ -10,7 +12,7 @@ class Framebuffer(val width: Int, val height: Int) {
     private val colorAttachments = ArrayList<Int>()
     private val colorTextures = ArrayList<Texture>()
 
-    var depthTexture: Int = 0
+    var depthTexture: Texture? = null
         private set
 
     var depthBuffer: Int = 0
@@ -50,12 +52,12 @@ class Framebuffer(val width: Int, val height: Int) {
 
     fun addDepthTexture(): Framebuffer {
         bind()
-        depthTexture = glGenTextures()
-        glBindTexture(GL_TEXTURE_2D, depthTexture)
+        depthTexture = Texture(glGenTextures(), width, height)
+        glBindTexture(GL_TEXTURE_2D, depthTexture!!.textureId)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture!!.textureId, 0)
         unbind()
         return this
     }
@@ -72,17 +74,18 @@ class Framebuffer(val width: Int, val height: Int) {
 
     fun getColorTexture(num: Int = 0) = colorTextures[num]
 
-    fun verify() {
+    fun verify(): Framebuffer {
         bind()
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             error("Framebuffer not complete")
         unbind()
+        return this
     }
 
     fun destroy() {
         glDeleteFramebuffers(framebufferId)
         for (t in colorTextures) glDeleteTextures(t.textureId)
-        glDeleteTextures(depthTexture)
+        glDeleteTextures(depthTexture?.textureId ?: 0)
         glDeleteRenderbuffers(depthBuffer)
     }
 

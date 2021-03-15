@@ -42,8 +42,7 @@ class SceneRenderer(val scene: Scene) {
             .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Positions
             .addColorTexture(1, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Normals
             .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
-
-        gBuffer!!.verify()
+            .verify()
     }
 
     fun renderFrame() {
@@ -55,8 +54,7 @@ class SceneRenderer(val scene: Scene) {
         bindGBuffer()
 
         lightingShader.bind()
-        glDisable(GL_CULL_FACE)
-        PostRenderer.fullscreenQuad()
+        Primitives.fullscreenQuad.draw()
         lightingShader.unbind()
     }
 

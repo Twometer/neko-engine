@@ -25,7 +25,7 @@
 
         fragmentPosition = worldSpacePos.xyz;
         fragmentColor = vertexColor;
-        fragmentNormal = normalMatrix * vertexNormal;
+        fragmentNormal = normalize(normalMatrix * vertexNormal);
         fragmentTexCoords = vertexTexCoords;
     }
 #end vertex
