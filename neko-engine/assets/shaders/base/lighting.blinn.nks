@@ -1,25 +1,33 @@
 #begin vertex
-#include post.base.nks
+    in vec3 position;
+
+    uniform mat4 projectionMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 modelMatrix;
+
+    void main(void) {
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+    }
 #end vertex
 
 #begin fragment
-
     out vec4 color;
 
-    in vec2 texCoords;
+    uniform vec2 screenSize;
 
     uniform sampler2D gPosition;
     uniform sampler2D gNormal;
     uniform sampler2D gAlbedo;
 
     void main() {
+        vec2 texCoords = gl_FragCoord.xy / screenSize;
         vec3 position = texture(gPosition, texCoords).rgb;
         vec3 normal = texture(gNormal, texCoords).rgb;
         vec4 albedo = texture(gAlbedo, texCoords);
 
         vec3 lightPos = vec3(0, 0, 0);
         vec3 lightDir = normalize(lightPos - position);
-        float diffuse = max(dot(normal, lightDir), 0.0f) + 0.25;
+        float diffuse = max(dot(normal, lightDir), 0.0f);
 
         if (albedo.a <= 0.15)
             discard;

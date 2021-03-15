@@ -25,7 +25,7 @@ open class NekoApp(private val config: AppConfig) {
     val window = Window(config)
     val timer = Timer(config.timerSpeed)
     val scene = Scene()
-    val renderer = SceneRenderer(scene)
+    val renderer = SceneRenderer(scene, window)
     var playerController: PlayerController = DefaultPlayerController()
 
     fun run() {

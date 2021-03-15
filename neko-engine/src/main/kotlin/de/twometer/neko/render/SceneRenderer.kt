@@ -1,5 +1,6 @@
 package de.twometer.neko.render
 
+import de.twometer.neko.core.Window
 import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.res.ShaderCache
@@ -8,12 +9,15 @@ import de.twometer.neko.scene.Geometry
 import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.Scene
 import org.greenrobot.eventbus.Subscribe
+import org.joml.Matrix4f
+import org.joml.Vector2f
 import org.lwjgl.opengl.GL30.*
 
-class SceneRenderer(val scene: Scene) {
+class SceneRenderer(val scene: Scene, val window: Window) {
 
     private var gBuffer: Framebuffer? = null
-    lateinit var lightingShader: Shader
+    lateinit var blinnShader: Shader
+    lateinit var ambientShader: Shader
 
     fun setup() {
         Events.register(this)
@@ -24,13 +28,19 @@ class SceneRenderer(val scene: Scene) {
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-        // Load and assign textures for lighting shader
-        lightingShader = ShaderCache.get("base/deferred.lighting.nks")
-        lightingShader.bind()
-        lightingShader["gPosition"] = 0
-        lightingShader["gNormal"] = 1
-        lightingShader["gAlbedo"] = 2
-        lightingShader.unbind()
+        // Init shader for the Blinn-Phong Lighting Model
+        blinnShader = ShaderCache.get("base/lighting.blinn.nks")
+        blinnShader.bind()
+        blinnShader["gPosition"] = 0
+        blinnShader["gNormal"] = 1
+        blinnShader["gAlbedo"] = 2
+        blinnShader.unbind()
+
+        // Init shader for the ambient lighting
+        ambientShader = ShaderCache.get("base/lighting.ambient.nks")
+        ambientShader.bind()
+        ambientShader["gAlbedo"] = 2
+        ambientShader.unbind()
     }
 
     @Subscribe
@@ -46,16 +56,45 @@ class SceneRenderer(val scene: Scene) {
     }
 
     fun renderFrame() {
+        // Render scene to GBuffer
         renderGBuffer()
 
-        glClearColor(scene.backgroundColor.r, scene.backgroundColor.g, scene.backgroundColor.b, scene.backgroundColor.a)
+        // Transfer to main buffer using deferred shading
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        glDisable(GL_DEPTH_TEST)
 
         bindGBuffer()
 
-        lightingShader.bind()
+        // Ambient lighting step
+        ambientShader.bind()
+        ambientShader["ambientStrength"] = scene.ambientStrength
+        ambientShader["backgroundColor"] = scene.backgroundColor
         Primitives.fullscreenQuad.draw()
-        lightingShader.unbind()
+        ambientShader.unbind()
+
+        // Blinn-Phong step (point lights)
+        val (width, height) = window.getSize()
+        val screenSize = Vector2f(width.toFloat(), height.toFloat())
+
+        glBlendFunc(GL_ONE, GL_ONE)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_FRONT)
+
+        blinnShader.bind()
+        blinnShader["viewMatrix"] = scene.camera.viewMatrix
+        blinnShader["projectionMatrix"] = scene.camera.projectionMatrix
+        blinnShader["screenSize"] = screenSize
+
+        // TODO: Implement full blinn-phong shading, locations, light radius etc.
+        blinnShader["modelMatrix"] = Matrix4f()
+        Primitives.unitSphere.draw()
+        blinnShader.unbind()
+
+        // Restore GL state
+        glEnable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     }
 
     private fun bindGBuffer() {

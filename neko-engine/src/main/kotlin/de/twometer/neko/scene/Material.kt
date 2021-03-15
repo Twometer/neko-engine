@@ -29,7 +29,7 @@ data class Material(val name: String, private val props: HashMap<String, Any> = 
         )
     }
 
-    var shader = "base/deferred.geom.nks"
+    var shader = "base/geometry.nks"
 
     operator fun set(key: String, value: Any?) {
         if (key.isBlank())
