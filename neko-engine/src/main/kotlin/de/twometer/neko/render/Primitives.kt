@@ -4,8 +4,13 @@ import de.twometer.neko.util.MathF
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
 
+/**
+ * Primitives are used as "proxy geometry" in the
+ *  deferred renderer and the post-processing renderer.
+ * They only have raw vertex information, and should not
+ *  be used for any other purpose.
+ */
 object Primitives {
-
 
     val fullscreenQuad: Primitive by lazy {
         Primitive(floatArrayOf(-1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f), GL_TRIANGLE_STRIP, 2)
@@ -29,7 +34,7 @@ object Primitives {
             addVertex(c)
         }
 
-        val resolution = 50
+        val resolution = 20
         val startU = 0F
         val startV = 0F
         val endU = MathF.PI * 2F
