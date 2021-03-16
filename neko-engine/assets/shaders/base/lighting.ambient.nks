@@ -12,12 +12,15 @@
     in vec2 texCoords;
     out vec4 color;
 
+    uniform sampler2D gPosition;
     uniform sampler2D gAlbedo;
+
     uniform float ambientStrength;
     uniform vec4 backgroundColor;
 
     void main() {
+        vec4 position = texture(gPosition, texCoords);
         vec4 albedo = texture(gAlbedo, texCoords);
-        color = vec4(mix(backgroundColor.rgb, albedo.rgb * ambientStrength, albedo.a), 1.0f);
+        color = vec4(mix(backgroundColor.rgb, albedo.rgb * ambientStrength, position.a), 1.0f);
     }
 #end fragment

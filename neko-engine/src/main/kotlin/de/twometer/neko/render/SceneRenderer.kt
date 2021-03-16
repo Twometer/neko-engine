@@ -5,10 +5,7 @@ import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
-import de.twometer.neko.scene.Geometry
-import de.twometer.neko.scene.MatKey
-import de.twometer.neko.scene.PointLight
-import de.twometer.neko.scene.Scene
+import de.twometer.neko.scene.*
 import de.twometer.neko.util.MathExtensions.clone
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Matrix4f
@@ -28,8 +25,6 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         // Basic OpenGL state
         glEnable(GL_DEPTH_TEST)
         glCullFace(GL_BACK)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Init shader for the Blinn-Phong Lighting Model
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
@@ -42,6 +37,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         // Init shader for the ambient lighting
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
         ambientShader.bind()
+        ambientShader["gPosition"] = 0
         ambientShader["gAlbedo"] = 2
         ambientShader.unbind()
     }
@@ -79,6 +75,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         val (width, height) = window.getSize()
         val screenSize = Vector2f(width.toFloat(), height.toFloat())
 
+        glEnable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE)
         glEnable(GL_CULL_FACE)
         glCullFace(GL_FRONT)
@@ -108,7 +105,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
         glCullFace(GL_BACK)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glDisable(GL_BLEND)
     }
 
     private fun bindGBuffer() {
@@ -138,6 +135,8 @@ class SceneRenderer(val scene: Scene, val window: Window) {
                 shader["viewMatrix"] = scene.camera.viewMatrix
                 shader["projectionMatrix"] = scene.camera.projectionMatrix
                 shader["modelMatrix"] = node.compositeTransform.matrix
+                shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
+                shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
 
                 node.render()
             }

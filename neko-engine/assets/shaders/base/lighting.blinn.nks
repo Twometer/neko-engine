@@ -31,16 +31,20 @@
 
     void main() {
         vec2 texCoords = gl_FragCoord.xy / screenSize;
+
+        // Unpack GBuffer
+        vec4 normalSpec = texture(gNormal, texCoords);
+        vec4 albedoShine = texture(gAlbedo, texCoords);
         vec3 position = texture(gPosition, texCoords).xyz;
-        vec3 normal = texture(gNormal, texCoords).xyz;
+        vec3 normal = normalSpec.xyz;
+        vec3 albedo = albedoShine.rgb;
+        float specularStrength = normalSpec.a;
+        float shininess = albedoShine.a;
 
-        vec4 albedo = texture(gAlbedo, texCoords);
-
+        // Light calculations
         vec3 lightDir = normalize(light.position - position);
         vec3 viewDir = normalize(cameraPos - position);
         vec3 halfway = normalize(lightDir + viewDir);
-
-        float shininess = 2f; // TODO: Load from material
 
         vec3 lightRgb = light.color.rgb;
         vec3 diffuse = lightRgb * max(dot(normal, lightDir), 0.0f);
@@ -48,7 +52,7 @@
         float distance = length(light.position - position);
         float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
 
-        color = vec4(albedo.rgb * attenuation * (diffuse + specular), 1.0f);
+        color = vec4(albedo * attenuation * (diffuse + specularStrength * specular), 1.0f);
     }
 
 #end fragment

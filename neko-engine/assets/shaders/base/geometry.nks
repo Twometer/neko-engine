@@ -31,18 +31,23 @@
 #end vertex
 
 #begin fragment
+
     layout(location = 0) out vec4 gPosition;
     layout(location = 1) out vec4 gNormal;
     layout(location = 2) out vec4 gAlbedo;
 
+    uniform float specular;
+    uniform float shininess;
+
     uniform sampler2D textureSampler;
 
     void main() {
-        gPosition = vec4(fragmentPosition, 1.0f);
-        gNormal = vec4(fragmentNormal, 1.0f);
-        gAlbedo = texture(textureSampler, fragmentTexCoords);
-
-        if (gAlbedo.a <= 0.15)
+        vec4 textureColor = texture(textureSampler, fragmentTexCoords);
+        if (textureColor.a <= 0.15)
             discard;
+
+        gPosition = vec4(fragmentPosition, 1.0f);
+        gNormal = vec4(fragmentNormal, specular);       // Encode as NormalSpecular
+        gAlbedo = vec4(textureColor.rgb, shininess);    // Encode as AlbedoShininess
     }
 #end fragment
