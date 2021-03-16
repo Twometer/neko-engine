@@ -4,6 +4,7 @@ import org.joml.Random
 import org.joml.Vector3f
 
 import org.joml.Vector2f
+import java.nio.channels.FileLock
 
 object MathF {
     private val random: Random = Random()
@@ -77,5 +78,23 @@ object MathF {
             else -> f
         }
     }
+
+    fun min(a: Float, b: Float): Float {
+        return a.coerceAtMost(b)
+    }
+
+    fun min(a: Float, b: Float, c: Float): Float {
+        return a.coerceAtMost(b).coerceAtMost(c)
+    }
+
+    fun max(a: Float, b: Float): Float {
+        return a.coerceAtLeast(b)
+    }
+
+    fun max(a: Float, b: Float, c: Float): Float {
+        return a.coerceAtLeast(b).coerceAtLeast(c)
+    }
+
+    fun sqrt(v: Float): Float = kotlin.math.sqrt(v)
 
 }

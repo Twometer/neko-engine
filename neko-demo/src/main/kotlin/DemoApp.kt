@@ -2,6 +2,7 @@ import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.ModelLoader
+import de.twometer.neko.scene.PointLight
 import de.twometer.neko.util.MathF.toRadians
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = false)) {
@@ -24,6 +25,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = 
 
         val model3 = ModelLoader.loadFromFile("test.fbx")
         scene.rootNode.attachChild(model3)
+
+        scene.rootNode.attachChild(PointLight())
     }
 
 }

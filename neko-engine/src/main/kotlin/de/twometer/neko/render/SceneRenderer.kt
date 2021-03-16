@@ -7,7 +7,9 @@ import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.Geometry
 import de.twometer.neko.scene.MatKey
+import de.twometer.neko.scene.PointLight
 import de.twometer.neko.scene.Scene
+import de.twometer.neko.util.MathExtensions.clone
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Matrix4f
 import org.joml.Vector2f
@@ -86,9 +88,16 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         blinnShader["screenSize"] = screenSize
 
         // TODO: Implement full blinn-phong shading, locations, light radius etc.
-        blinnShader["modelMatrix"] = Matrix4f()
-        Primitives.unitSphere.draw()
-        blinnShader.unbind()
+        scene.rootNode.scanTree {
+            if (it is PointLight) {
+                val matrix = it.transform.matrix.clone()
+                matrix.scale(it.radius)
+
+                blinnShader["modelMatrix"] = matrix
+                Primitives.unitSphere.draw()
+                blinnShader.unbind()
+            }
+        }
 
         // Restore GL state
         glEnable(GL_DEPTH_TEST)
