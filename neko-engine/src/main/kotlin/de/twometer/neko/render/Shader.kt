@@ -37,7 +37,7 @@ class Shader(private val programId: Int) {
 
     operator fun set(name: String, value: Matrix4f) {
         val location = uniformCache.get(name)
-        val buf = BufferUtils.createFloatBuffer(16)
+        val buf = MemoryUtil.memAllocFloat(16)
         value.get(buf)
         glUniformMatrix4fv(location, false, buf)
         MemoryUtil.memFree(buf)
