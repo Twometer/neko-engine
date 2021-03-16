@@ -13,6 +13,7 @@ import de.twometer.neko.util.MathExtensions.clone
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Matrix4f
 import org.joml.Vector2f
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene, val window: Window) {
@@ -86,18 +87,22 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         blinnShader["viewMatrix"] = scene.camera.viewMatrix
         blinnShader["projectionMatrix"] = scene.camera.projectionMatrix
         blinnShader["screenSize"] = screenSize
+        blinnShader["cameraPos"] = scene.camera.position
 
-        // TODO: Implement full blinn-phong shading, locations, light radius etc.
         scene.rootNode.scanTree {
             if (it is PointLight) {
-                val matrix = it.transform.matrix.clone()
-                matrix.scale(it.radius)
+                blinnShader["modelMatrix"] = it.compositeTransform.matrix.scale(it.radius)
+                blinnShader["light.position"] = it.compositeTransform.translation
+                blinnShader["light.color"] = it.color
+                blinnShader["light.constant"] = it.constant
+                blinnShader["light.linear"] = it.linear
+                blinnShader["light.quadratic"] = it.quadratic
 
-                blinnShader["modelMatrix"] = matrix
                 Primitives.unitSphere.draw()
-                blinnShader.unbind()
             }
         }
+
+        blinnShader.unbind()
 
         // Restore GL state
         glEnable(GL_DEPTH_TEST)

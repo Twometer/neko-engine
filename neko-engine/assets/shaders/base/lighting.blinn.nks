@@ -11,9 +11,19 @@
 #end vertex
 
 #begin fragment
+    struct Light {
+        vec3 position;
+        vec4 color;
+        float constant;
+        float linear;
+        float quadratic;
+    };
+
     out vec4 color;
 
     uniform vec2 screenSize;
+    uniform vec3 cameraPos;
+    uniform Light light;
 
     uniform sampler2D gPosition;
     uniform sampler2D gNormal;
@@ -21,22 +31,24 @@
 
     void main() {
         vec2 texCoords = gl_FragCoord.xy / screenSize;
-        vec3 position = texture(gPosition, texCoords).rgb;
-        vec3 normal = texture(gNormal, texCoords).rgb;
+        vec3 position = texture(gPosition, texCoords).xyz;
+        vec3 normal = texture(gNormal, texCoords).xyz;
+
         vec4 albedo = texture(gAlbedo, texCoords);
 
-        vec3 lightPos = vec3(0, 0, 0);
-        vec3 lightDir = normalize(lightPos - position);
-        float diffuse = max(dot(normal, lightDir), 0.0f);
+        vec3 lightDir = normalize(light.position - position);
+        vec3 viewDir = normalize(cameraPos - position);
+        vec3 halfway = normalize(lightDir + viewDir);
 
-        if (albedo.a <= 0.15)
-            discard;
+        float shininess = 2f; // TODO: Load from material
 
-        color = vec4(albedo.rgb * diffuse, 1.0f);
+        vec3 lightRgb = light.color.rgb;
+        vec3 diffuse = lightRgb * max(dot(normal, lightDir), 0.0f);
+        vec3 specular = lightRgb * pow(max(dot(normal, halfway), 0.0), shininess);
+        float distance = length(light.position - position);
+        float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
 
-        // Gamma correction
-        float gamma = 1.5;
-        color.rgb = pow(color.rgb, vec3(1.0 / gamma));
+        color = vec4(albedo.rgb * attenuation * (diffuse + specular), 1.0f);
     }
 
 #end fragment
