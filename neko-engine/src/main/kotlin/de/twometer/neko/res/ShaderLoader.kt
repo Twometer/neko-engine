@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL20.*
 import java.io.File
 
 private val logger = KotlinLogging.logger {}
+
 object ShaderLoader {
 
     private const val SECTION_SHARED = "shared"

@@ -10,9 +10,7 @@ import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
-import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GLUtil
 
 private val logger = KotlinLogging.logger {}
 

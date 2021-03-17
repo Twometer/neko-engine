@@ -11,7 +11,7 @@ import org.joml.Vector3f
 
 class Camera {
 
-    val position = Vector3f(1f,1f,1f)
+    val position = Vector3f(1f, 1f, 1f)
     val rotation = Vector2f()
 
     val viewMatrix = Matrix4f()

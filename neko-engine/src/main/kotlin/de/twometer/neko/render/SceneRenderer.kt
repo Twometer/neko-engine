@@ -6,11 +6,8 @@ import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.*
-import de.twometer.neko.util.MathExtensions.clone
 import org.greenrobot.eventbus.Subscribe
-import org.joml.Matrix4f
 import org.joml.Vector2f
-import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene, val window: Window) {

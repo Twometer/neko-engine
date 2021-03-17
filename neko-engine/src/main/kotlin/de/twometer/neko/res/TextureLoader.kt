@@ -4,7 +4,8 @@ import de.twometer.neko.render.Texture
 import mu.KotlinLogging
 import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.stb.STBImage.*
+import org.lwjgl.stb.STBImage.stbi_image_free
+import org.lwjgl.stb.STBImage.stbi_load
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 

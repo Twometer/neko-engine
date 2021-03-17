@@ -1,10 +1,8 @@
 package de.twometer.neko.util
 
 import org.joml.Random
-import org.joml.Vector3f
-
 import org.joml.Vector2f
-import java.nio.channels.FileLock
+import org.joml.Vector3f
 
 object MathF {
     private val random: Random = Random()

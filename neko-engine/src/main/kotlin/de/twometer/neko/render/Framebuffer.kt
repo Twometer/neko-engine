@@ -2,8 +2,6 @@ package de.twometer.neko.render
 
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
-import org.w3c.dom.Text
-import javax.swing.plaf.TextUI
 
 class Framebuffer(val width: Int, val height: Int) {
 

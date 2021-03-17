@@ -13,7 +13,10 @@ data class Transform(val translation: Vector3f = Vector3f(), val rotation: Quate
         }
 
     operator fun times(transform: Transform): Transform {
-        return Transform(this.translation.clone().add(transform.translation), this.rotation.clone().mul(transform.rotation))
+        return Transform(
+            this.translation.clone().add(transform.translation),
+            this.rotation.clone().mul(transform.rotation)
+        )
     }
 
 }
