@@ -3,6 +3,7 @@ package de.twometer.neko.core
 import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
+import de.twometer.neko.events.TickEvent
 import de.twometer.neko.player.DefaultPlayerController
 import de.twometer.neko.player.PlayerController
 import de.twometer.neko.render.SceneRenderer
@@ -55,6 +56,7 @@ open class NekoApp(config: AppConfig) {
             if (timer.elapsed()) {
                 onTimerTick()
                 playerController.updateCamera(window, scene)
+                Events.post(TickEvent())
                 timer.reset()
             }
 

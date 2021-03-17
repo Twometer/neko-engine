@@ -109,6 +109,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         glDepthMask(false)
         scene.rootNode.scanTree {
             if (it is Sky) {
+                skyboxShader["modelMatrix"] = it.compositeTransform.matrix
                 it.cubemap.bind()
                 Primitives.skybox.draw()
             }

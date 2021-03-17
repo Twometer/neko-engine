@@ -2,7 +2,6 @@ import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.CubemapCache
-import de.twometer.neko.res.CubemapLoader
 import de.twometer.neko.res.ModelLoader
 import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.PointLight
@@ -10,6 +9,8 @@ import de.twometer.neko.scene.Sky
 import de.twometer.neko.util.MathF.toRadians
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
+
+    private lateinit var sky: Sky
 
     override fun onPreInit() {
         AssetManager.registerPath("./neko-engine/assets")
@@ -35,10 +36,14 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             it.transform.translation.set(2f, 2f, 0f)
         })
 
-        scene.rootNode.attachChild(Sky(CubemapCache.get("skybox")))
+        sky = Sky(CubemapCache.get("skybox"))
+        scene.rootNode.attachChild(sky)
         scene.ambientStrength = 0.5f
     }
 
+    override fun onTimerTick() {
+        sky.transform.rotation.rotateY(0.0002f)
+    }
 }
 
 fun main() {
