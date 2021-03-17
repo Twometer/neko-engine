@@ -2,42 +2,22 @@ package de.twometer.neko.res
 
 import de.twometer.neko.render.Texture
 import mu.KotlinLogging
-import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.stb.STBImage.stbi_image_free
-import org.lwjgl.stb.STBImage.stbi_load
-import org.lwjgl.system.MemoryStack
-import java.nio.ByteBuffer
+import org.lwjgl.opengl.GL30.glGenerateMipmap
 
 private val logger = KotlinLogging.logger {}
 
 object TextureLoader {
 
-
     fun load(path: String): Texture {
         val filename = AssetManager.resolve(path, AssetType.Textures).absolutePath
         logger.debug { "Loading texture $path" }
 
-        var pixels: ByteBuffer
-        var width: Int
-        var height: Int
-
-        MemoryStack.stackPush().use {
-            val widthBuf = it.mallocInt(1)
-            val heightBuf = it.mallocInt(1)
-            val channelsBuf = it.mallocInt(1)
-
-            pixels = stbi_load(filename, widthBuf, heightBuf, channelsBuf, 4)
-                ?: error("STBI failed to load image from $path")
-
-            width = widthBuf.get()
-            height = heightBuf.get()
-        }
-
+        val image = ImageLoader.load(filename)
         val textureId = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, textureId)
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.pixels)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
@@ -46,9 +26,9 @@ object TextureLoader {
 
         glBindTexture(GL_TEXTURE_2D, 0)
 
-        stbi_image_free(pixels)
+        image.destroy()
 
-        return Texture(textureId, width, height)
+        return Texture(textureId, image.width, image.height)
     }
 
 }

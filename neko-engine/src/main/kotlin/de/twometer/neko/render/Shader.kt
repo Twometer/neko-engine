@@ -7,6 +7,7 @@ import org.joml.Vector2f
 import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.opengl.GL20.*
+import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 
 class Shader(private val programId: Int) {
@@ -36,10 +37,11 @@ class Shader(private val programId: Int) {
 
     operator fun set(name: String, value: Matrix4f) {
         val location = uniformCache.get(name)
-        val buf = MemoryUtil.memAllocFloat(16)
-        value.get(buf)
-        glUniformMatrix4fv(location, false, buf)
-        MemoryUtil.memFree(buf)
+        MemoryStack.stackPush().use {
+            val buf = it.mallocFloat(16)
+            value.get(buf)
+            glUniformMatrix4fv(location, false, buf)
+        }
     }
 
 }
