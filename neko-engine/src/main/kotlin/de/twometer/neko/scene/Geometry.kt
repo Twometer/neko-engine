@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL30.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(private val mesh: Mesh, val material: Material = Material.Default) : Node() {
+class Geometry(private val mesh: Mesh, val material: Material = Material.Default, val name: String = "") : Node() {
 
     companion object {
         const val VertexIdx = 0

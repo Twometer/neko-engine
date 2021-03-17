@@ -9,6 +9,7 @@ import java.io.File
 import java.nio.IntBuffer
 
 private val logger = KotlinLogging.logger {}
+
 object ModelLoader {
 
     fun loadFromFile(path: String): Node {
@@ -67,9 +68,7 @@ object ModelLoader {
     private fun createMesh(aiMesh: AIMesh): Mesh {
         val name = aiMesh.mName().dataString()
         logger.debug {
-            "Loading mesh ${
-                aiMesh.mName().dataString()
-            } (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
+            "Loading mesh $name (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
         }
 
         val mesh = Mesh(aiMesh.mNumVertices(), 3, name)
@@ -105,7 +104,7 @@ object ModelLoader {
     }
 
     private fun createMaterial(modelFile: String, aiMaterial: AIMaterial): Material {
-        val aiMatName = AIString.calloc()
+        val aiMatName = AIString.create()
         aiGetMaterialString(aiMaterial, AI_MATKEY_NAME, 0, 0, aiMatName)
 
         val material = Material(aiMatName.dataString())
@@ -155,7 +154,7 @@ object ModelLoader {
     }
 
     private fun AIMaterial.getTexture(modelFile: String, textureType: Int): String? {
-        val path = AIString.calloc()
+        val path = AIString.create()
         aiGetMaterialTexture(this, textureType, 0, path, null as IntBuffer?, null, null, null, null, null)
         return processTexturePath(modelFile, path.dataString())
     }

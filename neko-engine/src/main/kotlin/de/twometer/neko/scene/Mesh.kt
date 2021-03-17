@@ -118,7 +118,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {
-        return Geometry(this, material).also { destroy() }
+        return Geometry(this, material, name).also { destroy() }
     }
 
 }
