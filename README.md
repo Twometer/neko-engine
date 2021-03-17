@@ -28,7 +28,9 @@ Example code can be found [here](https://github.com/Twometer/neko-engine/tree/ma
 
 For a game made with Neko v1.x, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
 
-
+## Debugging
+For finding bugs, crashes, OpenGL errors, Memory Leaks and the like that occur with the Neko Engine or 
+any games written with it, I recommend the [LWJGLX Debugger](https://github.com/LWJGLX/debug).
 
 ## Used libraries
 ...

@@ -6,7 +6,7 @@ import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.PointLight
 import de.twometer.neko.util.MathF.toRadians
 
-class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", debugMode = false)) {
+class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
     override fun onPreInit() {
         AssetManager.registerPath("./neko-engine/assets")

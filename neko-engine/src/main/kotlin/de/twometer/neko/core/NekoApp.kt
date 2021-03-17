@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GLUtil
 
 private val logger = KotlinLogging.logger {}
 
-open class NekoApp(private val config: AppConfig) {
+open class NekoApp(config: AppConfig) {
 
     companion object {
         var the: NekoApp? = null
@@ -40,10 +40,6 @@ open class NekoApp(private val config: AppConfig) {
         window.create()
 
         logGlInfo()
-        if (config.debugMode) {
-            GLUtil.setupDebugMessageCallback()
-            logger.info { "Enabled debug messages" }
-        }
 
         renderer.setup()
 
