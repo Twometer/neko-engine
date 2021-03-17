@@ -1,3 +1,7 @@
+#bind gPosition 0
+#bind gNormal 1
+#bind gAlbedo 2
+
 #begin vertex
     in vec3 position;
 

@@ -1,3 +1,6 @@
+#bind gPosition 0
+#bind gAlbedo   2
+
 #begin vertex
     in vec2 position;
     out vec2 texCoords;

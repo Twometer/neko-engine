@@ -8,9 +8,10 @@ import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.MemoryUtil
 
 class Shader(private val programId: Int) {
+
+    val tags = HashSet<String>()
 
     private val uniformCache = object : Cache<String, Int>() {
         override fun create(key: String): Int = glGetUniformLocation(programId, key)

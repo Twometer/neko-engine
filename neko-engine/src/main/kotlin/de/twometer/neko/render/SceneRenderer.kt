@@ -2,6 +2,8 @@ package de.twometer.neko.render
 
 import de.twometer.neko.core.Window
 import de.twometer.neko.events.Events
+import de.twometer.neko.events.RenderDeferredEvent
+import de.twometer.neko.events.RenderForwardEvent
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
@@ -23,20 +25,11 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         glEnable(GL_DEPTH_TEST)
         glCullFace(GL_BACK)
 
-        // Init shader for the Blinn-Phong Lighting Model
+        // Shader for the Blinn-Phong Lighting Model
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
-        blinnShader.bind()
-        blinnShader["gPosition"] = 0
-        blinnShader["gNormal"] = 1
-        blinnShader["gAlbedo"] = 2
-        blinnShader.unbind()
 
-        // Init shader for the ambient lighting
+        // Shader for the ambient lighting
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
-        ambientShader.bind()
-        ambientShader["gPosition"] = 0
-        ambientShader["gAlbedo"] = 2
-        ambientShader.unbind()
     }
 
     @Subscribe
@@ -98,11 +91,10 @@ class SceneRenderer(val scene: Scene, val window: Window) {
 
         blinnShader.unbind()
 
-        // Restore GL state
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_CULL_FACE)
-        glCullFace(GL_BACK)
-        glDisable(GL_BLEND)
+        // Copy depth buffer from GBuffer to main FBO
+        gBuffer!!.blit(GL_DEPTH_BUFFER_BIT)
+
+        Events.post(RenderForwardEvent())
     }
 
     private fun bindGBuffer() {
@@ -115,6 +107,10 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         gBuffer!!.bind()
         glClearColor(0f, 0f, 0f, 0f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+
+        glEnable(GL_DEPTH_TEST)
+        glCullFace(GL_BACK)
+        glDisable(GL_BLEND)
 
         scene.rootNode.scanTree { node ->
             if (node is Geometry) {
@@ -138,6 +134,9 @@ class SceneRenderer(val scene: Scene, val window: Window) {
                 node.render()
             }
         }
+
+        Events.post(RenderDeferredEvent())
+
         gBuffer!!.unbind()
     }
 

@@ -1,5 +1,6 @@
 package de.twometer.neko.res
 
+import de.twometer.neko.render.Shader
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL20.*
 import java.io.File
@@ -14,9 +15,13 @@ object ShaderLoader {
 
     open class Node
     data class PlainText(val data: String) : Node()
-    data class Directive(val type: DirectiveType, val argument: String) : Node()
+    data class Directive(val type: DirectiveType, val arguments: List<String>) : Node()
 
-    data class ShaderAst(val version: String, val sections: HashMap<String, List<Node>>) {
+    data class ShaderAst(
+        val version: String,
+        val sections: HashMap<String, List<Node>>,
+        val directives: List<Directive>
+    ) {
         fun getSectionContent(key: String): String? {
             return sections[key]?.joinToString(separator = "\n") { if (it is PlainText) it.data else "" }
         }
@@ -26,7 +31,9 @@ object ShaderLoader {
         Version,
         Include,
         Begin,
-        End
+        End,
+        Bind,
+        Tag
     }
 
     private fun parseDirectiveType(name: String): DirectiveType = when (name.toLowerCase()) {
@@ -34,27 +41,33 @@ object ShaderLoader {
         "include" -> DirectiveType.Include
         "begin" -> DirectiveType.Begin
         "end" -> DirectiveType.End
+        "bind" -> DirectiveType.Bind
+        "tag" -> DirectiveType.Tag
         else -> failure("Unknown directive $name")
     }
 
     private fun parseShader(file: File): List<Node> {
         val result = ArrayList<Node>()
 
-        var line = 0
+        var lineNo = 0
         file.forEachLine {
-            line++
-            if (it.startsWith('#')) {
-                if (it.length <= 1)
-                    failure("Shader parser error (${file.name}:$line): expected instruction")
-                if (!it.contains(' '))
-                    failure("Shader parser error (${file.name}:$line): expected parameter")
+            val line = it.trim()
+            lineNo++
 
-                val content = it.substring(1)
-                val directive = parseDirectiveType(content.substringBefore(' '))
-                val param = content.substringAfter(' ').trim()
-                result.add(Directive(directive, param))
-            } else if (it.trim().isNotEmpty()) {
-                result.add(PlainText(it))
+            when {
+                line.startsWith('#') -> {
+                    if (line.length <= 1)
+                        failure("Shader parser error (${file.name}:$lineNo): expected instruction")
+                    if (!line.contains(' '))
+                        failure("Shader parser error (${file.name}:$lineNo): expected parameter")
+
+                    val content = line.substring(1)
+                    val directive = parseDirectiveType(content.substringBefore(' '))
+                    val param = content.substringAfter(' ').trim().split(' ').filter { arg -> arg.isNotBlank() }
+                    result.add(Directive(directive, param))
+                }
+                line.startsWith("//") -> return@forEachLine
+                line.isNotEmpty() -> result.add(PlainText(line))
             }
         }
         return result
@@ -62,11 +75,11 @@ object ShaderLoader {
 
     private fun loadIncludes(basePath: String, nodes: List<Node>, depth: Int = 0): List<Node> {
         if (depth > 10)
-            error("Maximum include depth exceeded")
+            failure("Maximum include depth exceeded")
         val result = ArrayList<Node>()
         nodes.forEach {
             if (it is Directive && it.type == DirectiveType.Include) {
-                val file = File(basePath, it.argument)
+                val file = File(basePath, it.arguments.first())
                 result.addAll(loadIncludes(basePath, parseShader(file), depth + 1))
             } else
                 result.add(it)
@@ -80,6 +93,7 @@ object ShaderLoader {
 
         var version = "330 core"
         val sections = HashMap<String, List<Node>>()
+        val directives = ArrayList<Directive>()
         var currentSection: ArrayList<Node>? = null
 
         nodes.forEach {
@@ -87,15 +101,20 @@ object ShaderLoader {
                 it is Directive -> {
                     when (it.type) {
                         DirectiveType.Begin -> {
-                            if (sections.containsKey(it.argument))
-                                failure("section ${it.argument} defined twice")
+                            if (sections.containsKey(it.arguments.first()))
+                                failure("Section ${it.arguments.first()} defined twice")
 
                             currentSection = ArrayList()
-                            sections[it.argument] = currentSection!!
+                            sections[it.arguments.first()] = currentSection!!
                         }
                         DirectiveType.End -> currentSection = null
-                        DirectiveType.Version -> version = it.argument
-                        else -> failure("Illegal directive ${it.type}")
+                        DirectiveType.Version -> version = it.arguments.first()
+                        else -> {
+                            if (currentSection == null)
+                                directives.add(it)
+                            else
+                                failure("Illegal directive ${it.type}")
+                        }
                     }
                 }
                 currentSection != null -> currentSection?.add(it)
@@ -106,10 +125,10 @@ object ShaderLoader {
         if (currentSection != null)
             failure("Section not closed")
 
-        return ShaderAst(version, sections)
+        return ShaderAst(version, sections, directives)
     }
 
-    fun loadFromFile(path: String): Int {
+    fun loadFromFile(path: String): Shader {
         logger.info { "Loading nks shader $path" }
 
         val ast = buildShaderAst(path)
@@ -132,7 +151,19 @@ object ShaderLoader {
         vertexShader = "#version ${ast.version}\n$vertexShader"
         fragmentShader = "#version ${ast.version}\n$fragmentShader"
 
-        return loadGlsl(vertexShader!!, fragmentShader!!)
+        val shader = Shader(loadGlsl(vertexShader!!, fragmentShader!!))
+
+        shader.bind()
+        ast.directives.forEach {
+            if (it.type == DirectiveType.Bind) {
+                shader[it.arguments[0]] = it.arguments[1].toInt()
+            } else if (it.type == DirectiveType.Tag) {
+                shader.tags.add(it.arguments.first())
+            }
+        }
+        shader.unbind()
+
+        return shader
     }
 
     private fun loadGlsl(vertexSrc: String, fragmentSrc: String): Int {

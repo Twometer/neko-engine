@@ -20,3 +20,7 @@ object Events {
 }
 
 data class ResizeEvent(val width: Int, val height: Int)
+
+class RenderDeferredEvent
+
+class RenderForwardEvent
