@@ -16,6 +16,54 @@ object Primitives {
         Primitive(floatArrayOf(-1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f), GL_TRIANGLE_STRIP, 2)
     }
 
+    val skybox: Primitive by lazy {
+        Primitive(
+            floatArrayOf(
+                -1.0f, 1.0f, -1.0f,
+                -1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f,
+                1.0f, 1.0f, -1.0f,
+                -1.0f, 1.0f, -1.0f,
+
+                -1.0f, -1.0f, 1.0f,
+                -1.0f, -1.0f, -1.0f,
+                -1.0f, 1.0f, -1.0f,
+                -1.0f, 1.0f, -1.0f,
+                -1.0f, 1.0f, 1.0f,
+                -1.0f, -1.0f, 1.0f,
+
+                1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f,
+
+                -1.0f, -1.0f, 1.0f,
+                -1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, -1.0f, 1.0f,
+                -1.0f, -1.0f, 1.0f,
+
+                -1.0f, 1.0f, -1.0f,
+                1.0f, 1.0f, -1.0f,
+                1.0f, 1.0f, 1.0f,
+                1.0f, 1.0f, 1.0f,
+                -1.0f, 1.0f, 1.0f,
+                -1.0f, 1.0f, -1.0f,
+
+                -1.0f, -1.0f, -1.0f,
+                -1.0f, -1.0f, 1.0f,
+                1.0f, -1.0f, -1.0f,
+                1.0f, -1.0f, -1.0f,
+                -1.0f, -1.0f, 1.0f,
+                1.0f, -1.0f, 1.0f
+            ), GL_TRIANGLES, 3
+        )
+    }
+
     val unitSphere: Primitive by lazy {
         fun sphere(u: Float, v: Float): Vector3f =
             Vector3f(MathF.cos(u) * MathF.sin(v), MathF.cos(v), MathF.sin(u) * MathF.sin(v))

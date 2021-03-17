@@ -9,6 +9,8 @@ import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.*
 import org.greenrobot.eventbus.Subscribe
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.lwjgl.opengl.GL30.*
 
@@ -17,6 +19,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
     private var gBuffer: Framebuffer? = null
     lateinit var blinnShader: Shader
     lateinit var ambientShader: Shader
+    lateinit var skyboxShader: Shader
 
     fun setup() {
         Events.register(this)
@@ -25,11 +28,10 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         glEnable(GL_DEPTH_TEST)
         glCullFace(GL_BACK)
 
-        // Shader for the Blinn-Phong Lighting Model
+        // Shaders
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
-
-        // Shader for the ambient lighting
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
+        skyboxShader = ShaderCache.get("base/skybox.nks")
     }
 
     @Subscribe
@@ -51,6 +53,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         // Transfer to main buffer using deferred shading
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
 
         bindGBuffer()
 
@@ -77,7 +80,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         blinnShader["cameraPos"] = scene.camera.position
 
         scene.rootNode.scanTree {
-            if (it is PointLight) {
+            if (it is PointLight && it.active) {
                 blinnShader["modelMatrix"] = it.compositeTransform.matrix.scale(it.radius)
                 blinnShader["light.position"] = it.compositeTransform.translation
                 blinnShader["light.color"] = it.color
@@ -92,7 +95,27 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         blinnShader.unbind()
 
         // Copy depth buffer from GBuffer to main FBO
+        glDepthMask(true)
         gBuffer!!.blit(GL_DEPTH_BUFFER_BIT)
+
+        // Prepare GL state for forward rendering
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glCullFace(GL_BACK)
+        glEnable(GL_DEPTH_TEST)
+        skyboxShader.bind()
+        skyboxShader["viewMatrix"] = Matrix4f(Matrix3f(scene.camera.viewMatrix))
+        skyboxShader["projectionMatrix"] = scene.camera.projectionMatrix
+        glDepthFunc(GL_LEQUAL)
+        glDepthMask(false)
+        scene.rootNode.scanTree {
+            if (it is Sky) {
+                it.cubemap.bind()
+                Primitives.skybox.draw()
+            }
+        }
+        glDepthFunc(GL_LESS)
+        glDepthMask(true)
+        skyboxShader.unbind()
 
         Events.post(RenderForwardEvent())
     }

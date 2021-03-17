@@ -1,0 +1,28 @@
+#bind textureSampler 0
+
+#begin shared
+    vec3 fragmentTexCoords;
+#end shared
+
+#begin vertex
+    layout(location = 0) in vec3 vertexPosition;
+
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
+
+    void main() {
+        gl_Position = (projectionMatrix * viewMatrix * vec4(vertexPosition, 1.0)).xyww;
+        fragmentTexCoords = vertexPosition;
+    }
+#end vertex
+
+#begin fragment
+    out vec4 color;
+
+    uniform samplerCube textureSampler;
+
+    void main() {
+        color = texture(textureSampler, fragmentTexCoords);
+    }
+
+#end fragment

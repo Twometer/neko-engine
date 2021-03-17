@@ -1,6 +1,7 @@
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.AssetManager
+import de.twometer.neko.res.CubemapCache
 import de.twometer.neko.res.CubemapLoader
 import de.twometer.neko.res.ModelLoader
 import de.twometer.neko.scene.Color
@@ -34,7 +35,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             it.transform.translation.set(2f, 2f, 0f)
         })
 
-        scene.rootNode.attachChild(Sky(CubemapLoader.load("skybox")))
+        scene.rootNode.attachChild(Sky(CubemapCache.get("skybox")))
+        scene.ambientStrength = 0.5f
     }
 
 }

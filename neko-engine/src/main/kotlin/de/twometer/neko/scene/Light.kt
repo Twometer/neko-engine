@@ -8,6 +8,8 @@ abstract class Light : Node() {
 
     var color: Color = Color.White
 
+    var active = true
+
     abstract fun getPrimitive(): Primitive
 
 }

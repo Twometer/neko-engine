@@ -90,8 +90,7 @@ class Framebuffer(val width: Int, val height: Int) {
     fun blit(mask: Int, target: Framebuffer? = null) {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferId)
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target?.framebufferId ?: 0)
-        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_LINEAR)
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebufferId)
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST)
     }
 
 }
