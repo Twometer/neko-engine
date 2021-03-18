@@ -33,7 +33,8 @@ object ShaderLoader {
         Begin,
         End,
         Bind,
-        Tag
+        Tag,
+        Set
     }
 
     private fun parseDirectiveType(name: String): DirectiveType = when (name.toLowerCase()) {
@@ -43,6 +44,7 @@ object ShaderLoader {
         "end" -> DirectiveType.End
         "bind" -> DirectiveType.Bind
         "tag" -> DirectiveType.Tag
+        "set" -> DirectiveType.Set
         else -> failure("Unknown directive $name")
     }
 
@@ -159,6 +161,8 @@ object ShaderLoader {
                 shader[it.arguments[0]] = it.arguments[1].toInt()
             } else if (it.type == DirectiveType.Tag) {
                 shader.tags.add(it.arguments.first())
+            } else if (it.type == DirectiveType.Set) {
+                shader.props[it.arguments[0]] = it.arguments[1]
             }
         }
         shader.unbind()

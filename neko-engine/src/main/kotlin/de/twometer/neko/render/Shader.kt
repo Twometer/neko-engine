@@ -12,6 +12,7 @@ import org.lwjgl.system.MemoryStack
 class Shader(private val programId: Int) {
 
     val tags = HashSet<String>()
+    val props = HashMap<String, String>()
 
     private val uniformCache = object : Cache<String, Int>() {
         override fun create(key: String): Int = glGetUniformLocation(programId, key)

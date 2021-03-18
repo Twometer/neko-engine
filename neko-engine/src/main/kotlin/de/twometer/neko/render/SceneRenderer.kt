@@ -118,6 +118,8 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         glDepthMask(true)
         skyboxShader.unbind()
 
+        // TODO: OpenGL State manager and bind to shader props
+
         Events.post(RenderForwardEvent())
     }
 

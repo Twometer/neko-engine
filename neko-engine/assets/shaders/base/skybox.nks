@@ -1,5 +1,12 @@
 #bind textureSampler 0
 
+#set DepthTest Off
+#set DepthMask Off
+#set DepthFunc LEqual
+#set CullFace Back
+
+#tag UseCameraMatrices
+
 #begin shared
     vec3 fragmentTexCoords;
 #end shared
