@@ -27,20 +27,20 @@ object ShaderParser {
     enum class DirectiveType {
         Version,
         Include,
+        Inject,
         Begin,
         End,
         Bind,
-        Tag,
         Set
     }
 
     private fun parseDirectiveType(name: String): DirectiveType = when (name.toLowerCase()) {
         "version" -> DirectiveType.Version
         "include" -> DirectiveType.Include
+        "inject" -> DirectiveType.Inject
         "begin" -> DirectiveType.Begin
         "end" -> DirectiveType.End
         "bind" -> DirectiveType.Bind
-        "tag" -> DirectiveType.Tag
         "set" -> DirectiveType.Set
         else -> failure("Unknown directive $name")
     }

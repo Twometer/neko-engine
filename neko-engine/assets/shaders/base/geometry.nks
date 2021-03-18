@@ -1,3 +1,5 @@
+#inject CameraMatrices
+
 #begin shared
     vec3 fragmentPosition;
     vec3 fragmentColor;

@@ -1,6 +1,8 @@
 package de.twometer.neko.res
 
 import de.twometer.neko.render.Shader
+import de.twometer.neko.render.ShaderInject
+import de.twometer.neko.render.ShaderProperty
 import de.twometer.neko.res.ShaderParser.SECTION_FRAGMENT
 import de.twometer.neko.res.ShaderParser.SECTION_SHARED
 import de.twometer.neko.res.ShaderParser.SECTION_VERTEX
@@ -40,10 +42,10 @@ object ShaderLoader {
         ast.directives.forEach {
             if (it.type == ShaderParser.DirectiveType.Bind) {
                 shader[it.arguments[0]] = it.arguments[1].toInt()
-            } else if (it.type == ShaderParser.DirectiveType.Tag) {
-                shader.tags.add(it.arguments.first())
+            } else if (it.type == ShaderParser.DirectiveType.Inject) {
+                shader.injects.add(ShaderInject.valueOf(it.arguments.first()))
             } else if (it.type == ShaderParser.DirectiveType.Set) {
-                shader.props[it.arguments[0]] = it.arguments[1]
+                shader.properties[ShaderProperty.valueOf(it.arguments[0])] = it.arguments[1]
             }
         }
         shader.unbind()

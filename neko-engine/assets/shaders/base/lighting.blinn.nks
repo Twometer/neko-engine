@@ -2,6 +2,10 @@
 #bind gNormal   1
 #bind gAlbedo   2
 
+#inject CameraMatrices
+#inject CameraPosition
+#inject ScreenSize
+
 #begin vertex
     in vec3 position;
 

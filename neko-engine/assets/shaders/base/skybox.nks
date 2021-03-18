@@ -1,11 +1,9 @@
 #bind textureSampler 0
 
-#set DepthTest Off
 #set DepthMask Off
 #set DepthFunc LEqual
-#set CullFace Back
 
-#tag UseCameraMatrices
+#inject CameraMatrices
 
 #begin shared
     vec3 fragmentTexCoords;
@@ -19,7 +17,8 @@
     uniform mat4 modelMatrix;
 
     void main() {
-        gl_Position = (projectionMatrix * viewMatrix * modelMatrix * vec4(vertexPosition, 1.0)).xyww;
+        mat4 skyboxViewMat = mat4(mat3(viewMatrix));
+        gl_Position = (projectionMatrix * skyboxViewMat * modelMatrix * vec4(vertexPosition, 1.0)).xyww;
         fragmentTexCoords = vertexPosition;
     }
 #end vertex

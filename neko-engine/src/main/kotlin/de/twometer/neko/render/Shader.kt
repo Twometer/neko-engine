@@ -9,10 +9,11 @@ import org.joml.Vector4f
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.system.MemoryStack
 
+
 class Shader(private val programId: Int) {
 
-    val tags = HashSet<String>()
-    val props = HashMap<String, String>()
+    val injects = ArrayList<ShaderInject>()
+    val properties = HashMap<ShaderProperty, String>()
 
     private val uniformCache = object : Cache<String, Int>() {
         override fun create(key: String): Int = glGetUniformLocation(programId, key)
@@ -20,6 +21,8 @@ class Shader(private val programId: Int) {
 
     fun bind() {
         glUseProgram(programId)
+        injects.forEach { it.inject(this) }
+        properties.forEach { (k, v) -> k.apply(v) }
     }
 
     fun unbind() {
