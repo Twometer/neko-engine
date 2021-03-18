@@ -17,7 +17,6 @@ object CrashHandler {
 
     private fun handleCrash(error: Throwable): Nothing {
         logger.error { "A fatal error occurred!" }
-        logger.error { error.message }
         logger.error { error.stackTraceToString() }
 
         NekoApp.the?.window?.destroy()
