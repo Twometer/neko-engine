@@ -19,17 +19,17 @@ object MatKey {
     const val TwoSided = "_TwoSided"
 }
 
-data class Material(val name: String, private val props: HashMap<String, Any> = HashMap()) {
+data class Material(val name: String, private val props: HashMap<String, Any> = HashMap(), var shader: String = "base/geometry.nks") {
 
     companion object {
-        val Default = Material(
-            "Default", hashMapOf(
-                MatKey.ColorDiffuse to Color(0.9f, 0.9f, 0.9f)
+        val Default: Material
+            get() = Material(
+                "Default", hashMapOf(
+                    MatKey.ColorDiffuse to Color(0.9f, 0.9f, 0.9f)
+                )
             )
-        )
-    }
 
-    var shader = "base/geometry.nks"
+    }
 
     operator fun set(key: String, value: Any?) {
         if (key.isBlank())

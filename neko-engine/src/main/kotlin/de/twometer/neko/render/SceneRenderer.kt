@@ -1,6 +1,5 @@
 package de.twometer.neko.render
 
-import de.twometer.neko.core.Window
 import de.twometer.neko.events.Events
 import de.twometer.neko.events.RenderDeferredEvent
 import de.twometer.neko.events.RenderForwardEvent
@@ -9,17 +8,13 @@ import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.scene.*
 import org.greenrobot.eventbus.Subscribe
-import org.joml.Matrix3f
-import org.joml.Matrix4f
-import org.joml.Vector2f
 import org.lwjgl.opengl.GL30.*
 
-class SceneRenderer(val scene: Scene, val window: Window) {
+class SceneRenderer(val scene: Scene) {
 
     private var gBuffer: Framebuffer? = null
     lateinit var blinnShader: Shader
     lateinit var ambientShader: Shader
-    lateinit var skyboxShader: Shader
 
     fun setup() {
         Events.register(this)
@@ -27,7 +22,6 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         // Shaders
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
-        skyboxShader = ShaderCache.get("base/skybox.nks")
     }
 
     @Subscribe
@@ -57,7 +51,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         ambientShader.bind()
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
-        Primitives.fullscreenQuad.draw()
+        Primitives.fullscreenQuad.render()
         ambientShader.unbind()
 
         // Blinn-Phong step (point lights)
@@ -76,7 +70,7 @@ class SceneRenderer(val scene: Scene, val window: Window) {
                 blinnShader["light.linear"] = it.linear
                 blinnShader["light.quadratic"] = it.quadratic
 
-                Primitives.unitSphere.draw()
+                Primitives.unitSphere.render()
             }
         }
         blinnShader.unbind()
@@ -91,19 +85,22 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         OpenGL.enable(GL_DEPTH_TEST)
 
         // Forward rendering
+        scene.rootNode.scanTree { node ->
+            if (node is Renderable && node.bucket == RenderBucket.Forward) {
+                val shader = ShaderCache.get(node.material.shader)
 
-        Events.post(RenderForwardEvent())
+                shader.bind()
+                shader["modelMatrix"] = node.compositeTransform.matrix
+                bindTexture(node.material[MatKey.TextureDiffuse])
 
-        skyboxShader.bind()
-        scene.rootNode.scanTree {
-            if (it is Sky) {
-                skyboxShader["modelMatrix"] = it.compositeTransform.matrix
-                it.cubemap.bind()
-                Primitives.skybox.draw()
+                node.render()
+
+                shader.unbind()
+                OpenGL.resetState() // Clean up the crap that the shader may have left behind. Could probably be done more elegant.
             }
         }
-        skyboxShader.unbind()
-        OpenGL.resetState()
+
+        Events.post(RenderForwardEvent())
     }
 
     private fun bindGBuffer() {
@@ -122,13 +119,12 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         OpenGL.disable(GL_BLEND)
 
         scene.rootNode.scanTree { node ->
-            if (node is Geometry) {
+            if (node is Renderable && node.bucket == RenderBucket.Deferred) {
                 val shader = ShaderCache.get(node.material.shader)
 
                 OpenGL.setBoolean(GL_CULL_FACE, node.material[MatKey.TwoSided] == true)
 
-                val tex = node.material[MatKey.TextureDiffuse]
-                tex?.also { TextureCache.get(it.toString()).bind() }
+                bindTexture(node.material[MatKey.TextureDiffuse])
 
                 shader.bind()
                 shader["modelMatrix"] = node.compositeTransform.matrix
@@ -142,6 +138,14 @@ class SceneRenderer(val scene: Scene, val window: Window) {
         Events.post(RenderDeferredEvent())
 
         gBuffer!!.unbind()
+    }
+
+    private fun bindTexture(texture: Any?) {
+        when (texture) {
+            is Cubemap -> texture.bind()
+            is Texture -> texture.bind()
+            is String -> TextureCache.get(texture).bind()
+        }
     }
 
 }

@@ -126,7 +126,7 @@ class Primitive(private val vertices: FloatArray, private val type: Int, dimensi
         glBindVertexArray(0)
     }
 
-    fun draw() {
+    fun render() {
         glBindVertexArray(vao)
         glDrawArrays(type, 0, vertices.size)
         glBindVertexArray(0)

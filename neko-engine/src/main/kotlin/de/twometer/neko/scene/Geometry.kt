@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL30.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(private val mesh: Mesh, val material: Material = Material.Default, val name: String = "") : Node() {
+class Geometry(private val mesh: Mesh, material: Material = Material.Default, val name: String = "") : Renderable(material) {
 
     companion object {
         const val VertexIdx = 0
@@ -38,7 +38,7 @@ class Geometry(private val mesh: Mesh, val material: Material = Material.Default
         glBindVertexArray(0)
     }
 
-    fun render() {
+    override fun render() {
         glBindVertexArray(vao)
         if (indexBuffer != null) {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)
