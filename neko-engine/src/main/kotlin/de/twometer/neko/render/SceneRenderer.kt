@@ -13,8 +13,10 @@ import org.lwjgl.opengl.GL30.*
 class SceneRenderer(val scene: Scene) {
 
     private var gBuffer: Framebuffer? = null
+    private var renderbuffer: Framebuffer? = null
     lateinit var blinnShader: Shader
     lateinit var ambientShader: Shader
+    lateinit var gammaCorrectShader: Shader
 
     fun setup() {
         Events.register(this)
@@ -22,6 +24,7 @@ class SceneRenderer(val scene: Scene) {
         // Shaders
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
+        gammaCorrectShader = ShaderCache.get("base/postproc.gamma.nks")
     }
 
     @Subscribe
@@ -34,13 +37,20 @@ class SceneRenderer(val scene: Scene) {
             .addColorTexture(1, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Normals
             .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
             .verify()
+
+        renderbuffer?.destroy()
+        renderbuffer = Framebuffer(event.width, event.height)
+            .addDepthBuffer()
+            .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+            .verify()
     }
 
     fun renderFrame() {
         // Render scene to GBuffer
         renderGBuffer()
 
-        // Transfer to main buffer using deferred shading
+        // Transfer to render buffer using deferred shading
+        renderbuffer!!.bind()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         OpenGL.disable(GL_DEPTH_TEST)
         OpenGL.depthMask(false)
@@ -77,7 +87,7 @@ class SceneRenderer(val scene: Scene) {
 
         // Copy depth buffer from GBuffer to main FBO
         OpenGL.depthMask(true)
-        gBuffer!!.blit(GL_DEPTH_BUFFER_BIT)
+        gBuffer!!.blit(GL_DEPTH_BUFFER_BIT, renderbuffer)
 
         // Prepare GL state for forward rendering
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -101,6 +111,15 @@ class SceneRenderer(val scene: Scene) {
         }
 
         Events.post(RenderForwardEvent())
+        renderbuffer!!.unbind()
+
+        // Now, we can apply postproc to our nice renderbuffer
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        renderbuffer!!.getColorTexture().bind()
+
+        gammaCorrectShader.bind()
+        Primitives.fullscreenQuad.render()
+        gammaCorrectShader.unbind()
     }
 
     private fun bindGBuffer() {

@@ -38,7 +38,6 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         sky = Sky(CubemapCache.get("skybox"))
         scene.rootNode.attachChild(sky)
-        scene.ambientStrength = 0.5f
     }
 
     override fun onTimerTick() {
