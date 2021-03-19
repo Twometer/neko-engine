@@ -1,8 +1,7 @@
 package de.twometer.neko.res
 
-import de.twometer.neko.render.Cubemap
+import de.twometer.neko.render.TextureCube
 import mu.KotlinLogging
-import org.lwjgl.opengl.ARBFramebufferObject
 import org.lwjgl.opengl.ARBInternalformatQuery2.GL_TEXTURE_CUBE_MAP
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_TEXTURE_WRAP_R
@@ -36,7 +35,7 @@ object CubemapLoader {
         return images
     }
 
-    fun load(path: String, fileFmt: String = "png"): Cubemap {
+    fun load(path: String, fileFmt: String = "png"): TextureCube {
         logger.info { "Loading .$fileFmt cubemap from $path" }
 
         val textureId = glGenTextures()
@@ -65,7 +64,7 @@ object CubemapLoader {
         glGenerateMipmap(GL_TEXTURE_CUBE_MAP)
 
         images.forEach { it.destroy() }
-        return Cubemap(textureId)
+        return TextureCube(textureId)
     }
 
 }

@@ -1,6 +1,6 @@
 package de.twometer.neko.res
 
-import de.twometer.neko.render.Texture
+import de.twometer.neko.render.Texture2d
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL30.glGenerateMipmap
@@ -10,16 +10,16 @@ private val logger = KotlinLogging.logger {}
 
 object TextureLoader {
 
-    fun load(path: String): Texture {
+    fun load(path: String): Texture2d {
         val filename = AssetManager.resolve(path, AssetType.Textures).absolutePath
         logger.debug { "Loading texture $path" }
 
         val image = ImageLoader.load(filename)
-        val texture = loadPixels(image.pixels, image.width, image.height)
+        val texture = load(image.pixels, image.width, image.height)
         return texture.also { image.destroy() }
     }
 
-    fun loadPixels(pixels: ByteBuffer, width: Int, height: Int, mipmap: Boolean = true): Texture {
+    fun load(pixels: ByteBuffer, width: Int, height: Int, mipmap: Boolean = true): Texture2d {
         val textureId = glGenTextures()
         glBindTexture(GL_TEXTURE_2D, textureId)
 
@@ -34,7 +34,7 @@ object TextureLoader {
 
         glBindTexture(GL_TEXTURE_2D, 0)
 
-        return Texture(textureId, width, height)
+        return Texture2d(textureId, width, height)
     }
 
 }

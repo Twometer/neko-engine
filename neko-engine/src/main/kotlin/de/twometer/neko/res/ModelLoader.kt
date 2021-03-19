@@ -12,7 +12,7 @@ private val logger = KotlinLogging.logger {}
 
 object ModelLoader {
 
-    fun loadFromFile(path: String): Node {
+    fun load(path: String): Node {
         logger.info { "Loading model $path" }
 
         val modelFileName = File(path).name
@@ -71,7 +71,7 @@ object ModelLoader {
             "Loading mesh $name (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
         }
 
-        val mesh = Mesh(aiMesh.mNumVertices(), 3, name)
+        val mesh = Mesh(aiMesh.mNumVertices(), 3, ModelProperties(name))
             .addTexCoords()
             .addNormals()
             .addIndices(aiMesh.mNumFaces() * 3)

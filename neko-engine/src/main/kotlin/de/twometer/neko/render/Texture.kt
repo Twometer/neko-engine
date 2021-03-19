@@ -1,17 +1,16 @@
 package de.twometer.neko.render
 
-import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
-import org.lwjgl.opengl.GL11.glBindTexture
-import org.lwjgl.opengl.GL13.GL_TEXTURE0
-import org.lwjgl.opengl.GL13.glActiveTexture
+import org.lwjgl.opengl.GL13.*
 
-data class Texture(val textureId: Int, val width: Int, val height: Int) {
+abstract class Texture(val textureId: Int) {
+
+    abstract val textureTarget: Int
 
     fun bind(unit: Int = 0) {
         glActiveTexture(GL_TEXTURE0 + unit)
-        glBindTexture(GL_TEXTURE_2D, textureId)
+        glBindTexture(textureTarget, textureId)
     }
 
-    fun unbind() = glBindTexture(GL_TEXTURE_2D, 0)
+    fun unbind() = glBindTexture(textureTarget, 0)
 
 }

@@ -19,7 +19,7 @@ class SceneRenderer(val scene: Scene) {
             val buf = it.malloc(4)
             repeat(4) { buf.put(255.toByte()) }
             buf.flip()
-            return@lazy TextureLoader.loadPixels(buf, 1, 1, false)
+            return@lazy TextureLoader.load(buf, 1, 1, false)
         }
     }
 
@@ -107,7 +107,7 @@ class SceneRenderer(val scene: Scene) {
 
         // Forward rendering
         scene.rootNode.scanTree { node ->
-            if (node is Renderable && node.bucket == RenderBucket.Forward) {
+            if (node is RenderableNode && node.bucket == RenderBucket.Forward) {
                 val shader = ShaderCache.get(node.material.shader)
 
                 shader.bind()
@@ -149,7 +149,7 @@ class SceneRenderer(val scene: Scene) {
         OpenGL.disable(GL_BLEND)
 
         scene.rootNode.scanTree { node ->
-            if (node is Renderable && node.bucket == RenderBucket.Deferred) {
+            if (node is RenderableNode && node.bucket == RenderBucket.Deferred) {
                 val shader = ShaderCache.get(node.material.shader)
 
                 OpenGL.setBoolean(GL_CULL_FACE, node.material[MatKey.TwoSided] == true)
@@ -173,7 +173,6 @@ class SceneRenderer(val scene: Scene) {
 
     private fun bindTexture(texture: Any?) {
         when (texture) {
-            is Cubemap -> texture.bind()
             is Texture -> texture.bind()
             is String -> TextureCache.get(texture).bind()
             else -> whiteTexture.bind()

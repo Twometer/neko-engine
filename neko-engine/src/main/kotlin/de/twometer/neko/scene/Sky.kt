@@ -1,10 +1,10 @@
 package de.twometer.neko.scene
 
-import de.twometer.neko.render.Cubemap
+import de.twometer.neko.render.TextureCube
 import de.twometer.neko.render.Primitives
 
-class Sky(cubemap: Cubemap) :
-    Renderable(
+class Sky(cubemap: TextureCube) :
+    RenderableNode(
         Material("Skybox", hashMapOf(Pair(MatKey.TextureDiffuse, cubemap)), "base/skybox.nks"),
         RenderBucket.Forward
     ) {

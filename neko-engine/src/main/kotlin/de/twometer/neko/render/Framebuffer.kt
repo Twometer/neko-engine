@@ -8,9 +8,9 @@ class Framebuffer(val width: Int, val height: Int) {
     private val framebufferId: Int = glGenFramebuffers()
 
     private val colorAttachments = ArrayList<Int>()
-    private val colorTextures = ArrayList<Texture>()
+    private val colorTextures = ArrayList<Texture2d>()
 
-    var depthTexture: Texture? = null
+    var depthTexture: Texture2d? = null
         private set
 
     var depthBuffer: Int = 0
@@ -32,7 +32,7 @@ class Framebuffer(val width: Int, val height: Int) {
             error("Color attachment $attachmentNum defined twice on FBO #$framebufferId")
 
         val tex = glGenTextures()
-        colorTextures.add(Texture(tex, width, height))
+        colorTextures.add(Texture2d(tex, width, height))
         colorAttachments.add(attachment)
 
         bind()
@@ -50,7 +50,7 @@ class Framebuffer(val width: Int, val height: Int) {
 
     fun addDepthTexture(): Framebuffer {
         bind()
-        depthTexture = Texture(glGenTextures(), width, height)
+        depthTexture = Texture2d(glGenTextures(), width, height)
         glBindTexture(GL_TEXTURE_2D, depthTexture!!.textureId)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
