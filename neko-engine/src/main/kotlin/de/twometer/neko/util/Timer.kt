@@ -1,15 +1,18 @@
 package de.twometer.neko.util
 
+import org.lwjgl.glfw.GLFW.glfwGetTime
+
 class Timer(tps: Int) {
 
-    private val delay: Int = 1000 / tps
-    private var lastReset = System.currentTimeMillis()
+    private val delay: Double = 1.0 / tps
+    private var lastReset = glfwGetTime()
 
-    fun reset() =
-        System.currentTimeMillis().also { lastReset = it }
+    fun reset() {
+        lastReset = glfwGetTime()
+    }
 
-    fun elapsed(): Boolean = System.currentTimeMillis() - lastReset > delay
+    fun elapsed(): Boolean = glfwGetTime() - lastReset > delay
 
-    fun getPartial(): Double = 1.0 - ((lastReset + delay - System.currentTimeMillis()) / delay)
+    fun getPartial(): Double = 1.0 - ((lastReset + delay - glfwGetTime()) / delay)
 
 }

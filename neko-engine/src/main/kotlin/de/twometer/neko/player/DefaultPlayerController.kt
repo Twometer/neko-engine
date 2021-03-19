@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW
 
 class DefaultPlayerController : PlayerController {
 
-    var speed = 0.15f
+    var speed = 0.1f
     var sensitivity = 0.002f
 
     override fun updateCamera(window: Window, scene: Scene) {
