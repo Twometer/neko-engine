@@ -2,16 +2,14 @@
 
 #begin shared
     vec3 fragmentPosition;
-    vec3 fragmentColor;
     vec3 fragmentNormal;
     vec2 fragmentTexCoords;
 #end shared
 
 #begin vertex
     layout(location = 0) in vec3 vertexPosition;
-    layout(location = 1) in vec3 vertexColor;
-    layout(location = 2) in vec3 vertexNormal;
-    layout(location = 3) in vec2 vertexTexCoords;
+    layout(location = 1) in vec3 vertexNormal;
+    layout(location = 2) in vec2 vertexTexCoords;
 
     uniform mat4 viewMatrix;
     uniform mat4 projectionMatrix;
@@ -24,7 +22,6 @@
         mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
 
         fragmentPosition = worldSpacePos.xyz;
-        fragmentColor = vertexColor;
         fragmentNormal = normalize(normalMatrix * vertexNormal);
         fragmentTexCoords = vertexTexCoords;
     }
@@ -37,6 +34,7 @@
 
     uniform float specular;
     uniform float shininess;
+    uniform vec4 diffuseColor;
 
     uniform sampler2D textureSampler;
 
@@ -44,6 +42,8 @@
         vec4 textureColor = texture(textureSampler, fragmentTexCoords);
         if (textureColor.a <= 0.15)
             discard;
+
+        textureColor.rgb *= diffuseColor.rgb;
 
         gPosition = vec4(fragmentPosition, 1.0f);
         gNormal = vec4(fragmentNormal, specular);       // Encode as NormalSpecular

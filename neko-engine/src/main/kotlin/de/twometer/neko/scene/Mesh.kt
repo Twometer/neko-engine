@@ -8,7 +8,6 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
 
     val vertices: FloatBuffer = MemoryUtil.memAllocFloat(capacity * dimensions)
     var normals: FloatBuffer? = null
-    var colors: FloatBuffer? = null
     var texCoords: FloatBuffer? = null
     var indices: IntBuffer? = null
 
@@ -16,26 +15,16 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
         private set
     var numNormals = 0
         private set
-    var numColors = 0
-        private set
     var numTexCoords = 0
         private set
     var numIndices = 0
         private set
 
-    var dimColors = 0
-        private set
     var dimTexCoords = 0
         private set
 
     fun addNormals(): Mesh {
         normals = MemoryUtil.memAllocFloat(capacity * dimensions)
-        return this
-    }
-
-    fun addColors(dim: Int = 3): Mesh {
-        colors = MemoryUtil.memAllocFloat(capacity * dim)
-        dimColors = dim
         return this
     }
 
@@ -89,21 +78,6 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
         numTexCoords++
     }
 
-    fun putColor(r: Float, g: Float, b: Float) {
-        colors?.put(r)
-        colors?.put(g)
-        colors?.put(b)
-        numColors++
-    }
-
-    fun putColor(r: Float, g: Float, b: Float, a: Float) {
-        colors?.put(r)
-        colors?.put(g)
-        colors?.put(b)
-        colors?.put(a)
-        numColors++
-    }
-
     fun putIndices(vararg indices: Int) {
         this.indices?.put(indices)
         numIndices += indices.size
@@ -111,7 +85,6 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = ""
 
     fun destroy() {
         MemoryUtil.memFree(vertices)
-        colors?.apply(MemoryUtil::memFree)
         normals?.apply(MemoryUtil::memFree)
         texCoords?.apply(MemoryUtil::memFree)
         indices?.apply(MemoryUtil::memFree)

@@ -6,11 +6,22 @@ import de.twometer.neko.events.RenderForwardEvent
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
+import de.twometer.neko.res.TextureLoader
 import de.twometer.neko.scene.*
 import org.greenrobot.eventbus.Subscribe
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.system.MemoryStack
 
 class SceneRenderer(val scene: Scene) {
+
+    private val whiteTexture by lazy {
+        MemoryStack.stackPush().use {
+            val buf = it.malloc(4)
+            repeat(4) { buf.put(255.toByte()) }
+            buf.flip()
+            return@lazy TextureLoader.loadPixels(buf, 1, 1, false)
+        }
+    }
 
     private var gBuffer: Framebuffer? = null
     private var renderbuffer: Framebuffer? = null
@@ -149,6 +160,7 @@ class SceneRenderer(val scene: Scene) {
                 shader["modelMatrix"] = node.compositeTransform.matrix
                 shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
                 shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
+                shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
 
                 node.render()
             }
@@ -164,6 +176,7 @@ class SceneRenderer(val scene: Scene) {
             is Cubemap -> texture.bind()
             is Texture -> texture.bind()
             is String -> TextureCache.get(texture).bind()
+            else -> whiteTexture.bind()
         }
     }
 
