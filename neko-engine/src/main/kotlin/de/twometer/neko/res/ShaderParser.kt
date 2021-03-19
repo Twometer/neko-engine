@@ -72,14 +72,14 @@ object ShaderParser {
         return result
     }
 
-    private fun loadIncludes(basePath: String, nodes: List<Node>, depth: Int = 0): List<Node> {
+    private fun loadIncludes(nodes: List<Node>, depth: Int = 0): List<Node> {
         if (depth > 10)
             failure("Maximum include depth exceeded")
         val result = ArrayList<Node>()
         nodes.forEach {
             if (it is Directive && it.type == DirectiveType.Include) {
-                val file = File(basePath, it.arguments.first())
-                result.addAll(loadIncludes(basePath, parseShader(file), depth + 1))
+                val path = AssetManager.resolve(it.arguments.first().removeSurrounding("\""), AssetType.Shaders)
+                result.addAll(loadIncludes(parseShader(path), depth + 1))
             } else
                 result.add(it)
         }
@@ -88,7 +88,7 @@ object ShaderParser {
 
     fun loadShaderAst(path: String): ShaderAst {
         val shaderFile = AssetManager.resolve(path, AssetType.Shaders)
-        val nodes = loadIncludes(shaderFile.parent, parseShader(shaderFile))
+        val nodes = loadIncludes(parseShader(shaderFile))
 
         var version = DEFAULT_VERSION
         val sections = HashMap<String, ArrayList<Node>>()

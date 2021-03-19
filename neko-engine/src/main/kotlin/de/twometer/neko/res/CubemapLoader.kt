@@ -27,8 +27,9 @@ object CubemapLoader {
         val images = ArrayList<Image>()
 
         for (side in CubemapSide.values()) {
-            val imagePath = AssetManager.resolve("$path/${side.name.toLowerCase()}.$fileFmt", AssetType.Textures)
-            logger.debug { "Loading cubemap side $side from $imagePath" }
+            val relativePath = "$path/${side.name.toLowerCase()}.$fileFmt"
+            val imagePath = AssetManager.resolve(relativePath, AssetType.Textures)
+            logger.debug { "Loading cubemap side $side from $relativePath" }
             images.add(ImageLoader.load(imagePath.absolutePath))
         }
 

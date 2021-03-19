@@ -1,4 +1,4 @@
-#include postproc.base.nks
+#include "base/postproc.base.nks"
 
 #begin fragment
     out vec4 color;
