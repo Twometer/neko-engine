@@ -31,14 +31,16 @@ object ModelLoader {
 
         val aiScene = aiImportFile(file.absolutePath, flags) ?: failure()
 
-        val node = Node()
+        val animations = ArrayList<Animation>()
         val materials = ArrayList<Material>()
+        val node = Node(name = modelFileName, animations = animations)
 
         aiScene.mAnimations()?.also {
             val aiNumAnimations = aiScene.mNumAnimations()
             for (i in 0 until aiNumAnimations) {
                 val aiAnimation = AIAnimation.create(it[i])
-                logger.debug { "Loading animation ${aiAnimation.mName().dataString()}" }
+                val animation = createAnimation(aiAnimation)
+                animations.add(animation)
             }
         }
 
@@ -65,6 +67,26 @@ object ModelLoader {
         return node
     }
 
+    private fun createAnimation(aiAnimation: AIAnimation): Animation {
+        val animation = Animation(aiAnimation.mTicksPerSecond(), aiAnimation.mDuration())
+
+        logger.debug {
+            "Loading animation ${
+                aiAnimation.mName().dataString()
+            } (${aiAnimation.mNumChannels()} channels)"
+        }
+
+        aiAnimation.mChannels()?.also { aiChannels ->
+            val aiNumChannels = aiAnimation.mNumChannels()
+            for (i in 0 until aiNumChannels) {
+                val channel = AINodeAnim.create(aiChannels[i])
+                println(channel.mNodeName().dataString())
+            }
+        }
+
+        return animation
+    }
+
     private fun createMesh(aiMesh: AIMesh): Mesh {
         val name = aiMesh.mName().dataString()
         logger.debug {
@@ -72,9 +94,9 @@ object ModelLoader {
         }
 
         val mesh = Mesh(aiMesh.mNumVertices(), 3, ModelProperties(name))
+            .addIndices(aiMesh.mNumFaces() * 3)
             .addTexCoords()
             .addNormals()
-            .addIndices(aiMesh.mNumFaces() * 3)
 
         aiMesh.mVertices().forEach {
             mesh.putVertex(it.x(), it.y(), it.z())

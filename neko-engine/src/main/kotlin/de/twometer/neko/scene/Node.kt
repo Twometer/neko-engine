@@ -3,7 +3,9 @@ package de.twometer.neko.scene
 open class Node(
     val transform: Transform = Transform(),
     var parent: Node? = null,
-    val children: MutableList<Node> = ArrayList()
+    val children: MutableList<Node> = ArrayList(),
+    val animations: MutableList<Animation> = ArrayList(),
+    val name: String = ""
 ) {
 
     companion object {
