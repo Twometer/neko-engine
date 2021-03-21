@@ -4,7 +4,7 @@ import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Mesh(private val capacity: Int, val dimensions: Int, val properties: ModelProperties = ModelProperties()) {
+class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "Unnamed Mesh") {
 
     val vertices: FloatBuffer = MemoryUtil.memAllocFloat(capacity * dimensions)
     var normals: FloatBuffer? = null
@@ -22,6 +22,10 @@ class Mesh(private val capacity: Int, val dimensions: Int, val properties: Model
 
     var dimTexCoords = 0
         private set
+
+    fun addRig(): Mesh {
+        return this
+    }
 
     fun addNormals(): Mesh {
         normals = MemoryUtil.memAllocFloat(capacity * dimensions)
@@ -92,7 +96,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val properties: Model
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {
-        return Geometry(this, material, properties).also { destroy() }
+        return Geometry(this, material, name).also { destroy() }
     }
 
 }

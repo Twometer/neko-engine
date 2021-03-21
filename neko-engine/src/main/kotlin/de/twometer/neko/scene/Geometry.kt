@@ -4,7 +4,7 @@ import org.lwjgl.opengl.GL30.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(private val mesh: Mesh, material: Material = Material.Default, val properties: ModelProperties = ModelProperties()) : RenderableNode(material) {
+class Geometry(private val mesh: Mesh, material: Material = Material.Default, name: String = "") : RenderableNode(material, name = name) {
 
     companion object {
         const val VertexIdx = 0

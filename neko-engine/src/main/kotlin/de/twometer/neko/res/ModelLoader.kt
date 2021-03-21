@@ -2,6 +2,8 @@ package de.twometer.neko.res
 
 import de.twometer.neko.scene.*
 import mu.KotlinLogging
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import org.lwjgl.PointerBuffer
 import org.lwjgl.assimp.*
 import org.lwjgl.assimp.Assimp.*
@@ -79,8 +81,31 @@ object ModelLoader {
         aiAnimation.mChannels()?.also { aiChannels ->
             val aiNumChannels = aiAnimation.mNumChannels()
             for (i in 0 until aiNumChannels) {
-                val channel = AINodeAnim.create(aiChannels[i])
-                println(channel.mNodeName().dataString())
+                val aiChannel = AINodeAnim.create(aiChannels[i])
+                val channel = AnimationChannel(aiChannel.mNodeName().dataString())
+
+                aiChannel.mPositionKeys()?.also {
+                    while (it.hasRemaining()) {
+                        val key = it.get()
+                        channel.positionKeyframes.add(PositionKeyframe(key.mTime(), key.mValue().toVector3f()))
+                    }
+                }
+
+                aiChannel.mRotationKeys()?.also {
+                    while (it.hasRemaining()) {
+                        val key = it.get()
+                        channel.rotationKeyframes.add(RotationKeyframe(key.mTime(), key.mValue().toQuaternionf()))
+                    }
+                }
+
+                aiChannel.mScalingKeys()?.also {
+                    while (it.hasRemaining()) {
+                        val key = it.get()
+                        channel.scaleKeyframes.add(ScaleKeyframe(key.mTime(), key.mValue().toVector3f()))
+                    }
+                }
+
+                animation.channels[channel.name] = channel
             }
         }
 
@@ -93,7 +118,7 @@ object ModelLoader {
             "Loading mesh $name (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
         }
 
-        val mesh = Mesh(aiMesh.mNumVertices(), 3, ModelProperties(name))
+        val mesh = Mesh(aiMesh.mNumVertices(), 3, name)
             .addIndices(aiMesh.mNumFaces() * 3)
             .addTexCoords()
             .addNormals()
@@ -112,9 +137,11 @@ object ModelLoader {
 
         val aiBones = aiMesh.mBones()
         aiBones?.apply {
-            // TODO Parse bones
-            while (aiBones.hasRemaining())
-                AIBone.create(aiBones.get())
+            mesh.addRig()
+
+            while (aiBones.hasRemaining()) {
+                val bone = AIBone.create(aiBones.get())
+            }
         }
 
         val aiFaces = aiMesh.mFaces()
@@ -193,5 +220,9 @@ object ModelLoader {
         val floatBuffer = property.mData().asFloatBuffer()
         return floatBuffer.get()
     }
+
+    private fun AIVector3D.toVector3f(): Vector3f = Vector3f(x(), y(), z())
+
+    private fun AIQuaternion.toQuaternionf(): Quaternionf = Quaternionf(x(), y(), z(), w())
 
 }

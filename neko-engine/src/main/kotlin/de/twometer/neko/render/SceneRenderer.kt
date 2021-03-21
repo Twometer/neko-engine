@@ -63,10 +63,12 @@ class SceneRenderer(val scene: Scene) {
         // Transfer to render buffer using deferred shading
         renderbuffer!!.bind()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        OpenGL.disable(GL_DEPTH_TEST)
-        OpenGL.depthMask(false)
 
         bindGBuffer()
+        gBuffer!!.blit(GL_DEPTH_BUFFER_BIT, renderbuffer)
+        OpenGL.disable(GL_DEPTH_TEST)
+        OpenGL.disable(GL_BLEND)
+        OpenGL.depthMask(false)
 
         // Ambient lighting step
         ambientShader.bind()
@@ -76,10 +78,12 @@ class SceneRenderer(val scene: Scene) {
         ambientShader.unbind()
 
         // Blinn-Phong step (point lights)
+        OpenGL.enable(GL_DEPTH_TEST)
         OpenGL.enable(GL_BLEND)
+        glBlendFunc(GL_ONE, GL_ONE)
+        OpenGL.depthFunc(GL_GREATER)
         OpenGL.enable(GL_CULL_FACE)
         OpenGL.cullFace(GL_FRONT)
-        glBlendFunc(GL_ONE, GL_ONE)
 
         blinnShader.bind()
         scene.rootNode.scanTree {
@@ -95,15 +99,12 @@ class SceneRenderer(val scene: Scene) {
             }
         }
         blinnShader.unbind()
-
-        // Copy depth buffer from GBuffer to main FBO
         OpenGL.depthMask(true)
-        gBuffer!!.blit(GL_DEPTH_BUFFER_BIT, renderbuffer)
+        OpenGL.depthFunc(GL_LESS)
 
         // Prepare GL state for forward rendering
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         OpenGL.cullFace(GL_BACK)
-        OpenGL.enable(GL_DEPTH_TEST)
 
         // Forward rendering
         scene.rootNode.scanTree { node ->
@@ -180,3 +181,4 @@ class SceneRenderer(val scene: Scene) {
     }
 
 }
+
