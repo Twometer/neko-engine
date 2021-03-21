@@ -1,15 +1,8 @@
 #include "base/geometry.base.nks"
 
 #begin vertex
-    layout(location = 0) in vec3 vertexPosition;
-    layout(location = 1) in vec3 vertexNormal;
-    layout(location = 2) in vec2 vertexTexCoords;
     layout(location = 3) in ivec4 boneIds;
     layout(location = 4) in vec4 boneWeights;
-
-    uniform mat4 viewMatrix;
-    uniform mat4 projectionMatrix;
-    uniform mat4 modelMatrix;
 
     const int MAX_BONES = 128;
     const int MAX_BONE_INFLUENCE = 4;
