@@ -10,6 +10,9 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     var normals: FloatBuffer? = null
     var texCoords: FloatBuffer? = null
     var indices: IntBuffer? = null
+    var boneIds: IntBuffer? = null
+    var boneWeights: FloatBuffer? = null
+    var skeletonRoot: SkeletonNode? = null
 
     var numVertices = 0
         private set
@@ -24,6 +27,15 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
         private set
 
     fun addRig(): Mesh {
+        boneIds = MemoryUtil.memAllocInt(capacity * 4)
+        boneWeights = MemoryUtil.memAllocFloat(capacity * 4)
+
+        // Fill rig with default values
+        for (i in 0 until capacity * 4) {
+            boneIds!!.put(-1)
+            boneWeights!!.put(0.0f)
+        }
+
         return this
     }
 
@@ -77,7 +89,6 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
 
     fun putTexCoord(x: Float, y: Float, z: Float) {
         texCoords?.put(x)
-
         texCoords?.put(y)
         texCoords?.put(z)
         numTexCoords++
@@ -88,15 +99,25 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
         numIndices += indices.size
     }
 
+    fun putBoneVertexData(bone: Bone) {
+        bone.weights.forEachIndexed { i, it ->
+            val offset = dimensions * it.vertexId + i
+            boneIds?.put(offset, it.vertexId)
+            boneWeights?.put(offset, it.weight)
+        }
+    }
+
     fun destroy() {
         MemoryUtil.memFree(vertices)
         normals?.apply(MemoryUtil::memFree)
         texCoords?.apply(MemoryUtil::memFree)
         indices?.apply(MemoryUtil::memFree)
+        boneIds?.apply(MemoryUtil::memFree)
+        boneWeights?.apply(MemoryUtil::memFree)
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {
-        return Geometry(this, material, name).also { destroy() }
+        return Geometry(this, material, name, skeletonRoot).also { destroy() }
     }
 
 }

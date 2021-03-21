@@ -4,12 +4,15 @@ import org.lwjgl.opengl.GL30.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(private val mesh: Mesh, material: Material = Material.Default, name: String = "") : RenderableNode(material, name = name) {
+class Geometry(private val mesh: Mesh, material: Material = Material.Default, name: String = "", val skeletonRoot: SkeletonNode? = null) :
+    RenderableNode(material, name = name) {
 
     companion object {
         const val VertexIdx = 0
         const val NormalIdx = 1
         const val TexCoordIdx = 2
+        const val BoneIdIdx = 3
+        const val BoneWeightIdx = 4
     }
 
     private val vao: Int
@@ -17,6 +20,8 @@ class Geometry(private val mesh: Mesh, material: Material = Material.Default, na
     private val normalBuffer: Int?
     private val texCoordBuffer: Int?
     private val indexBuffer: Int?
+    private val boneIdBuffer: Int?
+    private val boneWeightBuffer: Int?
 
     init {
         mesh.vertices.flip()
@@ -27,10 +32,13 @@ class Geometry(private val mesh: Mesh, material: Material = Material.Default, na
         vao = glGenVertexArrays()
         glBindVertexArray(vao)
 
-        vertexBuffer = createArrayBuffer(VertexIdx, mesh.dimensions, mesh.vertices)
-        normalBuffer = mesh.normals?.let { createArrayBuffer(NormalIdx, mesh.dimensions, it) }
-        texCoordBuffer = mesh.texCoords?.let { createArrayBuffer(TexCoordIdx, mesh.dimTexCoords, it) }
+        vertexBuffer = createFloatArrayBuffer(VertexIdx, mesh.dimensions, mesh.vertices)
+        normalBuffer = mesh.normals?.let { createFloatArrayBuffer(NormalIdx, mesh.dimensions, it) }
+        texCoordBuffer = mesh.texCoords?.let { createFloatArrayBuffer(TexCoordIdx, mesh.dimTexCoords, it) }
         indexBuffer = mesh.indices?.let { createIndexBuffer(it) }
+        boneIdBuffer = mesh.boneIds?.let { createIntArrayBuffer(BoneIdIdx, 4, it) }
+        boneWeightBuffer = mesh.boneWeights?.let { createFloatArrayBuffer(BoneWeightIdx, 4, it) }
+
         glBindVertexArray(0)
     }
 
@@ -62,11 +70,20 @@ class Geometry(private val mesh: Mesh, material: Material = Material.Default, na
         return elementBuffer
     }
 
-    private fun createArrayBuffer(index: Int, dimensions: Int, data: FloatBuffer): Int {
+    private fun createFloatArrayBuffer(index: Int, dimensions: Int, data: FloatBuffer): Int {
         val vbo = glGenBuffers()
         glBindBuffer(GL_ARRAY_BUFFER, vbo)
         glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW)
         glVertexAttribPointer(index, dimensions, GL_FLOAT, false, 0, 0)
+        glEnableVertexAttribArray(index)
+        return vbo
+    }
+
+    private fun createIntArrayBuffer(index: Int, dimensions: Int, data: IntBuffer): Int {
+        val vbo = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, vbo)
+        glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW)
+        glVertexAttribIPointer(index, dimensions, GL_INT, 0, 0)
         glEnableVertexAttribArray(index)
         return vbo
     }

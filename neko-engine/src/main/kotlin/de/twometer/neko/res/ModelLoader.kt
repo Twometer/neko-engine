@@ -2,6 +2,7 @@ package de.twometer.neko.res
 
 import de.twometer.neko.scene.*
 import mu.KotlinLogging
+import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.lwjgl.PointerBuffer
@@ -60,13 +61,21 @@ object ModelLoader {
             for (i in 0 until aiNumMeshes) {
                 val aiMesh = AIMesh.create(it[i])
                 val material = materials[aiMesh.mMaterialIndex()]
-                val geometry = createMesh(aiMesh).toGeometry(material)
+                val geometry = createMesh(aiMesh, aiScene.mRootNode()).toGeometry(material)
 
                 node.attachChild(geometry)
             }
         }
 
         return node
+    }
+
+    private fun createBone(aiBone: AIBone, index: Int): Bone {
+        val bone = Bone(aiBone.mName().dataString(), index, aiBone.mOffsetMatrix().toMatrix4f())
+        aiBone.mWeights().forEach {
+            bone.weights.add(BoneWeight(it.mVertexId(), it.mWeight()))
+        }
+        return bone
     }
 
     private fun createAnimation(aiAnimation: AIAnimation): Animation {
@@ -112,7 +121,21 @@ object ModelLoader {
         return animation
     }
 
-    private fun createMesh(aiMesh: AIMesh): Mesh {
+    private fun createBoneHierarchy(bones: Map<String, Bone>, baseNode: AINode): SkeletonNode {
+        val bone = bones[baseNode.mName().dataString()]
+
+        val skeletonNode = SkeletonNode(bone)
+        baseNode.mChildren()?.apply {
+            while (this.hasRemaining()) {
+                val aiNode = AINode.create(this.get())
+                val node = createBoneHierarchy(bones, aiNode)
+                skeletonNode.children.add(node)
+            }
+        }
+        return skeletonNode
+    }
+
+    private fun createMesh(aiMesh: AIMesh, rootNode: AINode?): Mesh {
         val name = aiMesh.mName().dataString()
         logger.debug {
             "Loading mesh $name (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
@@ -139,9 +162,15 @@ object ModelLoader {
         aiBones?.apply {
             mesh.addRig()
 
+            val bones = HashMap<String, Bone>()
             while (aiBones.hasRemaining()) {
-                val bone = AIBone.create(aiBones.get())
+                val aiBone = AIBone.create(aiBones.get())
+                val bone = createBone(aiBone, bones.size)
+                mesh.putBoneVertexData(bone)
+                bones[bone.name] = bone
             }
+
+            mesh.skeletonRoot = createBoneHierarchy(bones, rootNode!!)
         }
 
         val aiFaces = aiMesh.mFaces()
@@ -224,5 +253,14 @@ object ModelLoader {
     private fun AIVector3D.toVector3f(): Vector3f = Vector3f(x(), y(), z())
 
     private fun AIQuaternion.toQuaternionf(): Quaternionf = Quaternionf(x(), y(), z(), w())
+
+    private fun AIMatrix4x4.toMatrix4f(): Matrix4f {
+        return Matrix4f(
+            this.a1(), this.b1(), this.c1(), this.d1(),
+            this.a2(), this.b2(), this.c2(), this.d2(),
+            this.a3(), this.b3(), this.c3(), this.d3(),
+            this.a4(), this.b4(), this.c4(), this.d4()
+        )
+    }
 
 }
