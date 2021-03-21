@@ -19,7 +19,7 @@ object MatKey {
     const val TwoSided = "_TwoSided"
 }
 
-data class Material(val name: String, private val props: HashMap<String, Any> = HashMap(), var shader: String = "base/geometry.nks") {
+data class Material(val name: String, private val props: HashMap<String, Any> = HashMap(), var shader: String = "base/geometry.static.nks") {
 
     companion object {
         val Default: Material

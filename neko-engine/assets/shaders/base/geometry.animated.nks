@@ -1,0 +1,40 @@
+#include "base/geometry.base.nks"
+
+#begin vertex
+    layout(location = 0) in vec3 vertexPosition;
+    layout(location = 1) in vec3 vertexNormal;
+    layout(location = 2) in vec2 vertexTexCoords;
+    layout(location = 3) in ivec4 boneIds;
+    layout(location = 4) in vec4 boneWeights;
+
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
+    uniform mat4 modelMatrix;
+
+    const int MAX_BONES = 128;
+    const int MAX_BONE_INFLUENCE = 4;
+    uniform mat4 boneMatrices[MAX_BONES];
+
+    void main() {
+        vec4 animatedPosition = vec4(0.0f)
+        for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+            int boneId = boneIds[i]
+
+            if (boneId == -1 || boneId >= MAX_BONES)
+                continue;
+
+            vec4 localPosition = boneMatrices[boneId] * vec4(vertexPosition, 1.0)
+            animatedPosition += localPosition * boneWeights[i];
+        }
+
+        vec4 worldSpacePos = modelMatrix * animatedPosition;
+        gl_Position = projectionMatrix * viewMatrix * worldSpacePos;
+
+        mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
+
+        fragmentPosition = worldSpacePos.xyz;
+        fragmentNormal = normalize(normalMatrix * vertexNormal);
+        fragmentTexCoords = vertexTexCoords;
+    }
+#end vertex
+
