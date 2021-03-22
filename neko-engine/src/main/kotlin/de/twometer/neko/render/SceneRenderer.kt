@@ -30,9 +30,9 @@ class SceneRenderer(val scene: Scene) {
     private var gBuffer: Framebuffer? = null
     private var renderbuffer: Framebuffer? = null
     private var lastTime: Double = 0.0
-    lateinit var blinnShader: Shader
-    lateinit var ambientShader: Shader
-    lateinit var gammaCorrectShader: Shader
+    private lateinit var blinnShader: Shader
+    private lateinit var ambientShader: Shader
+    private lateinit var gammaCorrectShader: Shader
 
     fun setup() {
         Events.register(this)

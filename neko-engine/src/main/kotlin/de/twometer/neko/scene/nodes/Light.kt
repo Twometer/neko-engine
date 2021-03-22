@@ -3,7 +3,6 @@ package de.twometer.neko.scene.nodes
 import de.twometer.neko.render.Primitive
 import de.twometer.neko.render.Primitives
 import de.twometer.neko.scene.Color
-import de.twometer.neko.scene.nodes.Node
 import de.twometer.neko.util.MathF
 
 abstract class Light : Node() {

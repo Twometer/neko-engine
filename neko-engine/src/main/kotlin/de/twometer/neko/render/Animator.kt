@@ -26,7 +26,7 @@ class Animator(private val skeletonNode: SkeletonNode) {
 
         val animation = this.animation!!
 
-        // Increase animation timestep
+        // Increase animation time step
         time += animation.ticksPerSecond * deltaTime
         time %= animation.duration
 

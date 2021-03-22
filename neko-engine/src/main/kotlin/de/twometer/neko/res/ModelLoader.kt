@@ -3,7 +3,6 @@ package de.twometer.neko.res
 import de.twometer.neko.render.Animator
 import de.twometer.neko.scene.*
 import de.twometer.neko.scene.nodes.ModelNode
-import de.twometer.neko.scene.nodes.Node
 import mu.KotlinLogging
 import org.joml.Matrix4f
 import org.joml.Quaternionf

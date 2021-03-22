@@ -55,16 +55,16 @@ data class SkeletonNode(
 )
 
 /**
- * A PositionKeyframe represents the position of a single bone at an exact point in tíme
+ * A PositionKeyframe represents the position of a single bone at an exact point in time
  */
 class PositionKeyframe(time: Double, val position: Vector3f) : Keyframe(time)
 
 /**
- * A RotationKeyframe represents the rotation of a single bone at an exact point in tíme
+ * A RotationKeyframe represents the rotation of a single bone at an exact point in time
  */
 class RotationKeyframe(time: Double, val rotation: Quaternionf) : Keyframe(time)
 
 /**
- * A ScaleKeyframe represents the scale of a single bone at an exact point in tíme
+ * A ScaleKeyframe represents the scale of a single bone at an exact point in time
  */
 class ScaleKeyframe(time: Double, val scale: Vector3f) : Keyframe(time)

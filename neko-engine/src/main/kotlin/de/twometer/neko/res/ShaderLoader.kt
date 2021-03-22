@@ -40,12 +40,18 @@ object ShaderLoader {
 
         shader.bind()
         ast.directives.forEach {
-            if (it.type == ShaderParser.DirectiveType.Bind) {
-                shader[it.arguments[0]] = it.arguments[1].toInt()
-            } else if (it.type == ShaderParser.DirectiveType.Inject) {
-                shader.injects.add(ShaderInject.valueOf(it.arguments.first()))
-            } else if (it.type == ShaderParser.DirectiveType.Set) {
-                shader.properties[ShaderProperty.valueOf(it.arguments[0])] = it.arguments[1]
+            when (it.type) {
+                ShaderParser.DirectiveType.Bind -> {
+                    shader[it.arguments[0]] = it.arguments[1].toInt()
+                }
+                ShaderParser.DirectiveType.Inject -> {
+                    shader.injects.add(ShaderInject.valueOf(it.arguments.first()))
+                }
+                ShaderParser.DirectiveType.Set -> {
+                    shader.properties[ShaderProperty.valueOf(it.arguments[0])] = it.arguments[1]
+                }
+                else -> {
+                }
             }
         }
         shader.unbind()

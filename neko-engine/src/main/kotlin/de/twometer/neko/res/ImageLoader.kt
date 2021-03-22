@@ -22,7 +22,7 @@ object ImageLoader {
             val channelsBuf = it.mallocInt(1)
 
             pixels = STBImage.stbi_load(path, widthBuf, heightBuf, channelsBuf, 4)
-                ?: error("STBI failed to load image from $path")
+                ?: error("STB failed to load image from $path")
 
             width = widthBuf.get()
             height = heightBuf.get()
