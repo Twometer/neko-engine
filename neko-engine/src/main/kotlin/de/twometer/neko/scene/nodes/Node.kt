@@ -1,10 +1,11 @@
-package de.twometer.neko.scene
+package de.twometer.neko.scene.nodes
+
+import de.twometer.neko.scene.Transform
 
 open class Node(
     val transform: Transform = Transform(),
     var parent: Node? = null,
     val children: MutableList<Node> = ArrayList(),
-    val animations: MutableList<Animation> = ArrayList(),
     val name: String = ""
 ) {
 

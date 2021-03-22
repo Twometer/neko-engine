@@ -8,7 +8,11 @@ import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
 import de.twometer.neko.res.TextureLoader
 import de.twometer.neko.scene.*
+import de.twometer.neko.scene.nodes.Geometry
+import de.twometer.neko.scene.nodes.PointLight
+import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
+import org.lwjgl.glfw.GLFW.glfwGetTime
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryStack
 
@@ -25,6 +29,7 @@ class SceneRenderer(val scene: Scene) {
 
     private var gBuffer: Framebuffer? = null
     private var renderbuffer: Framebuffer? = null
+    private var lastTime: Double = 0.0
     lateinit var blinnShader: Shader
     lateinit var ambientShader: Shader
     lateinit var gammaCorrectShader: Shader
@@ -95,7 +100,7 @@ class SceneRenderer(val scene: Scene) {
                 blinnShader["light.linear"] = it.linear
                 blinnShader["light.quadratic"] = it.quadratic
 
-                Primitives.unitSphere.render()
+                it.getPrimitive().render()
             }
         }
         blinnShader.unbind()
@@ -141,6 +146,10 @@ class SceneRenderer(val scene: Scene) {
     }
 
     private fun renderGBuffer() {
+        val now = glfwGetTime()
+        val deltaTime = now - lastTime
+        lastTime = now
+
         gBuffer!!.bind()
         glClearColor(0f, 0f, 0f, 0f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
@@ -162,6 +171,11 @@ class SceneRenderer(val scene: Scene) {
                 shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
                 shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
                 shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
+
+                if (node is Geometry && node.animator != null) {
+                    node.animator?.update(deltaTime)
+                    node.animator?.loadMatrices(shader)
+                }
 
                 node.render()
             }

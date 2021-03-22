@@ -1,10 +1,11 @@
 package de.twometer.neko.scene
 
+import de.twometer.neko.scene.nodes.Geometry
 import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "Unnamed Mesh") {
+class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "Unnamed mesh") {
 
     val vertices: FloatBuffer = MemoryUtil.memAllocFloat(capacity * dimensions)
     var normals: FloatBuffer? = null
@@ -102,10 +103,14 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     }
 
     fun putBoneVertexData(bone: Bone) {
-        bone.weights.forEachIndexed { i, it ->
-            val offset = dimensions * it.vertexId + i
-            boneIds?.put(offset, it.vertexId)
-            boneWeights?.put(offset, it.weight)
+        bone.weights.forEach {
+            val baseOffset = 4 * it.vertexId
+            for (i in 0 until 4) {
+                if (boneIds?.get(baseOffset + i)!! < 0) {
+                    boneIds?.put(baseOffset + i, it.vertexId)
+                    boneWeights?.put(baseOffset + i, it.weight)
+                }
+            }
         }
     }
 

@@ -30,6 +30,7 @@ data class Bone(
     val name: String,
     val index: Int,
     val offsetMatrix: Matrix4f,
+    val localTransform: Matrix4f = Matrix4f(),
     val weights: MutableList<BoneWeight> = ArrayList()
 )
 

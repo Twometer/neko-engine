@@ -20,7 +20,7 @@
             animatedPosition += localPosition * boneWeights[i];
         }
 
-        vec4 worldSpacePos = modelMatrix * vec4(vertexPosition);
+        vec4 worldSpacePos = modelMatrix * animatedPosition;
         gl_Position = projectionMatrix * viewMatrix * worldSpacePos;
 
         mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));

@@ -4,8 +4,9 @@ import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.CubemapCache
 import de.twometer.neko.res.ModelLoader
 import de.twometer.neko.scene.Color
-import de.twometer.neko.scene.PointLight
-import de.twometer.neko.scene.Sky
+import de.twometer.neko.scene.nodes.ModelNode
+import de.twometer.neko.scene.nodes.PointLight
+import de.twometer.neko.scene.nodes.Sky
 import de.twometer.neko.util.MathF.toRadians
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
@@ -34,6 +35,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             it.transform.translation.set(5f, 0f, 0f)
             it.transform.rotation.rotateY(toRadians(15f))
             it.transform.scale.set(0.01, 0.01, 0.01)
+            it.playAnimation(it.animations[0])
         })
 
         scene.rootNode.attachChild(PointLight().also { it.color = Color(1f, 1f, 1f, 1f) })

@@ -1,10 +1,20 @@
-package de.twometer.neko.scene
+package de.twometer.neko.scene.nodes
 
+import de.twometer.neko.render.Animator
+import de.twometer.neko.scene.Material
+import de.twometer.neko.scene.Mesh
+import de.twometer.neko.scene.SkeletonNode
 import org.lwjgl.opengl.GL30.*
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(private val mesh: Mesh, material: Material = Material.Default, name: String = "", val skeletonRoot: SkeletonNode? = null) :
+class Geometry(
+    private val mesh: Mesh,
+    material: Material = Material.Default,
+    name: String = "",
+    val skeletonRoot: SkeletonNode? = null,
+    var animator: Animator? = null
+) :
     RenderableNode(material, name = name) {
 
     companion object {
@@ -62,6 +72,16 @@ class Geometry(private val mesh: Mesh, material: Material = Material.Default, na
         texCoordBuffer?.also { glDeleteBuffers(it) }
         indexBuffer?.also { glDeleteBuffers(it) }
         glDeleteVertexArrays(vao)
+    }
+
+    fun findModelNode(): ModelNode {
+        var node: Node? = this
+        while (node != null) {
+            if (node is ModelNode)
+                return node
+            node = node.parent
+        }
+        error("Geometry $name did not have a parent ModelNode")
     }
 
     private fun createIndexBuffer(data: IntBuffer): Int {

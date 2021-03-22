@@ -1,6 +1,9 @@
 package de.twometer.neko.res
 
+import de.twometer.neko.render.Animator
 import de.twometer.neko.scene.*
+import de.twometer.neko.scene.nodes.ModelNode
+import de.twometer.neko.scene.nodes.Node
 import mu.KotlinLogging
 import org.joml.Matrix4f
 import org.joml.Quaternionf
@@ -15,7 +18,7 @@ private val logger = KotlinLogging.logger {}
 
 object ModelLoader {
 
-    fun load(path: String): Node {
+    fun load(path: String): ModelNode {
         logger.info { "Loading model $path" }
 
         val modelFileName = File(path).name
@@ -36,7 +39,7 @@ object ModelLoader {
 
         val animations = ArrayList<Animation>()
         val materials = ArrayList<Material>()
-        val node = Node(name = modelFileName, animations = animations)
+        val node = ModelNode(name = modelFileName, animations = animations)
 
         aiScene.mAnimations()?.also {
             val aiNumAnimations = aiScene.mNumAnimations()
@@ -62,9 +65,12 @@ object ModelLoader {
                 val aiMesh = AIMesh.create(it[i])
                 val material = materials[aiMesh.mMaterialIndex()]
                 val mesh = createMesh(aiMesh, aiScene.mRootNode())
-                if (mesh.hasRig())
-                    material.shader = "base/geometry.animated.nks"
                 val geometry = mesh.toGeometry(material)
+
+                if (mesh.hasRig() && node.animations.isNotEmpty()) {
+                    material.shader = "base/geometry.animated.nks"
+                    geometry.animator = Animator(geometry.skeletonRoot!!)
+                }
 
                 node.attachChild(geometry)
             }
