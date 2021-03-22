@@ -109,6 +109,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
                 if (boneIds?.get(baseOffset + i)!! < 0) {
                     boneIds?.put(baseOffset + i, bone.index)
                     boneWeights?.put(baseOffset + i, it.weight)
+                    break
                 }
             }
         }

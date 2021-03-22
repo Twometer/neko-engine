@@ -14,7 +14,7 @@
         for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
             int boneId = boneIds[i];
 
-            if (boneId == -1)
+            if (boneId == -1 || boneId >= MAX_BONES)
                 continue;
 
             mat4 boneMatrix = boneMatrices[boneId];
