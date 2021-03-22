@@ -10,14 +10,20 @@
 
     void main() {
         vec4 animatedPosition = vec4(0.0f);
+        vec4 animatedNormal = vec4(0.0f);
         for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
             int boneId = boneIds[i];
 
-            if (boneId == -1 || boneId >= MAX_BONES)
+            if (boneId == -1)
                 continue;
 
-            vec4 localPosition = boneMatrices[boneId] * vec4(vertexPosition, 1.0);
+            mat4 boneMatrix = boneMatrices[boneId];
+
+            vec4 localPosition = boneMatrix * vec4(vertexPosition, 1.0);
             animatedPosition += localPosition * boneWeights[i];
+
+            vec4 localNormal = boneMatrix * vec4(vertexNormal, 1.0);
+            animatedNormal += localNormal * boneWeights[i];
         }
 
         vec4 worldSpacePos = modelMatrix * animatedPosition;
@@ -26,7 +32,7 @@
         mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
 
         fragmentPosition = worldSpacePos.xyz;
-        fragmentNormal = normalize(normalMatrix * vertexNormal);
+        fragmentNormal = normalize(normalMatrix * animatedNormal.xyz);
         fragmentTexCoords = vertexTexCoords;
     }
 #end vertex

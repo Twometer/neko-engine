@@ -86,7 +86,7 @@ object ShaderLoader {
 
             logger.error { "Shader compilation failed" }
             logLines.forEach {
-                if (it.isNotBlank())
+                if (it.isNotBlank() && it.contains("error"))
                     logger.error { reformatLogLine(it, src) }
             }
 

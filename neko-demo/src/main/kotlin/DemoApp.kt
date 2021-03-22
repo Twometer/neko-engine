@@ -4,7 +4,6 @@ import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.CubemapCache
 import de.twometer.neko.res.ModelLoader
 import de.twometer.neko.scene.Color
-import de.twometer.neko.scene.nodes.ModelNode
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.Sky
 import de.twometer.neko.util.MathF.toRadians
@@ -27,6 +26,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         scene.rootNode.attachChild(ModelLoader.load("animegirl.fbx").also {
             it.transform.rotation.rotateX(toRadians(-90f))
             it.transform.translation.set(2f, 0f, 0f)
+            it.playAnimation(it.animations[0])
         })
 
         scene.rootNode.attachChild(ModelLoader.load("test.fbx"))

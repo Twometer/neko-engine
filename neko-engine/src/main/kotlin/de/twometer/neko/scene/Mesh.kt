@@ -32,7 +32,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
         boneWeights = MemoryUtil.memAllocFloat(capacity * 4)
 
         // Fill rig with default values
-        for (i in 0 until capacity * 4) {
+        for (i in 0 until capacity * MAX_BONE_INFLUENCE) {
             boneIds!!.put(-1)
             boneWeights!!.put(0.0f)
         }
@@ -104,10 +104,10 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
 
     fun putBoneVertexData(bone: Bone) {
         bone.weights.forEach {
-            val baseOffset = 4 * it.vertexId
-            for (i in 0 until 4) {
+            val baseOffset = it.vertexId * MAX_BONE_INFLUENCE
+            for (i in 0 until MAX_BONE_INFLUENCE) {
                 if (boneIds?.get(baseOffset + i)!! < 0) {
-                    boneIds?.put(baseOffset + i, it.vertexId)
+                    boneIds?.put(baseOffset + i, bone.index)
                     boneWeights?.put(baseOffset + i, it.weight)
                 }
             }
@@ -125,6 +125,10 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
 
     fun toGeometry(material: Material = Material.Default): Geometry {
         return Geometry(this, material, name, skeletonRoot).also { destroy() }
+    }
+
+    companion object {
+        const val MAX_BONE_INFLUENCE = 4
     }
 
 }
