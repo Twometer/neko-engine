@@ -24,8 +24,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         })
 
         scene.rootNode.attachChild(ModelLoader.load("animegirl.fbx").also {
-            it.transform.rotation.rotateX(toRadians(-90f))
             it.transform.translation.set(2f, 0f, 0f)
+            it.transform.scale.set(0.01, 0.01, 0.01)
             it.playAnimation(it.animations[0])
         })
 

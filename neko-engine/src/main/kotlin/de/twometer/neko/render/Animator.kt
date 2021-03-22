@@ -42,7 +42,7 @@ class Animator(private val skeletonNode: SkeletonNode) {
     private fun calcBoneTransforms(node: SkeletonNode, parentTransform: Matrix4f) {
         var transform = node.transform
         val bone = node.bone
-        val channel = animation?.channels?.get(bone?.name)
+        val channel = animation?.channels?.get(node.name)
 
         if (channel != null) {
             transform = computeLocalTransform(channel)

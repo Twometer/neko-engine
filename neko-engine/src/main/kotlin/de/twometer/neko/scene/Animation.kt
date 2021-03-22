@@ -48,6 +48,7 @@ open class Keyframe(val time: Double)
  * A SkeletonNode represents a node in a hierarchy graph of bones (a skeleton)
  */
 data class SkeletonNode(
+    val name: String,
     val bone: Bone?,
     val transform: Matrix4f = Matrix4f(),
     val children: MutableList<SkeletonNode> = ArrayList()

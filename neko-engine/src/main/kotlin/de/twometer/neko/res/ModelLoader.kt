@@ -133,7 +133,7 @@ object ModelLoader {
     private fun createBoneHierarchy(bones: Map<String, Bone>, baseNode: AINode): SkeletonNode {
         val bone = bones[baseNode.mName().dataString()]
 
-        val skeletonNode = SkeletonNode(bone)
+        val skeletonNode = SkeletonNode(baseNode.mName().dataString(), bone, baseNode.mTransformation().toMatrix4f())
         baseNode.mChildren()?.apply {
             while (this.hasRemaining()) {
                 val aiNode = AINode.create(this.get())
