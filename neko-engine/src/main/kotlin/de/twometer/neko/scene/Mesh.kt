@@ -39,6 +39,8 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
         return this
     }
 
+    fun hasRig() = boneIds != null && boneWeights != null
+
     fun addNormals(): Mesh {
         normals = MemoryUtil.memAllocFloat(capacity * dimensions)
         return this

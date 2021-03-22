@@ -85,7 +85,10 @@ object ShaderLoader {
             val logLines = log.split("\n")
 
             logger.error { "Shader compilation failed" }
-            logLines.forEach { logger.error { reformatLogLine(it, src) } }
+            logLines.forEach {
+                if (it.isNotBlank())
+                    logger.error { reformatLogLine(it, src) }
+            }
 
             failure("Could not compile GLSL")
         }

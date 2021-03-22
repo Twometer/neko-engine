@@ -48,6 +48,7 @@ open class NekoApp(config: AppConfig) {
         onPostInit()
 
         logger.info { "Neko Engine initialized" }
+        timer.reset()
 
         while (!window.isCloseRequested()) {
             scene.camera.update()

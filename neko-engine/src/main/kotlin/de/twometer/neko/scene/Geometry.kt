@@ -28,6 +28,8 @@ class Geometry(private val mesh: Mesh, material: Material = Material.Default, na
         mesh.normals?.flip()
         mesh.texCoords?.flip()
         mesh.indices?.flip()
+        mesh.boneIds?.flip()
+        mesh.boneWeights?.flip()
 
         vao = glGenVertexArrays()
         glBindVertexArray(vao)

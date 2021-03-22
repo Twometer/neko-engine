@@ -61,7 +61,10 @@ object ModelLoader {
             for (i in 0 until aiNumMeshes) {
                 val aiMesh = AIMesh.create(it[i])
                 val material = materials[aiMesh.mMaterialIndex()]
-                val geometry = createMesh(aiMesh, aiScene.mRootNode()).toGeometry(material)
+                val mesh = createMesh(aiMesh, aiScene.mRootNode())
+                if (mesh.hasRig())
+                    material.shader = "base/geometry.animated.nks"
+                val geometry = mesh.toGeometry(material)
 
                 node.attachChild(geometry)
             }

@@ -9,18 +9,18 @@
     uniform mat4 boneMatrices[MAX_BONES];
 
     void main() {
-        vec4 animatedPosition = vec4(0.0f)
+        vec4 animatedPosition = vec4(0.0f);
         for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-            int boneId = boneIds[i]
+            int boneId = boneIds[i];
 
             if (boneId == -1 || boneId >= MAX_BONES)
                 continue;
 
-            vec4 localPosition = boneMatrices[boneId] * vec4(vertexPosition, 1.0)
+            vec4 localPosition = boneMatrices[boneId] * vec4(vertexPosition, 1.0);
             animatedPosition += localPosition * boneWeights[i];
         }
 
-        vec4 worldSpacePos = modelMatrix * animatedPosition;
+        vec4 worldSpacePos = modelMatrix * vec4(vertexPosition);
         gl_Position = projectionMatrix * viewMatrix * worldSpacePos;
 
         mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));

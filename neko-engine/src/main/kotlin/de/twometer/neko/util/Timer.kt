@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW.glfwGetTime
 class Timer(tps: Int) {
 
     private val delay: Double = 1.0 / tps
-    private var lastReset = glfwGetTime()
+    private var lastReset = 0.0
 
     fun reset() {
         lastReset = glfwGetTime()
