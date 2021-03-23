@@ -1,0 +1,9 @@
+//
+//  NekoEngine Default post processing pipeline
+//
+
+#begin "base/postproc.tonemap.nks" Tonemap
+    #bind GBuffer.Color 0
+    #input float Exposure
+    #output %screen
+#end

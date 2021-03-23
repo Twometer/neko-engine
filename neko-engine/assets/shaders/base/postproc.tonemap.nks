@@ -1,0 +1,24 @@
+#include "base/postproc.base.nks"
+
+#begin fragment
+    out vec4 color;
+
+    in vec2 texCoords;
+
+    uniform sampler2D textureSampler;
+
+    void main() {
+        vec3 hdrColor = texture(textureSampler, texCoords).rgb;
+
+        const float gamma = 1.5;
+        const float exposure = 1.8;
+
+        // Tone mapping
+        vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
+
+        // Gamma correction
+        mapped = pow(mapped, vec3(1.0 / gamma));
+
+        color = vec4(mapped, 1.0);
+    }
+#end fragment

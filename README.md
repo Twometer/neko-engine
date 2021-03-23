@@ -7,7 +7,7 @@ A 3D game rendering engine using Kotlin and LWJGL
 - [x] Deferred Rendering pipeline
 - [x] Scenegraph model system
   - [x] Assimp model importer
-  - [ ] Bone and animation support
+  - [x] Bone and animation support
   - [ ] Entity-Component-System
 - [x] Shader preprocessor: NekoShaders (.nks)
 - [ ] Ultralight GUI Framework

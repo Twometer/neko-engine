@@ -30,9 +30,9 @@ class SceneRenderer(val scene: Scene) {
     private var gBuffer: Framebuffer? = null
     private var renderbuffer: Framebuffer? = null
     private var lastTime: Double = 0.0
+    private val effectsRenderer = EffectsRenderer()
     private lateinit var blinnShader: Shader
     private lateinit var ambientShader: Shader
-    private lateinit var gammaCorrectShader: Shader
 
     fun setup() {
         Events.register(this)
@@ -40,7 +40,7 @@ class SceneRenderer(val scene: Scene) {
         // Shaders
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
-        gammaCorrectShader = ShaderCache.get("base/postproc.gamma.nks")
+        effectsRenderer.setup()
     }
 
     @Subscribe
@@ -59,6 +59,9 @@ class SceneRenderer(val scene: Scene) {
             .addDepthBuffer()
             .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
             .verify()
+
+        effectsRenderer.gBuffer = gBuffer
+        effectsRenderer.renderbuffer = renderbuffer
     }
 
     fun renderFrame() {
@@ -130,13 +133,8 @@ class SceneRenderer(val scene: Scene) {
         Events.post(RenderForwardEvent())
         renderbuffer!!.unbind()
 
-        // Now, we can apply postproc to our nice renderbuffer
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        renderbuffer!!.getColorTexture().bind()
-
-        gammaCorrectShader.bind()
-        Primitives.fullscreenQuad.render()
-        gammaCorrectShader.unbind()
+        // Now, we can apply post processing and copy everything to the screen
+        effectsRenderer.render()
     }
 
     private fun bindGBuffer() {
