@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.30'
 }
@@ -5,8 +7,20 @@ plugins {
 group 'de.twometer.neko'
 version '2.0.0-alpha'
 
+/* LWJGL Configuration */
 project.ext.lwjglVersion = "3.2.3"
-project.ext.lwjglNatives = "natives-windows"
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
+        project.ext.lwjglNatives = "natives-linux"
+        break
+    case OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = "natives-macos"
+        break
+    case OperatingSystem.WINDOWS:
+        project.ext.lwjglNatives = "natives-windows"
+        break
+}
 
 repositories {
     mavenCentral()
@@ -31,6 +45,13 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
     implementation "org.joml:joml:1.10.0"
     implementation 'org.slf4j:slf4j-api:1.7.30'
-    implementation 'io.github.microutils:kotlin-logging:1.12.0'
     implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'io.github.microutils:kotlin-logging:1.12.0'
+    implementation 'com.labymedia:ultralight-java-base:0.3.6'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
