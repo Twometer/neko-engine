@@ -9,7 +9,6 @@ import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.system.MemoryUtil.NULL
 
-
 class Window(private val config: AppConfig) {
 
     private var handle: Long = 0
@@ -67,6 +66,14 @@ class Window(private val config: AppConfig) {
     fun setCursorPosition(x: Int, y: Int) = glfwSetCursorPos(handle, x.toDouble(), y.toDouble())
 
     fun setCursor(cursor: Int) = glfwSetCursor(handle, cursorCache.get(cursor))
+
+    fun setClipboardContent(str: String) {
+        glfwSetClipboardString(handle, str)
+    }
+
+    fun getClipboardContent(): String? {
+        return glfwGetClipboardString(handle)
+    }
 
     fun getSize(): Pair<Int, Int> {
         val w = intArrayOf(0)

@@ -7,7 +7,9 @@ enum class AssetType(val folderName: String) {
     Textures("textures/"),
     Models("models/"),
     Shaders("shaders/"),
-    Gui("gui/")
+    Gui("gui/"),
+    Effects("effects/"),
+    Natives("natives/")
 }
 
 object AssetManager {

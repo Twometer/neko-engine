@@ -4,6 +4,7 @@ import de.twometer.neko.Neko
 import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.events.TickEvent
+import de.twometer.neko.gui.GuiManager
 import de.twometer.neko.player.DefaultPlayerController
 import de.twometer.neko.player.PlayerController
 import de.twometer.neko.render.FboManager
@@ -27,6 +28,7 @@ open class NekoApp(config: AppConfig) {
     val scene = Scene()
     val renderer = SceneRenderer(scene)
     var playerController: PlayerController = DefaultPlayerController()
+    var guiManager: GuiManager = GuiManager()
 
     fun run() {
         if (the != null)
@@ -43,6 +45,7 @@ open class NekoApp(config: AppConfig) {
 
         FboManager.setup()
         renderer.setup()
+        guiManager.setup()
 
         // Initial resize event
         val (width, height) = window.getSize()
