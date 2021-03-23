@@ -1,14 +1,17 @@
 #include "base/postproc.base.nks"
 
+#bind ssaoSampler 1
+
 #begin fragment
     out vec4 color;
 
     in vec2 texCoords;
 
     uniform sampler2D textureSampler;
+    uniform sampler2D ssaoSampler;
 
     void main() {
-        vec3 hdrColor = texture(textureSampler, texCoords).rgb;
+        vec3 hdrColor = texture(textureSampler, texCoords).rgb * texture(ssaoSampler, texCoords).r;
 
         const float gamma = 1.5;
         const float exposure = 1.8;

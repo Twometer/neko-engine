@@ -1,0 +1,25 @@
+#include "base/postproc.base.nks"
+
+#bind ssaoInput 3
+
+#begin fragment
+    out vec4 color;
+
+    in vec2 texCoords;
+
+    uniform sampler2D ssaoInput;
+
+    void main() {
+        vec2 texelSize = 1.0 / vec2(textureSize(ssaoInput, 0));
+        float result = 0.0;
+        for (int x = -2; x < 2; ++x) {
+            for (int y = -2; y < 2; ++y) {
+                vec2 offset = vec2(float(x), float(y)) * texelSize;
+                result += texture(ssaoInput, texCoords + offset).r;
+            }
+        }
+
+        float blurred = result / 16.0;
+        color = vec4(blurred, blurred, blurred, 1.0);
+    }
+#end fragment
