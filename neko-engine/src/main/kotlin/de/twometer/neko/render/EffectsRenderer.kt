@@ -10,6 +10,9 @@ import java.util.*
 
 class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuffer: FramebufferRef) {
 
+    // TODO: Optimize SSAO to not draw 99% GPU power
+    // TODO: Do not hardcode SSAO and use .nfx pipeline descriptions
+
     private val tonemapShader = ShaderCache.get("base/postproc.tonemap.nks")
     private val ssaoBaseShader = ShaderCache.get("base/postproc.ssao_base.nks")
     private val ssaoBlurShader = ShaderCache.get("base/postproc.ssao_blur.nks")
@@ -38,8 +41,20 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         OpenGL.disable(GL_DEPTH_TEST)
         OpenGL.disable(GL_CULL_FACE)
 
+        //renderSSAO()
+        renderNoSSAO()
 
-        // Temporary SSAO
+        OpenGL.enable(GL_DEPTH_TEST)
+    }
+
+    fun renderNoSSAO() {
+        renderbuffer.fbo.getColorTexture().bind()
+        StaticTextures.white.bind(1)
+        tonemapShader.bind()
+        Primitives.fullscreenQuad.render()
+    }
+
+    fun renderSSAO() {
         gBuffer.fbo.getColorTexture(0).bind(0)
         gBuffer.fbo.getColorTexture(1).bind(1)
         gBuffer.fbo.getColorTexture(2).bind(2)
@@ -63,8 +78,6 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         tonemapShader.bind()
         Primitives.fullscreenQuad.render()
         tonemapShader.unbind()
-
-        OpenGL.enable(GL_DEPTH_TEST)
     }
 
     // Temporary SSAO util functions

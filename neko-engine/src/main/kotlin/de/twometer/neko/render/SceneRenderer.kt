@@ -6,26 +6,18 @@ import de.twometer.neko.events.RenderForwardEvent
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.res.TextureCache
-import de.twometer.neko.res.TextureLoader
-import de.twometer.neko.scene.*
+import de.twometer.neko.scene.Color
+import de.twometer.neko.scene.MatKey
+import de.twometer.neko.scene.RenderBucket
+import de.twometer.neko.scene.Scene
 import de.twometer.neko.scene.nodes.Geometry
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
 import org.lwjgl.glfw.GLFW.glfwGetTime
 import org.lwjgl.opengl.GL30.*
-import org.lwjgl.system.MemoryStack
 
 class SceneRenderer(val scene: Scene) {
-
-    private val whiteTexture by lazy {
-        MemoryStack.stackPush().use {
-            val buf = it.malloc(4)
-            repeat(4) { buf.put(255.toByte()) }
-            buf.flip()
-            return@lazy TextureLoader.load(buf, 1, 1, false)
-        }
-    }
 
     private var lastTime: Double = 0.0
     private lateinit var effectsRenderer: EffectsRenderer
@@ -147,7 +139,7 @@ class SceneRenderer(val scene: Scene) {
         lastTime = now
 
         gBuffer.bind()
-        glClearColor(0f, 0f, 0f, 0f)
+        glClearColor(0f, 0f, 0f, 1f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         OpenGL.enable(GL_DEPTH_TEST)
@@ -186,7 +178,7 @@ class SceneRenderer(val scene: Scene) {
         when (texture) {
             is Texture -> texture.bind()
             is String -> TextureCache.get(texture).bind()
-            else -> whiteTexture.bind()
+            else -> StaticTextures.white.bind()
         }
     }
 
