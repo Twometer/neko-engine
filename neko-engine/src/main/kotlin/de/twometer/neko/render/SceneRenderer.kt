@@ -27,10 +27,10 @@ class SceneRenderer(val scene: Scene) {
         }
     }
 
-    private var gBuffer: Framebuffer? = null
-    private var renderbuffer: Framebuffer? = null
     private var lastTime: Double = 0.0
-    private val effectsRenderer = EffectsRenderer()
+    private lateinit var effectsRenderer: EffectsRenderer
+    private lateinit var gBuffer: FramebufferRef
+    private lateinit var renderbuffer: FramebufferRef
     private lateinit var blinnShader: Shader
     private lateinit var ambientShader: Shader
 
@@ -40,28 +40,26 @@ class SceneRenderer(val scene: Scene) {
         // Shaders
         blinnShader = ShaderCache.get("base/lighting.blinn.nks")
         ambientShader = ShaderCache.get("base/lighting.ambient.nks")
-        effectsRenderer.setup()
+
+        // Framebuffers
+        gBuffer = FboManager.request({
+            it.addDepthBuffer()
+                .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Positions
+                .addColorTexture(1, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Normals
+                .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
+        })
+
+        renderbuffer = FboManager.request({
+            it.addDepthBuffer()
+                .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+        })
+
+        effectsRenderer = EffectsRenderer(gBuffer, renderbuffer)
     }
 
     @Subscribe
     fun onSizeChanged(event: ResizeEvent) {
         glViewport(0, 0, event.width, event.height)
-        gBuffer?.destroy()
-        gBuffer = Framebuffer(event.width, event.height)
-            .addDepthBuffer()
-            .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Positions
-            .addColorTexture(1, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Normals
-            .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
-            .verify()
-
-        renderbuffer?.destroy()
-        renderbuffer = Framebuffer(event.width, event.height)
-            .addDepthBuffer()
-            .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
-            .verify()
-
-        effectsRenderer.gBuffer = gBuffer
-        effectsRenderer.renderbuffer = renderbuffer
     }
 
     fun renderFrame() {
@@ -69,11 +67,11 @@ class SceneRenderer(val scene: Scene) {
         renderGBuffer()
 
         // Transfer to render buffer using deferred shading
-        renderbuffer!!.bind()
+        renderbuffer.bind()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         bindGBuffer()
-        gBuffer!!.blit(GL_DEPTH_BUFFER_BIT, renderbuffer)
+        gBuffer.fbo.blit(GL_DEPTH_BUFFER_BIT, renderbuffer.fbo)
         OpenGL.disable(GL_DEPTH_TEST)
         OpenGL.disable(GL_BLEND)
         OpenGL.depthMask(false)
@@ -83,7 +81,7 @@ class SceneRenderer(val scene: Scene) {
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
         Primitives.fullscreenQuad.render()
-        ambientShader.unbind()
+        // ambientShader.unbind()
 
         // Blinn-Phong step (point lights)
         OpenGL.enable(GL_DEPTH_TEST)
@@ -131,16 +129,16 @@ class SceneRenderer(val scene: Scene) {
         }
 
         Events.post(RenderForwardEvent())
-        renderbuffer!!.unbind()
+        renderbuffer.unbind()
 
         // Now, we can apply post processing and copy everything to the screen
         effectsRenderer.render()
     }
 
     private fun bindGBuffer() {
-        gBuffer!!.getColorTexture(0).bind(0)
-        gBuffer!!.getColorTexture(1).bind(1)
-        gBuffer!!.getColorTexture(2).bind(2)
+        gBuffer.fbo.getColorTexture(0).bind(0)
+        gBuffer.fbo.getColorTexture(1).bind(1)
+        gBuffer.fbo.getColorTexture(2).bind(2)
     }
 
     private fun renderGBuffer() {
@@ -148,7 +146,7 @@ class SceneRenderer(val scene: Scene) {
         val deltaTime = now - lastTime
         lastTime = now
 
-        gBuffer!!.bind()
+        gBuffer.bind()
         glClearColor(0f, 0f, 0f, 0f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
@@ -181,7 +179,7 @@ class SceneRenderer(val scene: Scene) {
 
         Events.post(RenderDeferredEvent())
 
-        gBuffer!!.unbind()
+        gBuffer.unbind()
     }
 
     private fun bindTexture(texture: Any?) {

@@ -6,6 +6,7 @@ import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.events.TickEvent
 import de.twometer.neko.player.DefaultPlayerController
 import de.twometer.neko.player.PlayerController
+import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.SceneRenderer
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
@@ -40,6 +41,7 @@ open class NekoApp(config: AppConfig) {
 
         logGlInfo()
 
+        FboManager.setup()
         renderer.setup()
 
         // Initial resize event
