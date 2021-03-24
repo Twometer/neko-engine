@@ -1,6 +1,7 @@
 package de.twometer.neko.res
 
 import de.twometer.neko.render.Animator
+import de.twometer.neko.render.Texture
 import de.twometer.neko.scene.*
 import de.twometer.neko.scene.nodes.ModelNode
 import mu.KotlinLogging
@@ -239,10 +240,10 @@ object ModelLoader {
         return Color(color.r(), color.g(), color.b(), color.a())
     }
 
-    private fun AIMaterial.getTexture(modelFile: String, textureType: Int): String? {
+    private fun AIMaterial.getTexture(modelFile: String, textureType: Int): Texture? {
         val path = AIString.create()
         aiGetMaterialTexture(this, textureType, 0, path, null as IntBuffer?, null, null, null, null, null)
-        return processTexturePath(modelFile, path.dataString())
+        return processTexturePath(modelFile, path.dataString())?.let { TextureCache.get(it) }
     }
 
     private fun AIMaterial.getFloat(matKey: String): Float {
