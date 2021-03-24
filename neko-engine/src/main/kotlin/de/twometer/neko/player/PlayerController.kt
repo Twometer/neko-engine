@@ -5,6 +5,6 @@ import de.twometer.neko.scene.Scene
 
 interface PlayerController {
 
-    fun updateCamera(window: Window, scene: Scene)
+    fun updateCamera(window: Window, scene: Scene, deltaTime: Double)
 
 }

@@ -69,6 +69,7 @@ open class NekoApp(config: AppConfig) {
         timer.reset()
 
         while (!window.isCloseRequested()) {
+            playerController.updateCamera(window, scene, timer.deltaTime)
             scene.camera.update()
 
             renderer.renderFrame()
@@ -77,11 +78,11 @@ open class NekoApp(config: AppConfig) {
 
             if (timer.elapsed()) {
                 onTimerTick()
-                playerController.updateCamera(window, scene)
                 Events.post(TickEvent())
                 timer.reset()
             }
 
+            timer.onFrame()
             window.update()
         }
 

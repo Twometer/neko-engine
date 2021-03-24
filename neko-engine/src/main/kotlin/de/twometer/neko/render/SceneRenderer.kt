@@ -1,5 +1,6 @@
 package de.twometer.neko.render
 
+import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.Events
 import de.twometer.neko.events.RenderDeferredEvent
 import de.twometer.neko.events.RenderForwardEvent
@@ -14,7 +15,6 @@ import de.twometer.neko.scene.nodes.Geometry
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
-import org.lwjgl.glfw.GLFW.glfwGetTime
 import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
@@ -134,9 +134,7 @@ class SceneRenderer(val scene: Scene) {
     }
 
     private fun renderGBuffer() {
-        val now = glfwGetTime()
-        val deltaTime = now - lastTime
-        lastTime = now
+        val deltaTime = NekoApp.the!!.timer.deltaTime
 
         gBuffer.bind()
         glClearColor(0f, 0f, 0f, 1f)

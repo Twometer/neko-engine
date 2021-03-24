@@ -7,12 +7,15 @@ import org.lwjgl.glfw.GLFW
 
 class DefaultPlayerController : PlayerController {
 
-    var speed = 0.1f
-    var sensitivity = 0.002f
+    var speed = 2.5f
+    var sensitivity = 0.25f
 
-    override fun updateCamera(window: Window, scene: Scene) {
+    override fun updateCamera(window: Window, scene: Scene, deltaTime: Double) {
         if (!window.isFocused())
             return
+
+        val speed = this.speed * deltaTime.toFloat()
+        val sensitivity = this.sensitivity * deltaTime.toFloat()
 
         if (window.isKeyDown(GLFW.GLFW_KEY_W)) {
             scene.camera.position.add(scene.camera.direction.clone().mul(speed))
