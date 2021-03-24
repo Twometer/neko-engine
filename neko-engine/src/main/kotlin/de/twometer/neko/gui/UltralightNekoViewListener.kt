@@ -7,7 +7,10 @@ import com.labymedia.ultralight.plugin.view.MessageLevel
 import com.labymedia.ultralight.plugin.view.MessageSource
 import com.labymedia.ultralight.plugin.view.UltralightViewListener
 import de.twometer.neko.core.NekoApp
+import mu.KotlinLogging
 import org.lwjgl.glfw.GLFW.*
+
+private val logger = KotlinLogging.logger {}
 
 class UltralightNekoViewListener : UltralightViewListener {
 
@@ -38,7 +41,14 @@ class UltralightNekoViewListener : UltralightViewListener {
         columnNumber: Long,
         sourceId: String?
     ) {
-        TODO("Not yet implemented")
+        val formatted = "[JavaScript] [$sourceId] [$lineNumber:$columnNumber] $message"
+        when (level) {
+            MessageLevel.DEBUG -> logger.debug { formatted }
+            MessageLevel.INFO -> logger.info { formatted }
+            MessageLevel.LOG -> logger.info { formatted }
+            MessageLevel.WARNING -> logger.warn { formatted }
+            MessageLevel.ERROR -> logger.error { formatted }
+        }
     }
 
     override fun onCreateChildView(
