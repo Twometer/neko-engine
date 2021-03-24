@@ -21,6 +21,22 @@ object Events {
 
 data class ResizeEvent(val width: Int, val height: Int)
 
+data class FocusEvent(val focused: Boolean)
+
+data class CharEvent(val char: Char, val codepoint: Int)
+
+data class KeyEvent(val key: Int, val scancode: Int, val action: Int, val mods: Int)
+
+data class KeyPressEvent(val key: Int)
+
+data class MouseMoveEvent(val xPos: Int, val yPos: Int)
+
+data class MouseClickEvent(val button: Int)
+
+data class MouseButtonEvent(val button: Int, val action: Int, val mods: Int)
+
+data class MouseWheelEvent(val xOff: Int, val yOff: Int)
+
 class RenderDeferredEvent
 
 class RenderForwardEvent

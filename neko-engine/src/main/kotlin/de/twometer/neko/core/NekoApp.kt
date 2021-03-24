@@ -5,6 +5,7 @@ import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.events.TickEvent
 import de.twometer.neko.gui.GuiManager
+import de.twometer.neko.gui.Page
 import de.twometer.neko.player.DefaultPlayerController
 import de.twometer.neko.player.PlayerController
 import de.twometer.neko.render.FboManager
@@ -50,6 +51,18 @@ open class NekoApp(config: AppConfig) {
         // Initial resize event
         val (width, height) = window.getSize()
         Events.post(ResizeEvent(width, height))
+
+        // Rendering context ready - display the loading screen
+        guiManager.page = Page("base/loading.html")
+        do {
+            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+            guiManager.render()
+            window.update()
+        } while (!guiManager.finishedLoading)
+        guiManager.page = null
+
+
+        // Big chunky user init
         onPostInit()
 
         logger.info { "Neko Engine initialized" }
@@ -60,6 +73,7 @@ open class NekoApp(config: AppConfig) {
 
             renderer.renderFrame()
             onRenderFrame()
+            guiManager.render()
 
             if (timer.elapsed()) {
                 onTimerTick()

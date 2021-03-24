@@ -1,13 +1,13 @@
 package de.twometer.neko.core
 
-import de.twometer.neko.events.Events
-import de.twometer.neko.events.ResizeEvent
+import de.twometer.neko.events.*
 import de.twometer.neko.util.Cache
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.system.MemoryUtil.NULL
+
 
 class Window(private val config: AppConfig) {
 
@@ -38,6 +38,22 @@ class Window(private val config: AppConfig) {
         GL.createCapabilities()
 
         glfwSetFramebufferSizeCallback(handle) { _, width, height -> Events.post(ResizeEvent(width, height)) }
+        glfwSetWindowFocusCallback(handle) { _, focused -> Events.post(FocusEvent(focused)) }
+        glfwSetCharCallback(handle) { _, codepoint -> Events.post(CharEvent(codepoint.toChar(), codepoint)) }
+        glfwSetCursorPosCallback(handle) { _, x, y -> Events.post(MouseMoveEvent(x.toInt(), y.toInt())) }
+        glfwSetScrollCallback(handle) { _, x, y -> Events.post(MouseWheelEvent(x.toInt(), y.toInt())) }
+
+        glfwSetMouseButtonCallback(handle) { _, button, action, mods ->
+            if (action == GLFW_RELEASE)
+                Events.post(MouseClickEvent(button))
+            Events.post(MouseButtonEvent(button, action, mods))
+        }
+
+        glfwSetKeyCallback(handle) { _, key, scancode, action, mods ->
+            if (action == GLFW_REPEAT || action == GLFW_PRESS)
+                Events.post(KeyPressEvent(key))
+            Events.post(KeyEvent(key, scancode, action, mods))
+        }
     }
 
     fun update() {
@@ -65,7 +81,7 @@ class Window(private val config: AppConfig) {
 
     fun setCursorPosition(x: Int, y: Int) = glfwSetCursorPos(handle, x.toDouble(), y.toDouble())
 
-    fun setCursor(cursor: Int) = glfwSetCursor(handle, cursorCache.get(cursor))
+    fun setCursor(cursor: Int) = glfwSetCursor(handle, if (cursor == 0) 0 else cursorCache.get(cursor))
 
     fun setClipboardContent(str: String) {
         glfwSetClipboardString(handle, str)
@@ -73,6 +89,12 @@ class Window(private val config: AppConfig) {
 
     fun getClipboardContent(): String? {
         return glfwGetClipboardString(handle)
+    }
+
+    fun getScale(): Float {
+        val f = floatArrayOf(0.0f)
+        glfwGetWindowContentScale(handle, f, f)
+        return f[0]
     }
 
     fun getSize(): Pair<Int, Int> {
@@ -98,4 +120,5 @@ class Window(private val config: AppConfig) {
     fun isKeyDown(key: Int) =
         glfwGetKey(handle, key) == GLFW_PRESS
 
+    fun isMouseButtonPressed(key: Int) = glfwGetMouseButton(handle, key) == GLFW_PRESS
 }

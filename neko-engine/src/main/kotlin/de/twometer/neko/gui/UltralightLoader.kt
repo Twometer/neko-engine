@@ -4,6 +4,7 @@ import com.labymedia.ultralight.UltralightJava
 import com.labymedia.ultralight.UltralightPlatform
 import com.labymedia.ultralight.config.FontHinting
 import com.labymedia.ultralight.config.UltralightConfig
+import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.AssetType
 import mu.KotlinLogging
@@ -13,6 +14,8 @@ import java.nio.file.Paths
 private val logger = KotlinLogging.logger {}
 
 object UltralightLoader {
+
+    private val window = NekoApp.the!!.window
 
     fun load() {
         logger.info { "Loading ultralight..." }
@@ -31,7 +34,7 @@ object UltralightLoader {
             UltralightConfig()
                 .fontHinting(FontHinting.NORMAL)
                 .resourcePath(resourcePath.toString())
-                .deviceScale(1.0)
+                .deviceScale(window.getScale().toDouble())
         )
         platform.usePlatformFontLoader()
         platform.setLogger(UltralightNekoLogger())

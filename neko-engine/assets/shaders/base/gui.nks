@@ -1,0 +1,23 @@
+#begin shared
+    vec2 texCoords;
+#end shared
+
+#begin vertex
+    in vec2 position;
+
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+        texCoords = position * 0.5 + 0.5;
+        texCoords.y = 1 - texCoords.y;
+    }
+#end vertex
+
+#begin fragment
+    out vec4 color;
+
+    uniform sampler2D textureSampler;
+
+    void main() {
+        color = texture(textureSampler, texCoords);
+    }
+#end fragment
