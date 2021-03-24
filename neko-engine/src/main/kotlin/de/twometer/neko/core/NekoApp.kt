@@ -76,7 +76,7 @@ open class NekoApp(config: AppConfig) {
             onRenderFrame()
             guiManager.render()
 
-            if (timer.elapsed()) {
+            if (timer.elapsed) {
                 onTimerTick()
                 Events.post(TickEvent())
                 timer.reset()
