@@ -1,6 +1,7 @@
 package de.twometer.neko.events
 
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 object Events {
 
@@ -11,11 +12,23 @@ object Events {
             .installDefaultEventBus()
     }
 
-    fun register(subscriber: Any) = EventBus.getDefault().register(subscriber)
+    fun register(subscriber: Any) {
+        if (!hasSubscriberMethods(subscriber))
+            return
+        EventBus.getDefault().register(subscriber)
+    }
 
-    fun unregister(subscriber: Any) = EventBus.getDefault().unregister(subscriber)
+    fun unregister(subscriber: Any) {
+        if (!EventBus.getDefault().isRegistered(subscriber))
+            return
+        EventBus.getDefault().unregister(subscriber)
+    }
 
     fun post(event: Any) = EventBus.getDefault().post(event)
+
+    private fun hasSubscriberMethods(subscriber: Any): Boolean {
+        return subscriber.javaClass.methods.any { it.isAnnotationPresent(Subscribe::class.java) }
+    }
 
 }
 

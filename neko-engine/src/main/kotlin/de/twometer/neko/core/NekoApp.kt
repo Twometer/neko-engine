@@ -40,6 +40,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         logger.info { "Starting Neko Engine v${Neko.VERSION}" }
         CrashHandler.register()
         Events.setup()
+        Events.register(this)
         onPreInit()
         window.create()
 

@@ -9,10 +9,4 @@ repositories {
 dependencies {
     implementation project(':neko-engine')
     implementation 'org.slf4j:slf4j-log4j12:1.7.30'
-
-    // The following dependencies are not actually needed because the base engine brings them,
-    // but because dependencies between gradle projects work differently than a dependency
-    // on a remote jar file, it won't compile if I don't define them here:
-    implementation "org.joml:joml:1.10.0"
-    implementation 'com.labymedia:ultralight-java-base:0.3.6'
 }

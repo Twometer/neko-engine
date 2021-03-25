@@ -126,4 +126,9 @@ class Window(private val config: AppConfig) {
         glfwGetKey(handle, key) == GLFW_PRESS
 
     fun isMouseButtonPressed(key: Int) = glfwGetMouseButton(handle, key) == GLFW_PRESS
+
+    fun close() {
+        glfwSetWindowShouldClose(handle, true)
+    }
+
 }

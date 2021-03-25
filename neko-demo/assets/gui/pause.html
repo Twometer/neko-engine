@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+
+        * {
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 100;
+        }
+
+        .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: #212123;
+            color: white;
+            width: 350px;
+            box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.7);
+        }
+
+        .header {
+            font-size: 30px;
+            font-weight: 100;
+            padding: 25px 0;
+        }
+
+        button {
+            font-size: 22px;
+            display: block;
+            margin: 25px auto;
+            width: 200px;
+            height: 45px;
+            color: white;
+            background-color: #6647FF;
+            border: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="center">
+    <div class="header">Neko Demo - Paused</div>
+
+    <button id="closeBtn">Continue</button>
+    <button id="exitBtn">Exit</button>
+</div>
+
+</body>
+
+<script>
+    console.log("Hello from the demo screen!");
+
+    function OnLoad() {
+        document.getElementById('closeBtn').onclick = () => {
+            Remote.close();
+        }
+        document.getElementById('exitBtn').onclick = () => {
+            Remote.exitGame();
+        }
+    }
+</script>
+
+</html>
