@@ -10,7 +10,7 @@ A 3D game rendering engine using Kotlin and LWJGL
   - [x] Bone and animation support
   - [ ] Entity-Component-System
 - [x] Shader preprocessor: NekoShaders (.nks)
-- [ ] Ultralight GUI Framework
+- [x] Ultralight GUI Framework
 - [ ] OpenAL 3D sound engine
 - [ ] Fully extendable PostProcessingFX pipeline
 
