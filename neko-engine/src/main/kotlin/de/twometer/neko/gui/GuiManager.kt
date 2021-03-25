@@ -3,6 +3,9 @@ package de.twometer.neko.gui
 import com.labymedia.ultralight.UltralightRenderer
 import com.labymedia.ultralight.UltralightView
 import com.labymedia.ultralight.bitmap.UltralightBitmapSurface
+import com.labymedia.ultralight.databind.Databind
+import com.labymedia.ultralight.databind.DatabindConfiguration
+import com.labymedia.ultralight.javascript.JavascriptEvaluationException
 import com.labymedia.ultralight.plugin.loading.UltralightLoadListener
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.Events
@@ -17,7 +20,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.lwjgl.opengl.GL12.*
 import java.nio.ByteBuffer
 
-
 private val logger = KotlinLogging.logger {}
 
 class GuiManager : UltralightLoadListener {
@@ -25,12 +27,14 @@ class GuiManager : UltralightLoadListener {
     private lateinit var shader: Shader
     private lateinit var renderer: UltralightRenderer
     private lateinit var view: UltralightView
+    private lateinit var contextProvider: PageContextProvider
 
     var finishedLoading: Boolean = false
         private set
 
     var page: Page? = null
         set(newVal) {
+            field?.onUnloaded()
             field = newVal
             finishedLoading = false
             if (newVal != null)
@@ -57,7 +61,14 @@ class GuiManager : UltralightLoadListener {
         view = renderer.createView(width.toLong(), height.toLong(), true)
         view.setViewListener(UltralightNekoViewListener())
         view.setLoadListener(this)
+        view.focus()
         Events.register(UltralightNekoInputAdapter(view))
+
+        contextProvider = PageContextProvider(view)
+        contextProvider.syncWithJavascript {
+            val config = DatabindConfiguration.builder().contextProviderFactory(contextProvider).build()
+            contextProvider.databind = Databind(config)
+        }
 
         shader = ShaderCache.get("base/gui.nks")
 
@@ -123,11 +134,22 @@ class GuiManager : UltralightLoadListener {
         OpenGL.enable(GL_DEPTH_TEST)
     }
 
+    fun runScript(script: String): String {
+        return try {
+            view.evaluateScript(script)
+        } catch (e: JavascriptEvaluationException) {
+            logger.error(e) { "Failed to run JavaScript" }
+            "undefined"
+        }
+    }
+
     @Subscribe
     fun onResize(event: ResizeEvent) = view.resize(event.width.toLong(), event.height.toLong())
 
-    override fun onDOMReady(frameId: Long, isMainFrame: Boolean, url: String?) {
+    fun isInputBlocked() = page?.blocksGameInput() ?: false
 
+    override fun onDOMReady(frameId: Long, isMainFrame: Boolean, url: String?) {
+        page?.onDocumentReady()
     }
 
     override fun onFailLoading(
@@ -141,8 +163,22 @@ class GuiManager : UltralightLoadListener {
         logger.error { "Ultralight failed loading '$url': $description ($errorCode @ $errorDomain)" }
     }
 
-    override fun onBeginLoading(frameId: Long, isMainFrame: Boolean, url: String?) = Unit
-    override fun onFinishLoading(frameId: Long, isMainFrame: Boolean, url: String?) = run { finishedLoading = true }
+    override fun onFinishLoading(frameId: Long, isMainFrame: Boolean, url: String?) {
+        finishedLoading = true
+
+        page?.run {
+            contextProvider.syncWithJavascript {
+                contextProvider.registerObject(it.context, "Remote", this)
+                this.onLoaded()
+                runScript("if (typeof OnLoad !== 'undefined') { OnLoad(); }")
+            }
+        }
+    }
+
+    override fun onBeginLoading(frameId: Long, isMainFrame: Boolean, url: String?) {
+        finishedLoading = false
+    }
+
     override fun onUpdateHistory() = Unit
     override fun onWindowObjectReady(frameId: Long, isMainFrame: Boolean, url: String?) = Unit
 

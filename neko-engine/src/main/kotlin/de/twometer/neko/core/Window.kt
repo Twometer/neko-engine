@@ -12,6 +12,7 @@ import org.lwjgl.system.MemoryUtil.NULL
 class Window(private val config: AppConfig) {
 
     private var handle: Long = 0
+    private var cursorVisible: Boolean = true
 
     private val cursorCache = object : Cache<Int, Long>() {
         override fun create(key: Int): Long = glfwCreateStandardCursor(key)
@@ -76,8 +77,12 @@ class Window(private val config: AppConfig) {
 
     fun setTitle(title: String) = glfwSetWindowTitle(handle, title)
 
-    fun setCursorEnabled(enabled: Boolean) =
-        glfwSetInputMode(handle, GLFW_CURSOR, if (enabled) GLFW_CURSOR_NORMAL else GLFW_CURSOR_DISABLED)
+    fun setCursorVisible(visible: Boolean) {
+        if (visible != cursorVisible) {
+            glfwSetInputMode(handle, GLFW_CURSOR, if (visible) GLFW_CURSOR_NORMAL else GLFW_CURSOR_DISABLED)
+            cursorVisible = visible
+        }
+    }
 
     fun setCursorPosition(x: Int, y: Int) = glfwSetCursorPos(handle, x.toDouble(), y.toDouble())
 

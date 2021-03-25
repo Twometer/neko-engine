@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11.*
 
 private val logger = KotlinLogging.logger {}
 
-open class NekoApp(config: AppConfig) {
+open class NekoApp(config: AppConfig = AppConfig()) {
 
     companion object {
         var the: NekoApp? = null
@@ -30,6 +30,7 @@ open class NekoApp(config: AppConfig) {
     val renderer = SceneRenderer(scene)
     var playerController: PlayerController = DefaultPlayerController()
     var guiManager: GuiManager = GuiManager()
+    var cursorVisible = false
 
     fun run() {
         if (the != null)
@@ -69,9 +70,12 @@ open class NekoApp(config: AppConfig) {
         timer.reset()
 
         while (!window.isCloseRequested()) {
-            playerController.updateCamera(window, scene, timer.deltaTime)
-            scene.camera.update()
+            if (!guiManager.isInputBlocked()) {
+                playerController.updateCamera(window, scene, timer.deltaTime)
+            }
+            window.setCursorVisible(guiManager.isInputBlocked() || cursorVisible)
 
+            scene.camera.update()
             renderer.renderFrame()
             onRenderFrame()
             guiManager.render()

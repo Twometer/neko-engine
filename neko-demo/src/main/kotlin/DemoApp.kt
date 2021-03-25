@@ -50,6 +50,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         sky = Sky(CubemapCache.get("skybox"))
         scene.rootNode.attachChild(sky)
+
+        guiManager.page = DemoPage()
     }
 
     override fun onTimerTick() {
