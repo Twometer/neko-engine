@@ -51,3 +51,13 @@ class PointLight : Light() {
     }
 
 }
+
+class DirectionalLight : Light() {
+
+    // https://learnopengl.com/Advanced-Lighting/Shadows/Shadow-Mapping
+
+    override fun getPrimitive(): Primitive {
+        TODO("Not suitable for this type of light")
+    }
+
+}
