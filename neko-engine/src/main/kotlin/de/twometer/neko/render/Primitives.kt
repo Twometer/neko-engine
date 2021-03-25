@@ -16,7 +16,7 @@ object Primitives {
         Primitive(floatArrayOf(-1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f), GL_TRIANGLE_STRIP, 2)
     }
 
-    val skybox: Primitive by lazy {
+    val unitCube: Primitive by lazy {
         Primitive(
             floatArrayOf(
                 -1.0f, 1.0f, -1.0f,

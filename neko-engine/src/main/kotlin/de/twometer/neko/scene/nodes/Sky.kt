@@ -13,7 +13,7 @@ class Sky(cubemap: TextureCube) :
     ) {
 
     override fun render() {
-        Primitives.skybox.render()
+        Primitives.unitCube.render()
     }
 
 }
