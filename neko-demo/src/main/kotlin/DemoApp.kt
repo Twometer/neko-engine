@@ -37,6 +37,10 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         })
 
         scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
+        scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
+            it.transform.rotation.rotateX(toRadians(-90f))
+            it.transform.translation.y = -1f
+        })
 
         scene.rootNode.attachChild(ModelLoader.load("demo-run.fbx").also {
             it.transform.translation.set(5f, 0f, 0f)

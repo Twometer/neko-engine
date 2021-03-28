@@ -47,7 +47,7 @@ class PointLight : Light() {
     private fun recomputeRadius() {
         val lightMax = MathF.max(color.r, color.g, color.b)
         radius =
-            (-linear + MathF.sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * lightMax))) / (2 * quadratic)
+            (-linear + MathF.sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 2.5f) * lightMax))) / (2 * quadratic)
     }
 
 }
