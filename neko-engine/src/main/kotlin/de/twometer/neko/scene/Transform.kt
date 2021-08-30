@@ -5,7 +5,21 @@ import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
-data class Transform(val translation: Vector3f = Vector3f(), val rotation: Quaternionf = Quaternionf(), val scale: Vector3f = Vector3f(1f, 1f, 1f)) {
+data class Transform(
+    val translation: Vector3f = Vector3f(),
+    val rotation: Quaternionf = Quaternionf(),
+    val scale: Vector3f = Vector3f(1f, 1f, 1f)
+) {
+
+    companion object {
+        fun fromMatrix(mat: Matrix4f): Transform {
+            return Transform(
+                mat.getTranslation(Vector3f()),
+                mat.getUnnormalizedRotation(Quaternionf()),
+                mat.getScale(Vector3f())
+            )
+        }
+    }
 
     val matrix: Matrix4f
         get() {
