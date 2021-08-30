@@ -8,11 +8,13 @@ A 3D game rendering engine using Kotlin and LWJGL
 - [x] Scenegraph model system
   - [x] Assimp model importer
   - [x] Bone and animation support
-  - [ ] Entity-Component-System
+  - [ ] Component system
 - [x] Shader preprocessor: NekoShaders (.nks)
 - [x] Ultralight GUI Framework
 - [ ] OpenAL 3D sound engine
 - [ ] Fully extendable PostProcessingFX pipeline
+- [ ] Support for game scripts
+- [ ] Multiplayer and sync engine
 
 ## Asset Layout
 ...
