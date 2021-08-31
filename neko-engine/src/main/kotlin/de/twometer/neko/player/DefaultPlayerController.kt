@@ -1,5 +1,6 @@
 package de.twometer.neko.player
 
+import de.twometer.neko.core.NekoApp
 import de.twometer.neko.core.Window
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.MathExtensions.clone
@@ -11,7 +12,7 @@ class DefaultPlayerController : PlayerController {
     var sensitivity = 0.25f
 
     override fun updateCamera(window: Window, scene: Scene, deltaTime: Double) {
-        if (!window.isFocused())
+        if (!window.isFocused() || NekoApp.the?.cursorVisible == true)
             return
 
         val speed = this.speed * deltaTime.toFloat()

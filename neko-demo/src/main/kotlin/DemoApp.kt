@@ -9,8 +9,10 @@ import de.twometer.neko.scene.nodes.ModelNode
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.Sky
 import de.twometer.neko.util.MathF.toRadians
+import imgui.ImGui
 import org.greenrobot.eventbus.Subscribe
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
+import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_ALT
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
@@ -31,14 +33,17 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         })
 
         scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
-            it.transform.translation.set(2f, 0f, 0f)
+            it.transform.translation.set(2f, 0f, 15f)
             it.transform.scale.set(0.01, 0.01, 0.01)
             it.playAnimation(it.animations[0])
         })
 
-        scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
+        scene.rootNode.attachChild(ModelLoader.load("test.fbx").also {
+            it.transform.scale.set(0.01, 0.01, 0.01)
+        })
+
         scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
-            it.transform.rotation.rotateX(toRadians(-90f))
+            it.transform.scale.set(0.01, 0.01, 0.01)
             it.transform.translation.y = -1f
         })
 
@@ -64,6 +69,10 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         rin.transform.translation.z += 0.025f
     }
 
+    override fun onRenderFrame() {
+        ImGui.button("Test!")
+    }
+
     @Subscribe
     fun onKeyPress(e: KeyPressEvent) {
         if (e.key == GLFW_KEY_ESCAPE) {
@@ -71,6 +80,9 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
                 guiManager.page = DemoPausePage()
             else
                 guiManager.page = null
+        }
+        if (e.key == GLFW_KEY_LEFT_ALT) {
+            this.cursorVisible = !this.cursorVisible
         }
     }
 }

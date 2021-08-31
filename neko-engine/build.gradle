@@ -7,18 +7,19 @@ plugins {
 group 'de.twometer.neko'
 version '2.0.0-alpha'
 
-/* LWJGL Configuration */
+/* Version configuration */
 project.ext.lwjglVersion = "3.2.3"
+project.ext.imguiVersion = "1.84.1.0"
 
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
-        project.ext.lwjglNatives = "natives-linux"
+        project.ext.natives = "natives-linux"
         break
     case OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
+        project.ext.natives = "natives-macos"
         break
     case OperatingSystem.WINDOWS:
-        project.ext.lwjglNatives = "natives-windows"
+        project.ext.natives = "natives-windows"
         break
 }
 
@@ -44,14 +45,17 @@ dependencies {
     api 'org.slf4j:slf4j-api:1.7.30'
     api 'com.labymedia:ultralight-java-base:0.3.6'
     api 'com.labymedia:ultralight-java-databind:0.3.6'
+    api "io.github.spair:imgui-java-binding:$imguiVersion"
+    api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
 
-    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-    runtimeOnly "org.lwjgl:lwjgl-tinyfd::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl::$natives"
+    runtimeOnly "org.lwjgl:lwjgl-assimp::$natives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$natives"
+    runtimeOnly "org.lwjgl:lwjgl-openal::$natives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$natives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$natives"
+    runtimeOnly "org.lwjgl:lwjgl-tinyfd::$natives"
+    runtimeOnly "io.github.spair:imgui-java-$natives:$imguiVersion"
 }
 
 jar {

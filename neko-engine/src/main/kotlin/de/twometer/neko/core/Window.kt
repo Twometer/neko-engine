@@ -11,7 +11,9 @@ import org.lwjgl.system.MemoryUtil.NULL
 
 class Window(private val config: AppConfig) {
 
-    private var handle: Long = 0
+    var handle: Long = 0
+        private set
+
     private var cursorVisible: Boolean = true
 
     private val cursorCache = object : Cache<Int, Long>() {

@@ -5,6 +5,7 @@ import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.events.TickEvent
 import de.twometer.neko.gui.GuiManager
+import de.twometer.neko.gui.ImGuiHandler
 import de.twometer.neko.gui.Page
 import de.twometer.neko.player.DefaultPlayerController
 import de.twometer.neko.player.PlayerController
@@ -49,6 +50,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         FboManager.setup()
         renderer.setup()
         guiManager.setup()
+        ImGuiHandler.setup(window)
 
         // Initial resize event
         val (width, height) = window.getSize()
@@ -71,15 +73,17 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         timer.reset()
 
         while (!window.isCloseRequested()) {
-            if (!guiManager.isInputBlocked()) {
+            if (!guiManager.isInputBlocked() && !ImGuiHandler.wantsControl()) {
                 playerController.updateCamera(window, scene, timer.deltaTime)
             }
-            window.setCursorVisible(guiManager.isInputBlocked() || cursorVisible)
+            window.setCursorVisible(guiManager.isInputBlocked() || cursorVisible || ImGuiHandler.wantsControl())
+            ImGuiHandler.newFrame()
 
             scene.camera.update()
             renderer.renderFrame()
             onRenderFrame()
             guiManager.render()
+            ImGuiHandler.render()
 
             if (timer.elapsed) {
                 onTimerTick()
@@ -93,6 +97,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
 
         logger.info { "Shutting down..." }
         onShutdown()
+        ImGuiHandler.shutdown()
         window.destroy()
     }
 
