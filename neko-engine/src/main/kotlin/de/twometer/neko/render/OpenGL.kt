@@ -24,12 +24,12 @@ object OpenGL {
     }
 
     fun setBoolean(constant: Int, active: Boolean) {
-        trySetState(constant, active, {
+        trySetState(constant, active) {
             if (it)
                 glEnable(constant)
             else
                 glDisable(constant)
-        })
+        }
     }
 
     fun enable(constant: Int) {
