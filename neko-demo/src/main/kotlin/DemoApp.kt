@@ -6,6 +6,7 @@ import de.twometer.neko.res.CubemapCache
 import de.twometer.neko.res.ModelLoader
 import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.nodes.ModelNode
+import de.twometer.neko.scene.nodes.Node
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.Sky
 import de.twometer.neko.util.MathF.toRadians
@@ -69,8 +70,32 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         rin.transform.translation.z += 0.025f
     }
 
+    var selectedNode: Node? = null
+
     override fun onRenderFrame() {
-        ImGui.button("Test!")
+        ImGui.begin("Scenegraph")
+        fun drawNode(node: Node) {
+            ImGui.pushID(node.name)
+            val open = ImGui.treeNode("${node.javaClass.simpleName} - ${node.name}")
+            if (ImGui.isItemClicked()) {
+                selectedNode = node
+            }
+            if (open) {
+                node.children.forEach(::drawNode)
+                ImGui.treePop()
+            }
+            ImGui.popID()
+        }
+        drawNode(scene.rootNode)
+        ImGui.end()
+
+        selectedNode?.apply {
+            ImGui.begin("Node info")
+            ImGui.text("POS:" + this.transform.translation)
+            ImGui.text("ROT:" + this.transform.rotation)
+            ImGui.text("SCALE:" + this.transform.scale)
+            ImGui.end()
+        }
     }
 
     @Subscribe
