@@ -34,17 +34,15 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         })
 
         scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
-            it.transform.translation.set(2f, 0f, 15f)
+            it.transform.translation.set(2f, 0f, 0f)
             it.transform.scale.set(0.01, 0.01, 0.01)
             it.playAnimation(it.animations[0])
         })
 
-        scene.rootNode.attachChild(ModelLoader.load("test.fbx").also {
-            it.transform.scale.set(0.01, 0.01, 0.01)
-        })
+        scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
 
         scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
-            it.transform.scale.set(0.01, 0.01, 0.01)
+            it.transform.rotation.rotateX(toRadians(-90f))
             it.transform.translation.y = -1f
         })
 
@@ -75,8 +73,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     override fun onRenderFrame() {
         ImGui.begin("Scenegraph")
         fun drawNode(node: Node) {
-            ImGui.pushID(node.name)
-            val open = ImGui.treeNode("${node.javaClass.simpleName} - ${node.name}")
+            ImGui.pushID(node.id)
+            val open = ImGui.treeNode("${node.id} - ${node.javaClass.simpleName} [${node.name}]")
             if (ImGui.isItemClicked()) {
                 selectedNode = node
             }
