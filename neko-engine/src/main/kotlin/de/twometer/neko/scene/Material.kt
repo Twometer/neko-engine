@@ -19,7 +19,11 @@ object MatKey {
     const val TwoSided = "_TwoSided"
 }
 
-data class Material(val name: String, private val props: HashMap<String, Any> = HashMap(), var shader: String = "base/geometry.static.nks") {
+data class Material(
+    val name: String,
+    private val props: HashMap<String, Any> = HashMap(),
+    var shader: String = "base/geometry.static.nks"
+) {
 
     companion object {
         val Default: Material
@@ -28,22 +32,31 @@ data class Material(val name: String, private val props: HashMap<String, Any> = 
                     MatKey.ColorDiffuse to Color(0.9f, 0.9f, 0.9f)
                 )
             )
-
     }
 
     operator fun set(key: String, value: Any?) {
         if (key.isBlank())
             return
 
-        if (value == null || (value is String && value.isBlank())) {
+        val sanitized = sanitize(key, value)
+
+        if (sanitized == null || (sanitized is String && sanitized.isBlank())) {
             props.remove(key)
             return
         }
 
-        props[key] = value
+        props[key] = sanitized
     }
 
     operator fun get(key: String): Any? = props[key]
 
     fun hasProperty(key: String) = props.containsKey(key)
+
+    private fun sanitize(key: String, value: Any?): Any? {
+        return when {
+            value == null -> value
+            key == MatKey.Shininess && value == 0.0f -> 16
+            else -> value
+        }
+    }
 }
