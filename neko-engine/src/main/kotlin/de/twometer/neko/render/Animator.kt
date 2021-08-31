@@ -4,13 +4,14 @@ import de.twometer.neko.scene.Animation
 import de.twometer.neko.scene.AnimationChannel
 import de.twometer.neko.scene.Keyframe
 import de.twometer.neko.scene.SkeletonNode
+import de.twometer.neko.scene.nodes.Node
 import de.twometer.neko.util.MathExtensions.clone
 import de.twometer.neko.util.MathF
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
-class Animator(private val skeletonNode: SkeletonNode) {
+class Animator(private val node: Node) {
 
     private var time: Double = 0.0
     private var animation: Animation? = null
@@ -31,7 +32,21 @@ class Animator(private val skeletonNode: SkeletonNode) {
         time %= animation.duration
 
         // Animate bones
-        calcBoneTransforms(skeletonNode, Matrix4f())
+        calcBoneTransforms(findSkeletonRoot()!!, Matrix4f())
+    }
+
+    private fun findSkeletonRoot(node: Node = this.node): SkeletonNode? {
+        for (child in node.children) {
+            if (child is SkeletonNode)
+                return child
+
+            val subNode = findSkeletonRoot(child)
+            if (subNode != null) {
+                return subNode
+            }
+        }
+
+        return null
     }
 
     fun loadMatrices(target: Shader) {
@@ -39,21 +54,23 @@ class Animator(private val skeletonNode: SkeletonNode) {
             target["boneMatrices[$i]"] = boneMatrices[i]
     }
 
-    private fun calcBoneTransforms(node: SkeletonNode, parentTransform: Matrix4f) {
-        var transform = node.transform
-        val bone = node.bone
-        val channel = animation?.channels?.get(node.name)
+    private fun calcBoneTransforms(node: Node, parentTransform: Matrix4f) {
+        if (node is SkeletonNode) {
+            var transform = node.boneMatrix
+            val bone = node.bone
+            val channel = animation?.channels?.get(node.name)
 
-        if (channel != null) {
-            transform = computeLocalTransform(channel)
+            if (channel != null) {
+                transform = computeLocalTransform(channel)
+            }
+
+            val globalTransform = parentTransform.clone().mul(transform)
+            bone?.apply {
+                boneMatrices[index] = globalTransform.clone().mul(offsetMatrix)
+            }
+
+            node.children.forEach { calcBoneTransforms(it, globalTransform) }
         }
-
-        val globalTransform = parentTransform.clone().mul(transform)
-        bone?.apply {
-            boneMatrices[index] = globalTransform.clone().mul(offsetMatrix)
-        }
-
-        node.children.forEach { calcBoneTransforms(it, globalTransform) }
     }
 
     private fun calcProgress(prevKeyframe: Double, nextKeyframe: Double): Double {

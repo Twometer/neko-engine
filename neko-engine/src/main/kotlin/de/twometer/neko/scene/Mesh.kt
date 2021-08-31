@@ -103,7 +103,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     }
 
     fun putBoneVertexData(bone: Bone) {
-        bone.weights.forEach {
+        bone.vertexWeights.forEach {
             val baseOffset = it.vertexId * MAX_BONE_INFLUENCE
             for (i in 0 until MAX_BONE_INFLUENCE) {
                 if (boneIds?.get(baseOffset + i)!! < 0) {

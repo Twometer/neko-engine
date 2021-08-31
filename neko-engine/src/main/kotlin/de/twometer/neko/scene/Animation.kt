@@ -1,5 +1,6 @@
 package de.twometer.neko.scene
 
+import de.twometer.neko.scene.nodes.Node
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -26,18 +27,18 @@ data class AnimationChannel(
 /**
  * A Bone represents a single animation joint in a mesh.
  */
-data class Bone(
-    val name: String,
+class Bone(
+    name: String,
     val index: Int,
     val offsetMatrix: Matrix4f,
     val localTransform: Matrix4f = Matrix4f(),
-    val weights: MutableList<BoneWeight> = ArrayList()
-)
+    val vertexWeights: MutableList<BoneVertexWeight> = ArrayList()
+) : Node(name = name)
 
 /**
- * A BoneWeight represents the influence of a single bone on a single vertex
+ * A BoneVertexWeight represents the influence of a single bone on a single vertex
  */
-data class BoneWeight(val vertexId: Int, val weight: Float)
+data class BoneVertexWeight(val vertexId: Int, val weight: Float)
 
 /**
  * A Keyframe represents the state of a single bone at an exact point in time
@@ -47,12 +48,11 @@ open class Keyframe(val time: Double)
 /**
  * A SkeletonNode represents a node in a hierarchy graph of bones (a skeleton)
  */
-data class SkeletonNode(
-    val name: String,
+class SkeletonNode(
+    name: String,
     val bone: Bone?,
-    val transform: Matrix4f = Matrix4f(),
-    val children: MutableList<SkeletonNode> = ArrayList()
-)
+    val boneMatrix: Matrix4f = Matrix4f(),
+) : Node(name = name)
 
 /**
  * A PositionKeyframe represents the position of a single bone at an exact point in time

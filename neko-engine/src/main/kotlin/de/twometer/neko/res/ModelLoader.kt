@@ -69,7 +69,8 @@ object ModelLoader {
 
                 if (mesh.hasRig() && node.animations.isNotEmpty()) {
                     material.shader = "base/geometry.animated.nks"
-                    geometry.animator = Animator(geometry.skeletonRoot!!)
+                    geometry.attachChild(geometry.skeletonRoot!!)
+                    geometry.animator = Animator(geometry.skeletonRoot)
                 }
 
                 node.attachChild(geometry)
@@ -82,7 +83,7 @@ object ModelLoader {
     private fun createBone(aiBone: AIBone, index: Int): Bone {
         val bone = Bone(aiBone.mName().dataString(), index, aiBone.mOffsetMatrix().toMatrix4f())
         aiBone.mWeights().forEach {
-            bone.weights.add(BoneWeight(it.mVertexId(), it.mWeight()))
+            bone.vertexWeights.add(BoneVertexWeight(it.mVertexId(), it.mWeight()))
         }
         return bone
     }
