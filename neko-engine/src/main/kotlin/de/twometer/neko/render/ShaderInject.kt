@@ -1,7 +1,7 @@
 package de.twometer.neko.render
 
-import org.joml.Vector2f
 import de.twometer.neko.core.NekoApp
+import org.joml.Vector2f
 
 enum class ShaderInject(val inject: (Shader) -> Unit) {
 

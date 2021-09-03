@@ -6,7 +6,6 @@ import de.twometer.neko.util.MathF.rand
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
-import java.util.*
 
 class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuffer: FramebufferRef) {
 
