@@ -1,6 +1,5 @@
 package de.twometer.neko.scene.nodes
 
-import de.twometer.neko.render.Animator
 import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Mesh
 import de.twometer.neko.scene.SkeletonNode
@@ -13,7 +12,6 @@ class Geometry(
     material: Material = Material.Default,
     name: String = "",
     val skeletonRoot: SkeletonNode? = null,
-    var animator: Animator? = null
 ) :
     RenderableNode(material, name = name) {
 

@@ -8,7 +8,7 @@ open class Node(
     var parent: Node? = null,
     val transform: Transform = Transform(),
     val children: MutableList<Node> = ArrayList(),
-    private val components: HashMap<Class<out BaseComponent>, BaseComponent> = HashMap(),
+    val components: HashMap<Class<out BaseComponent>, BaseComponent> = HashMap(),
 ) {
 
     companion object {
@@ -20,12 +20,13 @@ open class Node(
     val compositeTransform: Transform
         get() = if (parent == null) transform else parent!!.compositeTransform * transform
 
-    fun <T : BaseComponent> getComponent(clazz: Class<T>): T {
+    inline fun <reified T : BaseComponent> getComponent(): T? {
+        val clazz = T::class.java
         val component = components[clazz]
-        if (component != null && component.javaClass == clazz) {
-            return component as T
+        return if (component?.javaClass == clazz) {
+            component as T
         } else {
-            throw Exception("Component of type ${clazz.name} is not registered on ${javaClass.name} (${name})")
+            null
         }
     }
 

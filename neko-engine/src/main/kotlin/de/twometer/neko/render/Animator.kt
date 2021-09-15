@@ -4,6 +4,7 @@ import de.twometer.neko.scene.Animation
 import de.twometer.neko.scene.AnimationChannel
 import de.twometer.neko.scene.Keyframe
 import de.twometer.neko.scene.SkeletonNode
+import de.twometer.neko.scene.component.BaseComponent
 import de.twometer.neko.scene.nodes.Node
 import de.twometer.neko.util.MathExtensions.clone
 import de.twometer.neko.util.MathF
@@ -11,7 +12,7 @@ import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 
-class Animator(private val node: Node) {
+class Animator : BaseComponent() {
 
     private var time: Double = 0.0
     private var animation: Animation? = null
@@ -35,7 +36,7 @@ class Animator(private val node: Node) {
         calcBoneTransforms(findSkeletonRoot()!!, Matrix4f())
     }
 
-    private fun findSkeletonRoot(node: Node = this.node): SkeletonNode? {
+    private fun findSkeletonRoot(node: Node = this.parent!!): SkeletonNode? {
         for (child in node.children) {
             if (child is SkeletonNode)
                 return child

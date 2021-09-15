@@ -11,7 +11,6 @@ import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.RenderBucket
 import de.twometer.neko.scene.Scene
-import de.twometer.neko.scene.nodes.Geometry
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
@@ -158,9 +157,9 @@ class SceneRenderer(val scene: Scene) {
                 shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
                 shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
 
-                if (node is Geometry && node.animator != null) {
-                    node.animator?.update(deltaTime)
-                    node.animator?.loadMatrices(shader)
+                node.getComponent<Animator>()?.let {
+                    it.update(deltaTime)
+                    it.loadMatrices(shader)
                 }
 
                 node.render()

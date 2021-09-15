@@ -70,7 +70,7 @@ object ModelLoader {
                 if (mesh.hasRig() && node.animations.isNotEmpty()) {
                     material.shader = "base/geometry.animated.nks"
                     geometry.attachChild(geometry.skeletonRoot!!)
-                    geometry.animator = Animator(geometry.skeletonRoot)
+                    geometry.attachComponent(Animator())
                 }
 
                 node.attachChild(geometry)
