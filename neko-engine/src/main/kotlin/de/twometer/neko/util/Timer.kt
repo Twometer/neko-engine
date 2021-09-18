@@ -20,15 +20,29 @@ class Timer(tps: Int) {
     var fps = 0.0
         private set
 
+    private var lastFpsReset = 0.0
+    private var frameTimeAccum = 0.0
+    private var frames = 0.0
+
     fun reset() {
         lastReset = glfwGetTime()
+
+        val timeSinceFpsReset = glfwGetTime() - lastFpsReset
+        if (timeSinceFpsReset > 1) {
+            fps = timeSinceFpsReset / (frameTimeAccum / frames)
+            frames = 0.0
+            frameTimeAccum = 0.0
+            lastFpsReset = glfwGetTime()
+        }
     }
 
     fun onFrame() {
         val now = glfwGetTime()
         deltaTime = now - lastFrame
-        fps = 1.0 / deltaTime
         lastFrame = now
+
+        frameTimeAccum += deltaTime
+        frames++
     }
 
 }

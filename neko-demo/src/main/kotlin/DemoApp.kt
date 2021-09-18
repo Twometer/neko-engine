@@ -87,6 +87,10 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         drawNode(scene.rootNode)
         ImGui.end()
 
+        ImGui.begin("Debug")
+        ImGui.text("FPS: " + timer.fps)
+        ImGui.end()
+
         selectedNode?.apply {
             ImGui.begin("Node info")
             ImGui.text("POS:" + this.transform.translation)
