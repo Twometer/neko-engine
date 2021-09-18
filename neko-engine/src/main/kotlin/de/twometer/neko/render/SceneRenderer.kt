@@ -20,7 +20,6 @@ import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
 
-    private var lastTime: Double = 0.0
     private lateinit var effectsRenderer: EffectsRenderer
     private lateinit var gBuffer: FramebufferRef
     private lateinit var renderbuffer: FramebufferRef
@@ -56,6 +55,8 @@ class SceneRenderer(val scene: Scene) {
     }
 
     fun renderFrame() {
+        glClearColor(0f, 0f, 0f, 1f)
+
         // Render scene to GBuffer
         renderGBuffer()
 
@@ -74,17 +75,16 @@ class SceneRenderer(val scene: Scene) {
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
         Primitives.fullscreenQuad.render()
-        // ambientShader.unbind()
 
         // Blinn-Phong step (point lights)
+        blinnShader.bind()
         OpenGL.enable(GL_DEPTH_TEST)
+        OpenGL.depthFunc(GL_GREATER)
         OpenGL.enable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE)
-        OpenGL.depthFunc(GL_GREATER)
         OpenGL.enable(GL_CULL_FACE)
         OpenGL.cullFace(GL_FRONT)
 
-        blinnShader.bind()
         scene.rootNode.scanTree {
             if (it is PointLight && it.active) {
                 blinnShader["modelMatrix"] = it.compositeTransform.matrix.scale(it.radius)
@@ -97,19 +97,17 @@ class SceneRenderer(val scene: Scene) {
                 it.getPrimitive().render()
             }
         }
-        blinnShader.unbind()
+
+        // Restore GL state
         OpenGL.depthMask(true)
         OpenGL.depthFunc(GL_LESS)
-
-        // Prepare GL state for forward rendering
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         OpenGL.cullFace(GL_BACK)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Forward rendering
         scene.rootNode.scanTree { node ->
             if (node is RenderableNode && node.bucket == RenderBucket.Forward) {
                 val shader = ShaderCache.get(node.material.shader)
-
                 shader.bind()
 
                 val modelMatrix = node.compositeTransform.matrix
@@ -118,12 +116,11 @@ class SceneRenderer(val scene: Scene) {
                 bindTexture(node.material[MatKey.TextureDiffuse])
 
                 node.render()
-
-                shader.unbind()
                 OpenGL.resetState() // Clean up the crap that the shader may have left behind. Could probably be done more elegant.
             }
         }
 
+        OpenGL.useProgram(0)
         Events.post(RenderForwardEvent())
         renderbuffer.unbind()
 
@@ -141,36 +138,44 @@ class SceneRenderer(val scene: Scene) {
         val deltaTime = NekoApp.the!!.timer.deltaTime
 
         gBuffer.bind()
-        glClearColor(0f, 0f, 0f, 1f)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         OpenGL.enable(GL_DEPTH_TEST)
         OpenGL.cullFace(GL_BACK)
         OpenGL.disable(GL_BLEND)
 
+        val nodes = ArrayList<RenderableNode>()
+
+        // Collect nodes
         scene.rootNode.scanTree { node ->
-            if (node is RenderableNode && node.bucket == RenderBucket.Deferred) {
-                val shader = ShaderCache.get(node.material.shader)
+            if (node is RenderableNode && node.bucket == RenderBucket.Deferred)
+                nodes.add(node)
+        }
 
-                OpenGL.setBoolean(GL_CULL_FACE, node.material[MatKey.TwoSided] == true)
+        // Sort by material
+        nodes.sortBy { it.material.shader }
 
-                bindTexture(node.material[MatKey.TextureDiffuse])
+        // Then render the node
+        nodes.forEach { node ->
+            val shader = ShaderCache.get(node.material.shader)
 
-                shader.bind()
-                val modelMatrix = node.compositeTransform.matrix
-                shader["modelMatrix"] = modelMatrix
-                shader["normalMatrix"] = createNormalMatrix(modelMatrix)
-                shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
-                shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
-                shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
+            OpenGL.setBoolean(GL_CULL_FACE, node.material[MatKey.TwoSided] == true)
+            bindTexture(node.material[MatKey.TextureDiffuse])
+            shader.bind()
 
-                node.getComponent<Animator>()?.let {
-                    it.update(deltaTime)
-                    it.loadMatrices(shader)
-                }
+            val modelMatrix = node.compositeTransform.matrix
+            shader["modelMatrix"] = modelMatrix
+            shader["normalMatrix"] = createNormalMatrix(modelMatrix)
+            shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
+            shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
+            shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
 
-                node.render()
+            node.getComponent<Animator>()?.let {
+                it.update(deltaTime)
+                it.loadMatrices(shader)
             }
+
+            node.render()
         }
 
         Events.post(RenderDeferredEvent())
@@ -186,10 +191,7 @@ class SceneRenderer(val scene: Scene) {
         }
     }
 
-    private fun createNormalMatrix(modelMatrix: Matrix4f): Matrix3f {
-        // //mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
-        return Matrix3f(modelMatrix).invert().transpose()
-    }
+    private fun createNormalMatrix(modelMatrix: Matrix4f): Matrix3f = Matrix3f(modelMatrix).invert().transpose()
 
 }
 

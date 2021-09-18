@@ -3,7 +3,6 @@ package de.twometer.neko.render
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.util.MathF.rand
-import org.joml.Vector2f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
 
@@ -15,7 +14,7 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
     private val aoBlurShader = ShaderCache.get("base/postproc.ao_blur.nks")
     private val aoBaseShader = ShaderCache.get("base/postproc.ao_base.nks")
 
-    private val aoBuffer = FboManager.request({
+    private val aoBaseBuffer = FboManager.request({
         it.addColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
     })
     private val aoBlurBuffer = FboManager.request({
@@ -28,48 +27,31 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         OpenGL.disable(GL_DEPTH_TEST)
         OpenGL.disable(GL_CULL_FACE)
-
-        //renderNoSSAO()
-        renderSAO()
-
+        renderWithAO()
         OpenGL.enable(GL_DEPTH_TEST)
     }
 
-    private fun renderNoSSAO() {
-        renderbuffer.fbo.getColorTexture().bind()
-        StaticTextures.white.bind(1)
-        tonemapShader.bind()
-        Primitives.fullscreenQuad.render()
-    }
-
-    private fun renderSAO() {
+    private fun renderWithAO() {
         gBuffer.fbo.getColorTexture(0).bind(0)
         gBuffer.fbo.getColorTexture(1).bind(1)
         gBuffer.fbo.getColorTexture(2).bind(2)
         noiseTexture.bind(4)
 
-        aoBuffer.bind()
+        aoBaseBuffer.bind()
         aoBaseShader.bind()
-
-        val (w, h) = NekoApp.the!!.window.getSize()
-        aoBaseShader["uNoiseScale"] = Vector2f(w / 4f, h / 4f)
         aoBaseShader["uFOV"] = NekoApp.the!!.scene.camera.fov
         aoBaseShader["uIntensity"] = 0.5f
         aoBaseShader["uSampleRadiusWS"] = 0.45f
         aoBaseShader["uBias"] = 0.0f
-
         Primitives.fullscreenQuad.render()
-        aoBaseShader.unbind()
-        aoBuffer.unbind()
 
         aoBlurBuffer.bind()
         aoBlurShader.bind()
-        aoBuffer.fbo.getColorTexture(0).bind(3)
+        aoBaseBuffer.fbo.getColorTexture(0).bind(3)
         Primitives.fullscreenQuad.render()
-        aoBuffer.unbind()
         aoBlurBuffer.unbind()
 
-        renderbuffer.fbo.getColorTexture().bind()
+        renderbuffer.fbo.getColorTexture().bind(0)
         aoBlurBuffer.fbo.getColorTexture().bind(1)
         tonemapShader.bind()
         Primitives.fullscreenQuad.render()

@@ -50,14 +50,16 @@
         float shininess = albedoShine.a;
 
         // Light calculations
-        vec3 lightDir = normalize(light.position - position);
+        vec3 lightDir = light.position - position;
+        float distance = length(lightDir);
+        lightDir /= distance;
+
         vec3 viewDir = normalize(cameraPos - position);
         vec3 halfway = normalize(lightDir + viewDir);
 
         vec3 lightRgb = light.color.rgb;
         vec3 diffuse = lightRgb * max(dot(normal, lightDir), 0.0f);
         vec3 specular = lightRgb * pow(max(dot(normal, halfway), 0.0), shininess);
-        float distance = length(light.position - position);
         float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
 
         color = vec4(albedo * attenuation * (diffuse + specularStrength * specular), 1.0f);

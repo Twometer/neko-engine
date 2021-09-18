@@ -12,6 +12,7 @@ enum class ShaderInject(val inject: (Shader) -> Unit) {
     }),
 
     CameraMatricesInverse({
+        it["viewMatrixInverse"] = NekoApp.the!!.scene.camera.viewMatrix.clone().invert()
         it["projectionMatrixInverse"] = NekoApp.the!!.scene.camera.projectionMatrix.clone().invert()
     }),
 

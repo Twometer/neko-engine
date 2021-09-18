@@ -10,18 +10,19 @@
     uniform sampler2D textureSampler;
     uniform sampler2D ssaoSampler;
 
+    const float gamma = 1.5;
+    const float exposure = 1.8;
+
     void main() {
         vec3 hdrColor = texture(textureSampler, texCoords).rgb * texture(ssaoSampler, texCoords).r;
-
-        const float gamma = 1.5;
-        const float exposure = 1.8;
 
         // Tone mapping
         vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
 
         // Gamma correction
-        mapped = pow(mapped, vec3(1.0 / gamma));
+        vec3 corrected = pow(mapped, vec3(1.0 / gamma));
 
-        color = vec4(mapped, 1.0);
+        // Output
+        color = vec4(corrected, 1.0);
     }
 #end fragment

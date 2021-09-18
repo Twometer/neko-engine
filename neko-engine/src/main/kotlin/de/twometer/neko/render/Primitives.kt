@@ -82,7 +82,7 @@ object Primitives {
             addVertex(c)
         }
 
-        val resolution = 20
+        val resolution = 10
         val startU = 0F
         val startV = 0F
         val endU = MathF.PI * 2F

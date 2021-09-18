@@ -17,13 +17,13 @@ class Shader(private val programId: Int) {
     }
 
     fun bind() {
-        glUseProgram(programId)
+        OpenGL.useProgram(programId)
         injects.forEach { it.inject(this) }
         properties.forEach { (k, v) -> k.apply(v) }
     }
 
     fun unbind() {
-        glUseProgram(0)
+        OpenGL.useProgram(0)
     }
 
     operator fun set(name: String, value: Float) = glUniform1f(uniformCache.get(name), value)

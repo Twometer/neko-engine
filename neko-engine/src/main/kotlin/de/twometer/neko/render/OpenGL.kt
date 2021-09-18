@@ -1,6 +1,8 @@
 package de.twometer.neko.render
 
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.glActiveTexture
+import org.lwjgl.opengl.GL20.glUseProgram
 
 /**
  * OpenGL wrapper with useful helper method
@@ -11,6 +13,8 @@ object OpenGL {
 
     // Auxiliary keys
     private const val DEPTH_MASK = 100000000
+    private const val CUR_PROGRAM = 100000001
+    private const val CUR_TEXTURE = 100000002
 
     // State map
     private val states = HashMap<Int, Any>()
@@ -50,6 +54,18 @@ object OpenGL {
 
     fun depthFunc(func: Int) {
         trySetState(GL_DEPTH_FUNC, func, ::glDepthFunc)
+    }
+
+    fun useProgram(program: Int) {
+        trySetState(CUR_PROGRAM, program, ::glUseProgram)
+    }
+
+    fun activeTexture(textureUnit: Int) {
+        trySetState(CUR_TEXTURE, textureUnit, ::glActiveTexture)
+    }
+
+    fun bindTexture(textureTarget: Int, textureId: Int) {
+        trySetState(-textureTarget, textureId) { glBindTexture(textureTarget, it) }
     }
 
     fun resetState() {
