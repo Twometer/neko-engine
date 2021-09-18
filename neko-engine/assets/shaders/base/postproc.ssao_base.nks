@@ -26,7 +26,7 @@
     const float bias = 0.025;
 
     vec3 samplePositionTex(vec2 coords) {
-        return (viewMatrix * texture(gPosition, coords)).xyz;
+        return (viewMatrix * vec4(texture(gPosition, coords).xyz, 1)).xyz;
     }
 
     void main(void){

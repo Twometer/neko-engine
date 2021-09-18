@@ -34,7 +34,7 @@ object ShaderParser {
         Set
     }
 
-    private fun parseDirectiveType(name: String): DirectiveType = when (name.toLowerCase()) {
+    private fun parseDirectiveType(name: String): DirectiveType? = when (name.toLowerCase()) {
         "version" -> DirectiveType.Version
         "include" -> DirectiveType.Include
         "inject" -> DirectiveType.Inject
@@ -42,7 +42,7 @@ object ShaderParser {
         "end" -> DirectiveType.End
         "bind" -> DirectiveType.Bind
         "set" -> DirectiveType.Set
-        else -> failure("Unknown directive $name")
+        else -> null
     }
 
     private fun parseShader(file: File): List<Node> {
@@ -53,20 +53,28 @@ object ShaderParser {
             val line = it.trim()
             lineNo++
 
+            fun copyLineRaw() =
+                result.add(PlainText("$line /*REF:${file.name}:$lineNo:*/"))
+
             when {
                 line.startsWith('#') -> {
                     if (line.length <= 1)
                         failure("Shader parser error (${file.name}:$lineNo): expected instruction")
-                    if (!line.contains(' '))
-                        failure("Shader parser error (${file.name}:$lineNo): expected parameter")
 
                     val content = line.substring(1)
-                    val directive = parseDirectiveType(content.substringBefore(' '))
-                    val param = content.substringAfter(' ').trim().split(' ').filter { arg -> arg.isNotBlank() }
-                    result.add(Directive(directive, param))
+                    val directive =
+                        parseDirectiveType(if (content.contains(' ')) content.substringBefore(' ') else content)
+
+                    if (directive != null) {
+                        if (!content.contains(' '))
+                            failure("Shader parser error (${file.name}:$lineNo): expected parameter")
+
+                        val param = content.substringAfter(' ').trim().split(' ').filter { arg -> arg.isNotBlank() }
+                        result.add(Directive(directive, param))
+                    } else copyLineRaw()
                 }
                 line.startsWith("//") -> return@forEachLine
-                line.isNotEmpty() -> result.add(PlainText("$line /*REF:${file.name}:$lineNo:*/"))
+                line.isNotEmpty() -> copyLineRaw()
             }
         }
         return result
