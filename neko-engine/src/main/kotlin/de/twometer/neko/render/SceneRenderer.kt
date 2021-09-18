@@ -14,6 +14,8 @@ import de.twometer.neko.scene.Scene
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
@@ -109,7 +111,10 @@ class SceneRenderer(val scene: Scene) {
                 val shader = ShaderCache.get(node.material.shader)
 
                 shader.bind()
-                shader["modelMatrix"] = node.compositeTransform.matrix
+
+                val modelMatrix = node.compositeTransform.matrix
+                shader["modelMatrix"] = modelMatrix
+                shader["normalMatrix"] = createNormalMatrix(modelMatrix)
                 bindTexture(node.material[MatKey.TextureDiffuse])
 
                 node.render()
@@ -152,7 +157,9 @@ class SceneRenderer(val scene: Scene) {
                 bindTexture(node.material[MatKey.TextureDiffuse])
 
                 shader.bind()
-                shader["modelMatrix"] = node.compositeTransform.matrix
+                val modelMatrix = node.compositeTransform.matrix
+                shader["modelMatrix"] = modelMatrix
+                shader["normalMatrix"] = createNormalMatrix(modelMatrix)
                 shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
                 shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
                 shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
@@ -177,6 +184,11 @@ class SceneRenderer(val scene: Scene) {
             is String -> TextureCache.get(texture).bind()
             else -> StaticTextures.white.bind()
         }
+    }
+
+    private fun createNormalMatrix(modelMatrix: Matrix4f): Matrix3f {
+        // //mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
+        return Matrix3f(modelMatrix).invert().transpose()
     }
 
 }

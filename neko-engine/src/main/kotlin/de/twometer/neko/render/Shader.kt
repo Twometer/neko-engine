@@ -2,10 +2,7 @@ package de.twometer.neko.render
 
 import de.twometer.neko.scene.Color
 import de.twometer.neko.util.Cache
-import org.joml.Matrix4f
-import org.joml.Vector2f
-import org.joml.Vector3f
-import org.joml.Vector4f
+import org.joml.*
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.system.MemoryStack
 
@@ -46,6 +43,15 @@ class Shader(private val programId: Int) {
             val buf = it.mallocFloat(16)
             value.get(buf)
             glUniformMatrix4fv(location, false, buf)
+        }
+    }
+
+    operator fun set(name: String, value: Matrix3f) {
+        val location = uniformCache.get(name)
+        MemoryStack.stackPush().use {
+            val buf = it.mallocFloat(9)
+            value.get(buf)
+            glUniformMatrix3fv(location, false, buf)
         }
     }
 

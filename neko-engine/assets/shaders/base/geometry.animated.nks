@@ -29,8 +29,6 @@
         vec4 worldSpacePos = modelMatrix * animatedPosition;
         gl_Position = projectionMatrix * viewMatrix * worldSpacePos;
 
-        mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
-
         fragmentPosition = worldSpacePos.xyz;
         fragmentNormal = normalize(normalMatrix * animatedNormal.xyz);
         fragmentTexCoords = vertexTexCoords;
