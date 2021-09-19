@@ -12,6 +12,7 @@ import de.twometer.neko.scene.nodes.Sky
 import de.twometer.neko.util.MathF.toRadians
 import imgui.ImGui
 import org.greenrobot.eventbus.Subscribe
+import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_ALT
 
@@ -40,6 +41,17 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         })
 
         scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
+        scene.rootNode.attachChild(ModelLoader.load("skeld.obj"))
+
+        val rand = java.util.Random()
+        for (i in 0..150) {
+            val x = rand.nextFloat() * 40
+            val y = rand.nextFloat() * -25
+            scene.rootNode.attachChild(PointLight().also {
+                it.color = Color(1f, 1f, 1f, 1f)
+                it.transform.translation.set(Vector3f(x, 1f, y))
+            })
+        }
 
         scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
             it.transform.rotation.rotateX(toRadians(-90f))
@@ -89,6 +101,9 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         ImGui.begin("Debug")
         ImGui.text("FPS: " + timer.fps)
+        ImGui.text("X:" + scene.camera.position.x)
+        ImGui.text("Y:" + scene.camera.position.y)
+        ImGui.text("Z:" + scene.camera.position.z)
         ImGui.end()
 
         selectedNode?.apply {

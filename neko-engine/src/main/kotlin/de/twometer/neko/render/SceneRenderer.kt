@@ -16,6 +16,7 @@ import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Matrix3f
 import org.joml.Matrix4f
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
@@ -85,18 +86,29 @@ class SceneRenderer(val scene: Scene) {
         OpenGL.enable(GL_CULL_FACE)
         OpenGL.cullFace(GL_FRONT)
 
+        val lights = ArrayList<PointLight>()
+
         scene.rootNode.scanTree {
             if (it is PointLight && it.active) {
-                blinnShader["modelMatrix"] = it.compositeTransform.matrix.scale(it.radius)
-                blinnShader["light.position"] = it.compositeTransform.translation
-                blinnShader["light.color"] = it.color
-                blinnShader["light.constant"] = it.constant
-                blinnShader["light.linear"] = it.linear
-                blinnShader["light.quadratic"] = it.quadratic
-
-                it.getPrimitive().render()
+                lights.add(it)
             }
         }
+
+        for (j in 0 until lights.size step 32) {
+            for (i in j until j + 32) {
+                if (i >= lights.size)
+                    break
+                
+                val it = lights[i]
+                blinnShader["modelMatrices[$i]"] = it.compositeTransform.matrix.scale(it.radius)
+                blinnShader["lightPositions[$i]"] = it.compositeTransform.translation
+                blinnShader["lightColors[$i]"] = it.color
+                blinnShader["lightValues[$i]"] = Vector3f(it.constant, it.linear, it.quadratic)
+                blinnShader["test_id"] = i
+            }
+            Primitives.unitSphere.renderInstanced(32)
+        }
+
 
         // Restore GL state
         OpenGL.depthMask(true)

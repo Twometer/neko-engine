@@ -8,30 +8,45 @@
 
 #begin vertex
     in vec3 position;
+    out vec3 lightPos;
+    out vec4 lightColor;
+    out float lightConstant;
+    out float lightLinear;
+    out float lightQuadratic;
 
     uniform mat4 projectionMatrix;
     uniform mat4 viewMatrix;
-    uniform mat4 modelMatrix;
+
+    const int MAX_LIGHTS = 32;
+    uniform mat4 modelMatrices[MAX_LIGHTS];
+    uniform vec3 lightPositions[MAX_LIGHTS];
+    uniform vec4 lightColors[MAX_LIGHTS];
+    uniform vec3 lightValues[MAX_LIGHTS];
 
     void main(void) {
-        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * viewMatrix * modelMatrices[gl_InstanceID] * vec4(position, 1.0f);
+
+        // Unpack light values
+        lightPos = lightPositions[gl_InstanceID];
+        lightColor = lightColors[gl_InstanceID];
+
+        vec3 val = lightValues[gl_InstanceID];
+        lightConstant = val.x;
+        lightLinear = val.y;
+        lightQuadratic = val.z;
     }
 #end vertex
 
 #begin fragment
-    struct Light {
-        vec3 position;
-        vec4 color;
-        float constant;
-        float linear;
-        float quadratic;
-    };
-
+    in vec3 lightPos;
+    in vec4 lightColor;
+    in float lightConstant;
+    in float lightLinear;
+    in float lightQuadratic;
     out vec4 color;
 
     uniform vec2 screenSize;
     uniform vec3 cameraPos;
-    uniform Light light;
 
     uniform sampler2D gPosition;
     uniform sampler2D gNormal;
@@ -50,17 +65,17 @@
         float shininess = albedoShine.a;
 
         // Light calculations
-        vec3 lightDir = light.position - position;
+        vec3 lightDir = lightPos - position;
         float distance = length(lightDir);
         lightDir /= distance;
 
         vec3 viewDir = normalize(cameraPos - position);
         vec3 halfway = normalize(lightDir + viewDir);
 
-        vec3 lightRgb = light.color.rgb;
+        vec3 lightRgb = lightColor.rgb;
         vec3 diffuse = lightRgb * max(dot(normal, lightDir), 0.0f);
         vec3 specular = lightRgb * pow(max(dot(normal, halfway), 0.0), shininess);
-        float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
+        float attenuation = 1.0 / (lightConstant + lightLinear * distance + lightQuadratic * distance * distance);
 
         color = vec4(albedo * attenuation * (diffuse + specularStrength * specular), 1.0f);
     }

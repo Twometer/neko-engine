@@ -3,6 +3,7 @@ package de.twometer.neko.render
 import de.twometer.neko.util.MathF
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.opengl.GL31.glDrawArraysInstanced
 
 /**
  * Primitives are used as "proxy geometry" in the
@@ -131,4 +132,11 @@ class Primitive(private val vertices: FloatArray, private val type: Int, dimensi
         glDrawArrays(type, 0, vertices.size)
         glBindVertexArray(0)
     }
+
+    fun renderInstanced(amount: Int) {
+        glBindVertexArray(vao)
+        glDrawArraysInstanced(type, 0, vertices.size, amount)
+        glBindVertexArray(0)
+    }
+
 }
