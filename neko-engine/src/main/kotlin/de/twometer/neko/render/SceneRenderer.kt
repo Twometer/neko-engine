@@ -78,7 +78,8 @@ class SceneRenderer(val scene: Scene) {
         val lights = gatherLights()
         activeLights = lights.size
 
-        blinnBuffer.reset()
+        val prevHash = blinnBuffer.hash()
+        blinnBuffer.rewind()
         for (light in lights) {
             val transform = light.compositeTransform
             blinnBuffer.writeMat4(transform.matrix.scale(light.radius))
@@ -89,6 +90,9 @@ class SceneRenderer(val scene: Scene) {
             blinnBuffer.writeFloat(light.quadratic)
             blinnBuffer.writeFloat(0f) // again, padding
         }
+
+        if (blinnBuffer.hash() == prevHash)
+            return
 
         blinnBuffer.bind()
         blinnBuffer.upload()
