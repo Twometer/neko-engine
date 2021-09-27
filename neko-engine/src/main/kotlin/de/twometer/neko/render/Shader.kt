@@ -3,7 +3,7 @@ package de.twometer.neko.render
 import de.twometer.neko.scene.Color
 import de.twometer.neko.util.Cache
 import org.joml.*
-import org.lwjgl.opengl.GL20.*
+import org.lwjgl.opengl.GL31.*
 import org.lwjgl.system.MemoryStack
 
 
@@ -12,6 +12,9 @@ class Shader(private val programId: Int) {
     val injects = ArrayList<ShaderInject>()
     val properties = HashMap<ShaderProperty, String>()
 
+    private val uniformBlockCache = object : Cache<String, Int>() {
+        override fun create(key: String): Int = glGetUniformBlockIndex(programId, key)
+    }
     private val uniformCache = object : Cache<String, Int>() {
         override fun create(key: String): Int = glGetUniformLocation(programId, key)
     }
@@ -24,6 +27,12 @@ class Shader(private val programId: Int) {
 
     fun unbind() {
         OpenGL.useProgram(0)
+    }
+
+    fun bindUniformBuffer(blockName: String, buffer: UniformBuffer, bindingPoint: Int) {
+        val index = uniformBlockCache.get(blockName)
+        glUniformBlockBinding(programId, index, bindingPoint)
+        glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer.bufferId)
     }
 
     operator fun set(name: String, value: Float) = glUniform1f(uniformCache.get(name), value)

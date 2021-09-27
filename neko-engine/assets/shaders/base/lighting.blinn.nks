@@ -17,23 +17,32 @@
     uniform mat4 projectionMatrix;
     uniform mat4 viewMatrix;
 
-    const int MAX_LIGHTS = 32;
-    uniform mat4 modelMatrices[MAX_LIGHTS];
-    uniform vec3 lightPositions[MAX_LIGHTS];
-    uniform vec4 lightColors[MAX_LIGHTS];
-    uniform vec3 lightValues[MAX_LIGHTS];
+    // Each light is 112 bytes in size [4 * 28]
+    // A UBO can store 64KB. 512 lights are 57KB.
+    const int MAX_LIGHTS = 512;
+    struct Light {
+        mat4 matrix;        // 0..15
+        vec4 color;         // 16..20
+        vec4 position;      // 20..24
+        float constant;     // 25
+        float linear;       // 26
+        float quadratic;    // 27
+        float _padding;     // 28
+    };
+    layout (std140) uniform LightsBlock {
+        Light lights[MAX_LIGHTS];
+    };
 
     void main(void) {
-        gl_Position = projectionMatrix * viewMatrix * modelMatrices[gl_InstanceID] * vec4(position, 1.0f);
+        Light light = lights[gl_InstanceID];
+        gl_Position = projectionMatrix * viewMatrix * light.matrix * vec4(position, 1.0f);
 
-        // Unpack light values
-        lightPos = lightPositions[gl_InstanceID];
-        lightColor = lightColors[gl_InstanceID];
-
-        vec3 val = lightValues[gl_InstanceID];
-        lightConstant = val.x;
-        lightLinear = val.y;
-        lightQuadratic = val.z;
+        // Send light information to fragment shader
+        lightPos = light.position.xyz;
+        lightColor = light.color;
+        lightConstant = light.constant;
+        lightLinear = light.linear;
+        lightQuadratic = light.quadratic;
     }
 #end vertex
 
@@ -79,5 +88,4 @@
 
         color = vec4(albedo * attenuation * (diffuse + specularStrength * specular), 1.0f);
     }
-
 #end fragment

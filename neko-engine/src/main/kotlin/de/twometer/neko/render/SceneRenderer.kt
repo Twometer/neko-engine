@@ -16,16 +16,23 @@ import de.twometer.neko.scene.nodes.RenderableNode
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Matrix3f
 import org.joml.Matrix4f
-import org.joml.Vector3f
+import org.joml.Vector4f
 import org.lwjgl.opengl.GL30.*
 
 class SceneRenderer(val scene: Scene) {
+
+    // For more info on these variables, see lighting.blinn.nks
+    private val maxLights = 512
+    private val lightSize = 112
 
     private lateinit var effectsRenderer: EffectsRenderer
     private lateinit var gBuffer: FramebufferRef
     private lateinit var renderbuffer: FramebufferRef
     private lateinit var blinnShader: Shader
+    private lateinit var blinnBuffer: UniformBuffer
     private lateinit var ambientShader: Shader
+
+    private var activeLights = 0
 
     fun setup() {
         Events.register(this)
@@ -48,11 +55,44 @@ class SceneRenderer(val scene: Scene) {
         })
 
         effectsRenderer = EffectsRenderer(gBuffer, renderbuffer)
+        blinnBuffer = UniformBuffer(maxLights * lightSize)
+        blinnShader.bindUniformBuffer("Lights", blinnBuffer, 0)
     }
 
     @Subscribe
     fun onSizeChanged(event: ResizeEvent) {
         glViewport(0, 0, event.width, event.height)
+    }
+
+    private fun gatherLights(): List<PointLight> {
+        val lights = ArrayList<PointLight>()
+        scene.rootNode.scanTree {
+            if (it is PointLight && it.active) {
+                lights.add(it)
+            }
+        }
+        return lights
+    }
+
+    private fun updateLights() {
+        val lights = gatherLights()
+        activeLights = lights.size
+
+        blinnBuffer.reset()
+        for (light in lights) {
+            val transform = light.compositeTransform
+            blinnBuffer.writeMat4(transform.matrix.scale(light.radius))
+            blinnBuffer.writeVec4(Vector4f(light.color.r, light.color.g, light.color.b, light.color.a))
+            blinnBuffer.writeVec4(Vector4f(transform.translation, 0f)) // 0f is padding
+            blinnBuffer.writeFloat(light.constant)
+            blinnBuffer.writeFloat(light.linear)
+            blinnBuffer.writeFloat(light.quadratic)
+            blinnBuffer.writeFloat(0f) // again, padding
+        }
+
+        blinnBuffer.bind()
+        blinnBuffer.upload()
+        blinnBuffer.unbind()
     }
 
     fun renderFrame() {
@@ -86,29 +126,8 @@ class SceneRenderer(val scene: Scene) {
         OpenGL.enable(GL_CULL_FACE)
         OpenGL.cullFace(GL_FRONT)
 
-        val lights = ArrayList<PointLight>()
-
-        scene.rootNode.scanTree {
-            if (it is PointLight && it.active) {
-                lights.add(it)
-            }
-        }
-
-        for (j in 0 until lights.size step 32) {
-            for (i in j until j + 32) {
-                if (i >= lights.size)
-                    break
-                
-                val it = lights[i]
-                blinnShader["modelMatrices[$i]"] = it.compositeTransform.matrix.scale(it.radius)
-                blinnShader["lightPositions[$i]"] = it.compositeTransform.translation
-                blinnShader["lightColors[$i]"] = it.color
-                blinnShader["lightValues[$i]"] = Vector3f(it.constant, it.linear, it.quadratic)
-                blinnShader["test_id"] = i
-            }
-            Primitives.unitSphere.renderInstanced(32)
-        }
-
+        updateLights()
+        Primitives.unitSphere.renderInstanced(activeLights)
 
         // Restore GL state
         OpenGL.depthMask(true)
