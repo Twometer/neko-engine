@@ -2,6 +2,7 @@ package de.twometer.neko.scene.nodes
 
 import de.twometer.neko.scene.Transform
 import de.twometer.neko.scene.component.BaseComponent
+import java.util.function.Predicate
 
 open class Node(
     val name: String = "",
@@ -51,6 +52,18 @@ open class Node(
     fun scanTree(consumer: (Node) -> Unit) {
         children.forEach { it.scanTree(consumer) }
         consumer(this)
+    }
+
+    fun detachAll(selector: Predicate<Node>) {
+        val it = children.iterator()
+        while (it.hasNext()) {
+            val child = it.next()
+            child.detachAll(selector)
+            if (selector.test(child)) {
+                it.remove()
+                child.parent = null
+            }
+        }
     }
 
 }
