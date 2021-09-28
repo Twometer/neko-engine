@@ -15,9 +15,12 @@ class DefaultPlayerController : PlayerController {
         if (!window.isFocused() || NekoApp.the?.cursorVisible == true)
             return
 
-        val speed = this.speed * deltaTime.toFloat()
+        var speed = this.speed * deltaTime.toFloat()
         val sensitivity = this.sensitivity * deltaTime.toFloat()
 
+        if (window.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) {
+            speed *= 4
+        }
         if (window.isKeyDown(GLFW.GLFW_KEY_W)) {
             scene.camera.position.add(scene.camera.direction.clone().mul(speed))
         }
