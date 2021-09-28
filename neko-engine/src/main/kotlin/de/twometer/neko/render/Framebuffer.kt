@@ -24,7 +24,7 @@ class Framebuffer(val width: Int, val height: Int) {
         attachmentNum: Int = 0,
         internalFormat: Int = GL_RGBA8,
         format: Int = GL_RGBA,
-        interpolation: Int = GL_LINE,
+        interpolation: Int = GL_LINEAR,
         dataType: Int = GL_UNSIGNED_BYTE
     ): Framebuffer {
         val attachment = GL_COLOR_ATTACHMENT0 + attachmentNum
