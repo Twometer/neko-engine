@@ -17,12 +17,6 @@ class UniformBuffer(size: Int) {
     private var savedPos = 0
     private var savedLimit = 0
 
-    init {
-        bind()
-        glBufferData(GL_UNIFORM_BUFFER, buffer, GL_DYNAMIC_DRAW)
-        unbind()
-    }
-
     private fun saveState() {
         savedLimit = buffer.limit()
         savedPos = buffer.position()
@@ -31,6 +25,11 @@ class UniformBuffer(size: Int) {
     private fun restoreState() {
         buffer.limit(savedLimit)
         buffer.position(savedPos)
+    }
+
+    private fun tryFlip() {
+        if (buffer.position() != 0)
+            buffer.flip()
     }
 
     fun bind() = glBindBuffer(GL_UNIFORM_BUFFER, bufferId)
@@ -43,14 +42,14 @@ class UniformBuffer(size: Int) {
 
     fun upload() {
         saveState()
-        buffer.flip()
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, buffer)
+        tryFlip()
+        glBufferData(GL_UNIFORM_BUFFER, buffer, GL_DYNAMIC_DRAW)
         restoreState()
     }
 
     fun hash(): HashResult {
         saveState()
-        buffer.flip()
+        tryFlip()
         val hash = Hash.meow(buffer)
         restoreState()
         return hash
