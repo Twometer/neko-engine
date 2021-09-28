@@ -11,12 +11,16 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
     private val tonemapShader = ShaderCache.get("base/postproc.tonemap.nks")
     private val aoBlurShader = ShaderCache.get("base/postproc.ao_blur.nks")
     private val aoBaseShader = ShaderCache.get("base/postproc.ao_base.nks")
+    private val fxaaShader = ShaderCache.get("base/postproc.fxaa.nks")
 
     private val aoBaseBuffer = FboManager.request({
         it.addColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
     })
     private val aoBlurBuffer = FboManager.request({
         it.addColorTexture(0, GL_RGBA16F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+    })
+    private val tonemapBuffer = FboManager.request({
+        it.addColorTexture(0)
     })
 
     private val noiseTexture = generateNoiseTexture()
@@ -49,13 +53,19 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         aoBlurShader.bind()
         aoBaseBuffer.fbo.getColorTexture(0).bind(3)
         Primitives.fullscreenQuad.render()
-        aoBlurBuffer.unbind()
 
+        // Tonemap and multiply AO
+        tonemapBuffer.bind()
+        tonemapShader.bind()
         renderbuffer.fbo.getColorTexture().bind(0)
         aoBlurBuffer.fbo.getColorTexture().bind(1)
-        tonemapShader.bind()
         Primitives.fullscreenQuad.render()
-        tonemapShader.unbind()
+        tonemapBuffer.unbind()
+
+        // Transfer to screen using FXAA
+        fxaaShader.bind()
+        tonemapBuffer.fbo.getColorTexture(0).bind(0)
+        Primitives.fullscreenQuad.render()
     }
 
     private fun generateNoiseTexture(): Texture2d {
