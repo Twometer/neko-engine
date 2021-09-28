@@ -10,8 +10,8 @@
     uniform sampler2D textureSampler;
     uniform sampler2D ssaoSampler;
 
-    const float gamma = 1.5;
-    const float exposure = 1.8;
+    uniform float gamma;
+    uniform float exposure;
 
     void main() {
         vec3 hdrColor = texture(textureSampler, texCoords).rgb * texture(ssaoSampler, texCoords).r;

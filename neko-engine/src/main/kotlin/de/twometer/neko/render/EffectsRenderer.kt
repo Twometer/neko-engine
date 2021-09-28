@@ -33,6 +33,9 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         OpenGL.enable(GL_DEPTH_TEST)
     }
 
+    private val gamma = floatArrayOf(1.5f)
+    private val exposure = floatArrayOf(1.5f)
+
     private fun renderWithAO() {
         gBuffer.fbo.getColorTexture(0).bind(0)
         gBuffer.fbo.getColorTexture(1).bind(1)
@@ -57,6 +60,8 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         // Tonemap and multiply AO
         tonemapBuffer.bind()
         tonemapShader.bind()
+        tonemapShader["gamma"] = 0.95f
+        tonemapShader["exposure"] = 2f
         renderbuffer.fbo.getColorTexture().bind(0)
         aoBlurBuffer.fbo.getColorTexture().bind(1)
         Primitives.fullscreenQuad.render()
