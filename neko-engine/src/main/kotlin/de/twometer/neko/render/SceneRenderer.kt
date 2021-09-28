@@ -56,7 +56,7 @@ class SceneRenderer(val scene: Scene) {
 
         effectsRenderer = EffectsRenderer(gBuffer, renderbuffer)
         blinnBuffer = UniformBuffer(maxLights * lightSize)
-        blinnShader.bindUniformBuffer("Lights", blinnBuffer, 0)
+        blinnShader.bindUniformBuffer("LightsBlock", blinnBuffer, 0)
     }
 
     @Subscribe
@@ -111,33 +111,35 @@ class SceneRenderer(val scene: Scene) {
 
         bindGBuffer()
         gBuffer.fbo.blit(GL_DEPTH_BUFFER_BIT, renderbuffer.fbo)
-        OpenGL.disable(GL_DEPTH_TEST)
-        OpenGL.disable(GL_BLEND)
-        OpenGL.depthMask(false)
 
         // Ambient lighting step
+        OpenGL.disable(GL_DEPTH_TEST)
+        OpenGL.depthMask(false)
+        OpenGL.disable(GL_BLEND)
+
         ambientShader.bind()
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
         Primitives.fullscreenQuad.render()
 
         // Blinn-Phong step (point lights)
-        blinnShader.bind()
-        OpenGL.enable(GL_DEPTH_TEST)
-        OpenGL.depthFunc(GL_GREATER)
-        OpenGL.enable(GL_BLEND)
-        glBlendFunc(GL_ONE, GL_ONE)
-        OpenGL.enable(GL_CULL_FACE)
-        OpenGL.cullFace(GL_FRONT)
-
         updateLights()
-        Primitives.unitSphere.renderInstanced(activeLights)
+        if (activeLights > 0) {
+            OpenGL.enable(GL_DEPTH_TEST)
+            OpenGL.depthFunc(GL_GREATER)
+            OpenGL.enable(GL_BLEND)
+            glBlendFunc(GL_ONE, GL_ONE)
+            OpenGL.enable(GL_CULL_FACE)
+            OpenGL.cullFace(GL_FRONT)
+
+            blinnShader.bind()
+            Primitives.unitSphere.renderInstanced(activeLights)
+
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        }
 
         // Restore GL state
-        OpenGL.depthMask(true)
-        OpenGL.depthFunc(GL_LESS)
-        OpenGL.cullFace(GL_BACK)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        OpenGL.resetState()
 
         // Forward rendering
         scene.rootNode.scanTree { node ->
