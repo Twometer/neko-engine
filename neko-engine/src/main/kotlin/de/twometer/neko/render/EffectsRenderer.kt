@@ -8,8 +8,6 @@ import org.lwjgl.opengl.GL30.*
 
 class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuffer: FramebufferRef) {
 
-    // TODO: Do not hardcode SSAO and use .nfx pipeline descriptions
-
     private val tonemapShader = ShaderCache.get("base/postproc.tonemap.nks")
     private val aoBlurShader = ShaderCache.get("base/postproc.ao_blur.nks")
     private val aoBaseShader = ShaderCache.get("base/postproc.ao_base.nks")
@@ -37,14 +35,16 @@ class EffectsRenderer(private val gBuffer: FramebufferRef, private val renderbuf
         gBuffer.fbo.getColorTexture(2).bind(2)
         noiseTexture.bind(4)
 
+        // Build AO buffer
         aoBaseBuffer.bind()
         aoBaseShader.bind()
         aoBaseShader["uFOV"] = NekoApp.the!!.scene.camera.fov
-        aoBaseShader["uIntensity"] = 0.5f
-        aoBaseShader["uSampleRadiusWS"] = 0.45f
-        aoBaseShader["uBias"] = 0.0f
+        aoBaseShader["uIntensity"] = 0f
+        aoBaseShader["uSampleRadiusWS"] = 0.46f
+        aoBaseShader["uBias"] = 0.005f
         Primitives.fullscreenQuad.render()
 
+        // Blur AO Buffer
         aoBlurBuffer.bind()
         aoBlurShader.bind()
         aoBaseBuffer.fbo.getColorTexture(0).bind(3)

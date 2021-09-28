@@ -41,7 +41,7 @@ object FboManager {
 
     private val framebufferRefs = ArrayList<FramebufferRef>()
 
-    val scale = 1.0f
+    private const val scale = 0.5f
 
     fun setup() {
         Events.register(this)

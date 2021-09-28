@@ -1,3 +1,4 @@
+
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.KeyPressEvent
@@ -41,17 +42,6 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         })
 
         scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
-        scene.rootNode.attachChild(ModelLoader.load("skeld.obj"))
-
-        val rand = java.util.Random()
-        for (i in 0..150) {
-            val x = rand.nextFloat() * 40
-            val y = rand.nextFloat() * -25
-            scene.rootNode.attachChild(PointLight().also {
-                it.color = Color(1f, 1f, 1f, 1f)
-                it.transform.translation.set(Vector3f(x, 1f, y))
-            })
-        }
 
         scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
             it.transform.rotation.rotateX(toRadians(-90f))
@@ -70,6 +60,18 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             it.color = Color(0f, 1f, 1f, 1f)
             it.transform.translation.set(2f, 2f, 0f)
         })
+
+        scene.rootNode.attachChild(ModelLoader.load("skeld.obj"))
+
+        val rand = java.util.Random()
+        for (i in 0..100) {
+            val x = rand.nextFloat() * 40
+            val y = rand.nextFloat() * -25
+            scene.rootNode.attachChild(PointLight().also {
+                it.color = Color(1f, 1f, 1f, 1f)
+                it.transform.translation.set(Vector3f(x, 1f, y))
+            })
+        }
 
         sky = Sky(CubemapCache.get("skybox"))
         scene.rootNode.attachChild(sky)

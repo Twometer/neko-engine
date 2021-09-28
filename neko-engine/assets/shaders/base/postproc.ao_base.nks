@@ -14,6 +14,7 @@
     #define NUM_SAMPLES           9
     #define NUM_SPIRAL_TURNS      7
     #define USE_ACTUAL_NORMALS    0
+    #define USE_NOISE_TEXTURE     1
     #define VARIATION             1
     #define PI                    3.14159265359
 
@@ -34,6 +35,10 @@
     in vec2 texCoords;
     out vec4 FragColor;
 
+    float rand(vec2 co) {
+        return fract( sin( dot( co.xy, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 );
+    }
+
     // reconstructs view-space unit normal from view-space position
     vec3 reconstructNormalVS(vec3 positionVS) {
         return normalize(cross(dFdx(positionVS), dFdy(positionVS)));
@@ -50,7 +55,7 @@
     vec2 tapLocation(int sampleNumber, float spinAngle, out float radiusSS) {
         // radius relative to radiusSS
         float alpha = (float(sampleNumber) + 0.5) * (1.0 / float(NUM_SAMPLES));
-        float angle = alpha * (float(NUM_SPIRAL_TURNS) * 6.28) + spinAngle;
+        float angle = alpha * (float(NUM_SPIRAL_TURNS) * 2 * PI) + spinAngle;
 
         radiusSS = alpha;
         return vec2(cos(angle), sin(angle));
@@ -114,10 +119,15 @@
         vec3 normalVS = reconstructNormalVS(originVS);
     #endif
 
+    #if USE_NOISE_TEXTURE
         vec2 noiseScale = screenSize / 4;
-        vec3 sampleNoise = texture2D(noise, texCoords * noiseScale).xyz;
+        vec3 sampleNoise = texture(noise, texCoords * noiseScale).xyz;
+        float noise = sampleNoise.x;
+    #else
+        float noise = rand(texCoords);
+    #endif
 
-        float randomPatternRotationAngle = 2.0 * PI * sampleNoise.x;
+        float randomPatternRotationAngle = 2.0 * PI * noise;
 
         float projScale = 1.0 / (2.0 * tan(uFOV * 0.5));
 
