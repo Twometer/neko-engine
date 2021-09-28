@@ -113,8 +113,11 @@ object Primitives {
 
 }
 
-class Primitive(private val vertices: FloatArray, private val type: Int, dimensions: Int) {
+class Primitive(private val vertices: FloatArray, private val type: Int, private val dimensions: Int) {
     private val vao: Int = glGenVertexArrays()
+
+    private val vertexCount: Int
+        get() = vertices.size / dimensions
 
     init {
         glBindVertexArray(vao)
@@ -129,14 +132,12 @@ class Primitive(private val vertices: FloatArray, private val type: Int, dimensi
 
     fun render() {
         glBindVertexArray(vao)
-        glDrawArrays(type, 0, vertices.size)
-        glBindVertexArray(0)
+        glDrawArrays(type, 0, vertexCount)
     }
 
     fun renderInstanced(amount: Int) {
         glBindVertexArray(vao)
-        glDrawArraysInstanced(type, 0, vertices.size, amount)
-        glBindVertexArray(0)
+        glDrawArraysInstanced(type, 0, vertexCount, amount)
     }
 
 }
