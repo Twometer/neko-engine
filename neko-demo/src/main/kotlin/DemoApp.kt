@@ -1,15 +1,12 @@
-
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.KeyPressEvent
 import de.twometer.neko.res.AssetManager
 import de.twometer.neko.res.CubemapCache
 import de.twometer.neko.res.ModelLoader
+import de.twometer.neko.res.RawLoader
 import de.twometer.neko.scene.Color
-import de.twometer.neko.scene.nodes.ModelNode
-import de.twometer.neko.scene.nodes.Node
-import de.twometer.neko.scene.nodes.PointLight
-import de.twometer.neko.scene.nodes.Sky
+import de.twometer.neko.scene.nodes.*
 import de.twometer.neko.util.MathF.toRadians
 import imgui.ImGui
 import org.greenrobot.eventbus.Subscribe
@@ -63,14 +60,17 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         scene.rootNode.attachChild(ModelLoader.load("skeld.obj"))
 
-        val rand = java.util.Random()
-        for (i in 0..100) {
-            val x = rand.nextFloat() * 40
-            val y = rand.nextFloat() * -25
+        val lightPositions = RawLoader.loadLines("lights.txt")
+        for (pos in lightPositions) {
+            val parts = pos.split("|")
             scene.rootNode.attachChild(PointLight().also {
                 it.color = Color(1f, 1f, 1f, 1f)
-                it.transform.translation.set(Vector3f(x, 1f, y))
+                it.transform.translation.set(Vector3f(parts[0].toFloat(), parts[1].toFloat(), parts[2].toFloat()))
             })
+        }
+
+        scene.rootNode.detachAll {
+            it is Geometry && it.material.name.startsWith("Translucent_Glass_Blue")
         }
 
         sky = Sky(CubemapCache.get("skybox"))
@@ -78,7 +78,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     }
 
     override fun onTimerTick() {
-        sky.transform.rotation.rotateY(0.0002f)
+        //sky.transform.rotation.rotateY(0.0002f)
         rin.transform.translation.z += 0.025f
     }
 
