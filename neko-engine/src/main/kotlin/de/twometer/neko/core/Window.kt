@@ -73,6 +73,7 @@ class Window(private val config: AppConfig) {
         glfwDestroyWindow(handle)
         glfwTerminate()
         glfwSetErrorCallback(null)?.free()
+        GL.destroy()
     }
 
     fun setSize(width: Int, height: Int) = glfwSetWindowSize(handle, width, height)
