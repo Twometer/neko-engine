@@ -64,8 +64,11 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         for (pos in lightPositions) {
             val parts = pos.split("|")
             scene.rootNode.attachChild(PointLight().also {
-                it.color = Color(1f, 1f, 1f, 1f)
                 it.transform.translation.set(Vector3f(parts[0].toFloat(), parts[1].toFloat(), parts[2].toFloat()))
+                if (parts.size > 3)
+                    it.color = Color(parts[3].toFloat(), parts[4].toFloat(), parts[5].toFloat(), 1f)
+                else
+                    it.color = Color(1f, 1f, 1f, 1f)
             })
         }
 
