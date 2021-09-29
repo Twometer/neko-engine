@@ -54,7 +54,7 @@ object ShaderParser {
             lineNo++
 
             fun copyLineRaw() =
-                result.add(PlainText("$line /*REF:${file.name}:$lineNo:*/"))
+                result.add(PlainText("$line //REF:${file.name}:$lineNo:"))
 
             when {
                 line.startsWith('#') -> {
