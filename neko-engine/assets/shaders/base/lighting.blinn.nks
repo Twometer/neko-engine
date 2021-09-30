@@ -6,13 +6,16 @@
 #inject CameraPosition
 #inject ScreenSize
 
+#begin shared
+    vec3 lightPos;
+    vec4 lightColor;
+    float lightConstant;
+    float lightLinear;
+    float lightQuadratic;
+#end shared
+
 #begin vertex
     in vec3 position;
-    out vec3 lightPos;
-    out vec4 lightColor;
-    out float lightConstant;
-    out float lightLinear;
-    out float lightQuadratic;
 
     uniform mat4 projectionMatrix;
     uniform mat4 viewMatrix;
@@ -47,11 +50,6 @@
 #end vertex
 
 #begin fragment
-    in vec3 lightPos;
-    in vec4 lightColor;
-    in float lightConstant;
-    in float lightLinear;
-    in float lightQuadratic;
     out vec4 color;
 
     uniform vec2 screenSize;
@@ -76,16 +74,16 @@
         // Light calculations
         vec3 lightDir = lightPos - position;
         float distance = length(lightDir);
-        lightDir /= distance;
+        float attenuation = 1.0 / (lightConstant + lightLinear * distance + lightQuadratic * distance * distance);
 
         vec3 viewDir = normalize(cameraPos - position);
+        lightDir /= distance;
         vec3 halfway = normalize(lightDir + viewDir);
-
         vec3 lightRgb = lightColor.rgb;
         vec3 diffuse = lightRgb * max(dot(normal, lightDir), 0.0f);
         vec3 specular = lightRgb * pow(max(dot(normal, halfway), 0.0), shininess);
-        float attenuation = 1.0 / (lightConstant + lightLinear * distance + lightQuadratic * distance * distance);
 
-        color = vec4(albedo * attenuation * (diffuse + specularStrength * specular), 1.0f);
+        vec3 finalColor = (albedo * diffuse + specular * specularStrength) * max(attenuation - 0.025, 0); /* HACK: Fix weird light sphere edges */
+        color = vec4(finalColor, 1.0f);
     }
 #end fragment

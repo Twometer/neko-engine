@@ -134,12 +134,11 @@ class SceneRenderer(val scene: Scene) {
 
             blinnShader.bind()
             Primitives.unitSphere.renderInstanced(activeLights)
-
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         }
 
         // Restore GL state
         OpenGL.resetState()
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Forward rendering
         scene.rootNode.scanTree { node ->
