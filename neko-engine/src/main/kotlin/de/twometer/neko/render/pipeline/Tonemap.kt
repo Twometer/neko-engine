@@ -1,9 +1,10 @@
 package de.twometer.neko.render.pipeline
 
-import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.EffectsPipeline
+import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.Primitives
 import de.twometer.neko.res.ShaderCache
+import de.twometer.neko.util.Profiler
 
 class Tonemap : PipelineStep() {
 
@@ -19,11 +20,13 @@ class Tonemap : PipelineStep() {
         pipeline.import("_Main").bind(4)
         pipeline.import("AmbientOcclusion").bind(5)
 
+        Profiler.begin("Tonemap")
         shader.bind()
         buffer.bind()
         shader["gamma"] = gamma
         shader["exposure"] = exposure
         Primitives.fullscreenQuad.render()
+        Profiler.end()
 
         pipeline.export("_Main", buffer.fbo.getColorTexture())
     }

@@ -68,11 +68,14 @@ object Profiler {
 
         for (section in profile)
             section.value.reset()
+
+        begin("Full frame")
     }
 
     fun endFrame() {
         if (!enabled) return
 
+        end()
         for (section in profile)
             section.value.retrieveData()
     }

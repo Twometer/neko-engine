@@ -13,6 +13,7 @@ import de.twometer.neko.scene.RenderBucket
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.RenderableNode
+import de.twometer.neko.util.Profiler
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Matrix3f
 import org.joml.Matrix4f
@@ -109,10 +110,13 @@ class SceneRenderer(val scene: Scene) {
         renderbuffer.bind()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
+        Profiler.begin("Depth Blit")
         bindGBuffer()
         gBuffer.fbo.blit(GL_DEPTH_BUFFER_BIT, renderbuffer.fbo)
+        Profiler.end()
 
         // Ambient lighting step
+        Profiler.begin("Ambient lighting")
         OpenGL.disable(GL_DEPTH_TEST)
         OpenGL.depthMask(false)
         OpenGL.disable(GL_BLEND)
@@ -121,9 +125,11 @@ class SceneRenderer(val scene: Scene) {
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
         Primitives.fullscreenQuad.render()
+        Profiler.end()
 
         // Blinn-Phong step (point lights)
         updateLights()
+        Profiler.begin("Deferred lights")
         if (activeLights > 0) {
             OpenGL.enable(GL_DEPTH_TEST)
             OpenGL.depthFunc(GL_GREATER)
@@ -135,12 +141,14 @@ class SceneRenderer(val scene: Scene) {
             blinnShader.bind()
             Primitives.unitSphere.renderInstanced(activeLights)
         }
+        Profiler.end()
 
         // Restore GL state
         OpenGL.resetState()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Forward rendering
+        Profiler.begin("Forward pass")
         scene.rootNode.scanTree { node ->
             if (node is RenderableNode && node.bucket == RenderBucket.Forward) {
                 val shader = ShaderCache.get(node.material.shader)
@@ -155,6 +163,7 @@ class SceneRenderer(val scene: Scene) {
                 OpenGL.resetState() // Clean up the crap that the shader may have left behind. Could probably be done more elegant.
             }
         }
+        Profiler.end()
 
         OpenGL.useProgram(0)
         Events.post(RenderForwardEvent())
@@ -192,6 +201,7 @@ class SceneRenderer(val scene: Scene) {
         nodes.sortBy { it.material.shader }
 
         // Then render the node
+        Profiler.begin("GBuffer draw")
         nodes.forEach { node ->
             val shader = ShaderCache.get(node.material.shader)
 
@@ -213,6 +223,7 @@ class SceneRenderer(val scene: Scene) {
 
             node.render()
         }
+        Profiler.end()
 
         Events.post(RenderDeferredEvent())
 

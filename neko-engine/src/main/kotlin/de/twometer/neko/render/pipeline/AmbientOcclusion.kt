@@ -6,6 +6,7 @@ import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.Primitives
 import de.twometer.neko.render.StaticTextures
 import de.twometer.neko.res.ShaderCache
+import de.twometer.neko.util.Profiler
 import org.lwjgl.opengl.GL30
 
 class AmbientOcclusion : PipelineStep() {
@@ -25,6 +26,7 @@ class AmbientOcclusion : PipelineStep() {
     var bias: Float = 0.005f
 
     override fun render(pipeline: EffectsPipeline) {
+        Profiler.begin("AO Base")
         baseBuffer.bind()
         baseShader.bind()
         baseShader["uFOV"] = NekoApp.the!!.scene.camera.fov
@@ -33,11 +35,14 @@ class AmbientOcclusion : PipelineStep() {
         baseShader["uBias"] = bias
         StaticTextures.noise5x5.bind(4)
         Primitives.fullscreenQuad.render()
+        Profiler.end()
 
+        Profiler.begin("AO Blur")
         blurBuffer.bind()
         blurShader.bind()
         baseBuffer.fbo.getColorTexture(0).bind(4)
         Primitives.fullscreenQuad.render()
+        Profiler.end()
 
         pipeline.export("AmbientOcclusion", blurBuffer.fbo.getColorTexture())
     }

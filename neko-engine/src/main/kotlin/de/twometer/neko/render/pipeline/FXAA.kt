@@ -1,9 +1,10 @@
 package de.twometer.neko.render.pipeline
 
-import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.EffectsPipeline
+import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.Primitives
 import de.twometer.neko.res.ShaderCache
+import de.twometer.neko.util.Profiler
 
 class FXAA : PipelineStep() {
 
@@ -13,10 +14,12 @@ class FXAA : PipelineStep() {
     })
 
     override fun render(pipeline: EffectsPipeline) {
+        Profiler.begin("FXAA")
         buffer.bind()
         shader.bind()
         pipeline.import("_Main").bind(4)
         Primitives.fullscreenQuad.render()
         pipeline.export("_Main", buffer.fbo.getColorTexture())
+        Profiler.end()
     }
 }
