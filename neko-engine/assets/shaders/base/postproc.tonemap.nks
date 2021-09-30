@@ -1,6 +1,7 @@
 #include "base/postproc.base.nks"
 
-#bind ssaoSampler 1
+#bind textureSampler 4
+#bind ssaoSampler 5
 
 #begin fragment
     out vec4 color;

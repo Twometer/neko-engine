@@ -4,6 +4,8 @@
 
 #inject ScreenSize
 
+#bind tex 4
+
 #begin fragment
     out vec4 FragColor;
     in vec2 texCoords;

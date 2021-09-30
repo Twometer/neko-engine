@@ -1,6 +1,6 @@
 #include "base/postproc.base.nks"
 
-#bind ssaoInput 3
+#bind ssaoInput 4
 
 #begin fragment
     out vec4 color;

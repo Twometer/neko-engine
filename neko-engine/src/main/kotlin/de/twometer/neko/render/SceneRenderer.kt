@@ -25,7 +25,7 @@ class SceneRenderer(val scene: Scene) {
     private val maxLights = 512
     private val lightSize = 112
 
-    private lateinit var effectsRenderer: EffectsRenderer
+    lateinit var effectsPipeline: EffectsPipeline
     private lateinit var gBuffer: FramebufferRef
     private lateinit var renderbuffer: FramebufferRef
     private lateinit var blinnShader: Shader
@@ -54,7 +54,7 @@ class SceneRenderer(val scene: Scene) {
                 .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
         })
 
-        effectsRenderer = EffectsRenderer(gBuffer, renderbuffer)
+        effectsPipeline = EffectsPipeline(gBuffer, renderbuffer)
         blinnBuffer = UniformBuffer(maxLights * lightSize)
         blinnShader.bindUniformBuffer("LightsBlock", blinnBuffer, 0)
     }
@@ -161,7 +161,7 @@ class SceneRenderer(val scene: Scene) {
         renderbuffer.unbind()
 
         // Now, we can apply post processing and copy everything to the screen
-        effectsRenderer.render()
+        effectsPipeline.render()
     }
 
     private fun bindGBuffer() {

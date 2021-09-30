@@ -91,8 +91,8 @@ open class NekoApp(config: AppConfig = AppConfig()) {
                 timer.reset()
             }
 
-            timer.onFrame()
             window.update()
+            timer.onFrame()
         }
 
         logger.info { "Shutting down..." }
