@@ -17,10 +17,16 @@ object StaticTextures {
         }
     }
 
-    val noise4x4 by lazy {
+    val noise3x3 by lazy { genNoiseTexture(3) }
+
+    val noise4x4 by lazy { genNoiseTexture(4) }
+
+    val noise5x5 by lazy { genNoiseTexture(5) }
+
+    private fun genNoiseTexture(size: Int): Texture2d {
         MemoryStack.stackPush().use {
-            val buffer = it.mallocFloat(16 * 3)
-            for (i in 0..15) {
+            val buffer = it.mallocFloat(size * size * 3)
+            for (i in 0 until (size * size)) {
                 buffer.put(MathF.rand() * 2.0f - 1.0f)
                 buffer.put(MathF.rand() * 2.0f - 1.0f)
                 buffer.put(0f)
@@ -29,14 +35,13 @@ object StaticTextures {
 
             val texture = glGenTextures()
             glBindTexture(GL_TEXTURE_2D, texture)
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 4, 4, 0, GL_RGB, GL_FLOAT, buffer)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, size, size, 0, GL_RGB, GL_FLOAT, buffer)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-            return@lazy Texture2d(texture, 4, 4)
+            return Texture2d(texture, size, size)
         }
-
     }
 
 }

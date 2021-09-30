@@ -1,8 +1,8 @@
 package de.twometer.neko.render.pipeline
 
 import de.twometer.neko.core.NekoApp
-import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.EffectsPipeline
+import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.Primitives
 import de.twometer.neko.render.StaticTextures
 import de.twometer.neko.res.ShaderCache
@@ -31,7 +31,7 @@ class AmbientOcclusion : PipelineStep() {
         baseShader["uIntensity"] = intensity
         baseShader["uSampleRadiusWS"] = radius
         baseShader["uBias"] = bias
-        StaticTextures.noise4x4.bind(4)
+        StaticTextures.noise5x5.bind(4)
         Primitives.fullscreenQuad.render()
 
         blurBuffer.bind()

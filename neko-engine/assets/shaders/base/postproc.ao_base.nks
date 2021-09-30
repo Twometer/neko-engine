@@ -117,7 +117,7 @@
     #endif
 
     #if USE_NOISE_TEXTURE
-        vec2 noiseScale = _screenSize / 4;
+        vec2 noiseScale = _screenSize / 5;
         vec3 sampleNoise = texture(noise, texCoords * noiseScale).xyz;
         float noise = sampleNoise.x;
     #else
