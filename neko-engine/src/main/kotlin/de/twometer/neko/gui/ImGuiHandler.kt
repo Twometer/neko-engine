@@ -14,7 +14,6 @@ object ImGuiHandler {
         ImGui.createContext()
 
         val io = ImGui.getIO()
-        io.iniFilename = null
         io.fonts.addFontDefault()
 
         glfw.init(window.handle, true)

@@ -23,3 +23,6 @@ assets/Fonts
 assets/Sounds
 assets/Textures
 assets/Natives
+
+# ImGui
+imgui.ini
