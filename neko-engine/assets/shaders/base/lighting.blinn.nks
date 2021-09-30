@@ -83,7 +83,7 @@
         vec3 diffuse = lightRgb * max(dot(normal, lightDir), 0.0f);
         vec3 specular = lightRgb * pow(max(dot(normal, halfway), 0.0), shininess);
 
-        vec3 finalColor = (albedo * diffuse + specular * specularStrength) * max(attenuation - 0.025, 0); /* HACK: Fix weird light sphere edges */
+        vec3 finalColor = (albedo * diffuse + specular * specularStrength) * max(attenuation - 0.025, 0); // HACK: Fix weird light sphere edges
         color = vec4(finalColor, 1.0f);
     }
 #end fragment

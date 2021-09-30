@@ -28,12 +28,14 @@ class SceneRenderer(val scene: Scene) {
 
     lateinit var effectsPipeline: EffectsPipeline
     private lateinit var gBuffer: FramebufferRef
-    private lateinit var renderbuffer: FramebufferRef
+    private lateinit var sceneBuffer: FramebufferRef
     private lateinit var blinnShader: Shader
     private lateinit var blinnBuffer: UniformBuffer
     private lateinit var ambientShader: Shader
 
-    private var activeLights = 0
+    var lightRadius = 35
+
+    private var numActiveLights = 0
 
     fun setup() {
         Events.register(this)
@@ -50,12 +52,12 @@ class SceneRenderer(val scene: Scene) {
                 .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
         })
 
-        renderbuffer = FboManager.request({
+        sceneBuffer = FboManager.request({
             it.addDepthBuffer()
                 .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
         })
 
-        effectsPipeline = EffectsPipeline(gBuffer, renderbuffer)
+        effectsPipeline = EffectsPipeline(gBuffer, sceneBuffer)
         blinnBuffer = UniformBuffer(maxLights * lightSize)
         blinnShader.bindUniformBuffer("LightsBlock", blinnBuffer, 0)
     }
@@ -65,10 +67,17 @@ class SceneRenderer(val scene: Scene) {
         glViewport(0, 0, event.width, event.height)
     }
 
+    private fun shouldRenderLight(light: PointLight): Boolean {
+        val position = light.compositeTransform.translation
+        return light.active
+                && scene.camera.isInFrustum(position, light.radius)
+                && scene.camera.position.distanceSquared(position) < lightRadius * lightRadius
+    }
+
     private fun gatherLights(): List<PointLight> {
         val lights = ArrayList<PointLight>()
         scene.rootNode.scanTree {
-            if (it is PointLight && it.active) {
+            if (it is PointLight && shouldRenderLight(it)) {
                 lights.add(it)
             }
         }
@@ -77,7 +86,7 @@ class SceneRenderer(val scene: Scene) {
 
     private fun updateLights() {
         val lights = gatherLights()
-        activeLights = lights.size
+        numActiveLights = lights.size
 
         val prevHash = blinnBuffer.hash()
         blinnBuffer.rewind()
@@ -95,9 +104,11 @@ class SceneRenderer(val scene: Scene) {
         if (blinnBuffer.hash() == prevHash)
             return
 
+        Profiler.begin("Light upload")
         blinnBuffer.bind()
         blinnBuffer.upload()
         blinnBuffer.unbind()
+        Profiler.end()
     }
 
     fun renderFrame() {
@@ -106,40 +117,42 @@ class SceneRenderer(val scene: Scene) {
         // Render scene to GBuffer
         renderGBuffer()
 
-        // Transfer to render buffer using deferred shading
-        renderbuffer.bind()
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-
+        // Transfer depth to scene buffer
         Profiler.begin("Depth Blit")
         bindGBuffer()
-        gBuffer.fbo.blit(GL_DEPTH_BUFFER_BIT, renderbuffer.fbo)
+        gBuffer.fbo.blit(GL_DEPTH_BUFFER_BIT, sceneBuffer.fbo)
         Profiler.end()
 
-        // Ambient lighting step
+        // Setup scene buffer for main draw
+        Profiler.begin("Scene buffer setup")
+        sceneBuffer.bind()
+        glClear(GL_COLOR_BUFFER_BIT)
+
+        OpenGL.enable(GL_BLEND)
+        glBlendFunc(GL_ONE, GL_ONE)
+        Profiler.end()
+
+        // Ambient lighting pass
         Profiler.begin("Ambient lighting")
         OpenGL.disable(GL_DEPTH_TEST)
         OpenGL.depthMask(false)
-        OpenGL.disable(GL_BLEND)
-
         ambientShader.bind()
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
         Primitives.fullscreenQuad.render()
         Profiler.end()
 
-        // Blinn-Phong step (point lights)
+        // Blinn-Phong pass (point lights)
         updateLights()
-        Profiler.begin("Deferred lights")
-        if (activeLights > 0) {
-            OpenGL.enable(GL_DEPTH_TEST)
-            OpenGL.depthFunc(GL_GREATER)
-            OpenGL.enable(GL_BLEND)
-            glBlendFunc(GL_ONE, GL_ONE)
+        Profiler.begin("Deferred light pass")
+        if (numActiveLights > 0) {
             OpenGL.enable(GL_CULL_FACE)
             OpenGL.cullFace(GL_FRONT)
+            OpenGL.enable(GL_DEPTH_TEST)
+            OpenGL.depthFunc(GL_GEQUAL)
 
             blinnShader.bind()
-            Primitives.unitSphere.renderInstanced(activeLights)
+            Primitives.unitSphere.renderInstanced(numActiveLights)
         }
         Profiler.end()
 
@@ -147,7 +160,7 @@ class SceneRenderer(val scene: Scene) {
         OpenGL.resetState()
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-        // Forward rendering
+        // Forward rendering pass
         Profiler.begin("Forward pass")
         scene.rootNode.scanTree { node ->
             if (node is RenderableNode && node.bucket == RenderBucket.Forward) {
@@ -163,14 +176,17 @@ class SceneRenderer(val scene: Scene) {
                 OpenGL.resetState() // Clean up the crap that the shader may have left behind. Could probably be done more elegant.
             }
         }
-        Profiler.end()
 
+        // Let the rest of the world know that they have a chance to do forward rendering
         OpenGL.useProgram(0)
         Events.post(RenderForwardEvent())
-        renderbuffer.unbind()
+        sceneBuffer.unbind()
+        Profiler.end()
 
         // Now, we can apply post processing and copy everything to the screen
+        Profiler.begin("Effects pipeline")
         effectsPipeline.render()
+        Profiler.end()
     }
 
     private fun bindGBuffer() {
