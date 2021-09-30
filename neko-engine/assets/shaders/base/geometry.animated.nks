@@ -27,7 +27,7 @@
         }
 
         vec4 worldSpacePos = modelMatrix * animatedPosition;
-        gl_Position = projectionMatrix * viewMatrix * worldSpacePos;
+        gl_Position = _projectionMatrix * _viewMatrix * worldSpacePos;
 
         fragmentPosition = worldSpacePos.xyz;
         fragmentNormal = normalize(normalMatrix * animatedNormal.xyz);

@@ -9,7 +9,7 @@
     in vec2 texCoords;
 
     uniform sampler2D tex;
-    uniform vec2 screenSize;
+    uniform vec2 _screenSize;
 
     #define FXAA_SPAN_MAX     24.0
     #define FXAA_REDUCE_MUL   (1.0 / FXAA_SPAN_MAX)
@@ -62,7 +62,7 @@
     }
 
     void main() {
-        vec2 rcpFrame = 1.0f / screenSize;
+        vec2 rcpFrame = 1.0f / _screenSize;
         vec4 uv = vec4(texCoords, texCoords - (rcpFrame * (0.5 + FXAA_SUBPIX_SHIFT)));
         vec3 col = fxaaImpl(uv, rcpFrame);
         FragColor = vec4(col, 1.0f);

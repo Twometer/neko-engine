@@ -12,13 +12,13 @@
 #begin vertex
     layout(location = 0) in vec3 vertexPosition;
 
-    uniform mat4 viewMatrix;
-    uniform mat4 projectionMatrix;
+    uniform mat4 _viewMatrix;
+    uniform mat4 _projectionMatrix;
     uniform mat4 modelMatrix;
 
     void main() {
-        mat4 skyboxViewMat = mat4(mat3(viewMatrix));
-        gl_Position = (projectionMatrix * skyboxViewMat * modelMatrix * vec4(vertexPosition, 1.0)).xyww;
+        mat4 skyboxViewMat = mat4(mat3(_viewMatrix));
+        gl_Position = (_projectionMatrix * skyboxViewMat * modelMatrix * vec4(vertexPosition, 1.0)).xyww;
         fragmentTexCoords = vertexPosition;
     }
 #end vertex

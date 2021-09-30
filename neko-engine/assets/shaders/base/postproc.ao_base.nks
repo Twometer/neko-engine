@@ -4,7 +4,6 @@
 #bind gNormal 1
 #bind noise 4
 
-#inject CameraPosition
 #inject CameraMatrices
 #inject ScreenSize
 
@@ -22,10 +21,8 @@
     uniform sampler2D gNormal;
     uniform sampler2D noise;
 
-    uniform vec3 cameraPos;
-    uniform vec2 screenSize;
-    uniform mat4 viewMatrix;
-    uniform mat4 projectionMatrix;
+    uniform vec2 _screenSize;
+    uniform mat4 _viewMatrix;
 
     uniform float uFOV;
     uniform float uIntensity;
@@ -46,7 +43,7 @@
 
     vec3 getPositionVS(vec2 uv) {
         vec3 originWS = texture(gPosition, uv).xyz;
-        vec4 originVS = viewMatrix * vec4(originWS, 1.0);
+        vec4 originVS = _viewMatrix * vec4(originWS, 1.0);
         return originVS.xyz;
     }
 
@@ -62,7 +59,7 @@
     }
 
     vec3 getOffsetPositionVS(vec2 uv, vec2 unitOffset, float radiusSS) {
-        uv = uv + radiusSS * unitOffset * (1.0 / screenSize);
+        uv = uv + radiusSS * unitOffset * (1.0 / _screenSize);
         return getPositionVS(uv);
     }
 
@@ -113,14 +110,14 @@
         vec3 originVS = getPositionVS(texCoords);
 
     #if USE_ACTUAL_NORMALS
-        mat3 normalMatrix = mat3(viewMatrix);
+        mat3 normalMatrix = mat3(_viewMatrix);
         vec3 normalVS = normalize(normalMatrix * texture(gNormal, texCoords).xyz);
     #else
         vec3 normalVS = reconstructNormalVS(originVS);
     #endif
 
     #if USE_NOISE_TEXTURE
-        vec2 noiseScale = screenSize / 4;
+        vec2 noiseScale = _screenSize / 4;
         vec3 sampleNoise = texture(noise, texCoords * noiseScale).xyz;
         float noise = sampleNoise.x;
     #else

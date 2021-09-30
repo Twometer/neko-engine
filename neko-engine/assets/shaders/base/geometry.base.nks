@@ -11,8 +11,8 @@
     layout(location = 1) in vec3 vertexNormal;
     layout(location = 2) in vec2 vertexTexCoords;
 
-    uniform mat4 viewMatrix;
-    uniform mat4 projectionMatrix;
+    uniform mat4 _viewMatrix;
+    uniform mat4 _projectionMatrix;
     uniform mat4 modelMatrix;
     uniform mat3 normalMatrix;
 #end vertex
