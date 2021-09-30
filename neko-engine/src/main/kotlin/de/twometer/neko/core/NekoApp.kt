@@ -13,6 +13,7 @@ import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.SceneRenderer
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
+import de.twometer.neko.util.Profiler
 import de.twometer.neko.util.Timer
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
@@ -73,6 +74,8 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         timer.reset()
 
         while (!window.isCloseRequested()) {
+            Profiler.beginFrame()
+            timer.onFrame()
             if (!guiManager.isInputBlocked() && !ImGuiHandler.wantsControl()) {
                 playerController.updateCamera(window, scene, timer.deltaTime)
             }
@@ -92,7 +95,8 @@ open class NekoApp(config: AppConfig = AppConfig()) {
             }
 
             window.update()
-            timer.onFrame()
+            Profiler.endFrame()
+            onPostFrame()
         }
 
         logger.info { "Shutting down..." }
@@ -111,6 +115,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
     open fun onPreInit() = Unit
     open fun onPostInit() = Unit
     open fun onRenderFrame() = Unit
+    open fun onPostFrame() = Unit
     open fun onTimerTick() = Unit
     open fun onShutdown() = Unit
 
