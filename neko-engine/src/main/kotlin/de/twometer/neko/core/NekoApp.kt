@@ -1,6 +1,7 @@
 package de.twometer.neko.core
 
 import de.twometer.neko.Neko
+import de.twometer.neko.audio.OpenAL
 import de.twometer.neko.events.Events
 import de.twometer.neko.events.ResizeEvent
 import de.twometer.neko.events.TickEvent
@@ -45,8 +46,8 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         Events.register(this)
         onPreInit()
         window.create()
-
         logGlInfo()
+        OpenAL.open()
 
         FboManager.setup()
         renderer.setup()
@@ -83,6 +84,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
             ImGuiHandler.newFrame()
 
             scene.camera.update()
+            OpenAL.updateListener(scene.camera)
             renderer.renderFrame()
             onRenderFrame()
             guiManager.render()
@@ -103,6 +105,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         onShutdown()
         ImGuiHandler.shutdown()
         window.destroy()
+        OpenAL.close()
     }
 
     private fun logGlInfo() {
