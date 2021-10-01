@@ -1,3 +1,4 @@
+import de.twometer.neko.audio.SoundEngine
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.KeyPressEvent
@@ -29,7 +30,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     }
 
     override fun onPostInit() {
-       // Profiler.enable()
+        // Profiler.enable()
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)
@@ -84,6 +85,9 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         sky = Sky(CubemapCache.get("skybox"))
         scene.rootNode.attachChild(sky)
+
+        //SoundEngine.play("Test.ogg")
+        SoundEngine.playAt("Test.ogg", Vector3f(-5f, 2f, 10f))
     }
 
     override fun onTimerTick() {
