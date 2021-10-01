@@ -17,6 +17,18 @@ object StaticTextures {
         }
     }
 
+    val emptyNormalMap by lazy {
+        MemoryStack.stackPush().use {
+            val buf = it.malloc(4)
+            buf.put(128.toByte())
+            buf.put(128.toByte())
+            buf.put(255.toByte())
+            buf.put(255.toByte())
+            buf.flip()
+            return@lazy TextureLoader.load(buf, 1, 1, false)
+        }
+    }
+
     val noise3x3 by lazy { genNoiseTexture(3) }
 
     val noise4x4 by lazy { genNoiseTexture(4) }

@@ -223,6 +223,7 @@ class SceneRenderer(val scene: Scene) {
 
             OpenGL.setBoolean(GL_CULL_FACE, node.material[MatKey.TwoSided] == true)
             bindTexture(node.material[MatKey.TextureDiffuse])
+            bindTexture(node.material[MatKey.TextureNormals], 1, StaticTextures.emptyNormalMap)
             shader.bind()
 
             val modelMatrix = node.compositeTransform.matrix
@@ -246,11 +247,11 @@ class SceneRenderer(val scene: Scene) {
         gBuffer.unbind()
     }
 
-    private fun bindTexture(texture: Any?) {
+    private fun bindTexture(texture: Any?, unit: Int = 0, fallback: Texture2d = StaticTextures.white) {
         when (texture) {
-            is Texture -> texture.bind()
-            is String -> TextureCache.get(texture).bind()
-            else -> StaticTextures.white.bind()
+            is Texture -> texture.bind(unit)
+            is String -> TextureCache.get(texture).bind(unit)
+            else -> fallback.bind(unit)
         }
     }
 
