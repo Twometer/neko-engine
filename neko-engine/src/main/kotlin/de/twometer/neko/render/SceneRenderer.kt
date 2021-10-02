@@ -47,7 +47,7 @@ class SceneRenderer(val scene: Scene) {
         // Framebuffers
         gBuffer = FboManager.request({
             it.addDepthBuffer()
-                .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Positions
+                .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_LINEAR, GL_FLOAT)  // Positions
                 .addColorTexture(1, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Normals
                 .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
         })
