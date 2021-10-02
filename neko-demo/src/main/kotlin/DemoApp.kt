@@ -30,7 +30,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     }
 
     override fun onPostInit() {
-        // Profiler.enable()
+         Profiler.enable()
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)

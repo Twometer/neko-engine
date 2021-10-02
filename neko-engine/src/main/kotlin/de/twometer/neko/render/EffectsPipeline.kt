@@ -1,9 +1,6 @@
 package de.twometer.neko.render
 
-import de.twometer.neko.render.pipeline.AmbientOcclusion
-import de.twometer.neko.render.pipeline.FXAA
-import de.twometer.neko.render.pipeline.PipelineStep
-import de.twometer.neko.render.pipeline.Tonemap
+import de.twometer.neko.render.pipeline.*
 import de.twometer.neko.res.ShaderCache
 import org.lwjgl.opengl.GL30.*
 
@@ -15,6 +12,7 @@ class EffectsPipeline(private val gBuffer: FramebufferRef, private val sceneBuff
 
     init {
         steps.add(AmbientOcclusion())
+        steps.add(SSR())
         steps.add(Tonemap())
         steps.add(FXAA())
     }
@@ -27,8 +25,8 @@ class EffectsPipeline(private val gBuffer: FramebufferRef, private val sceneBuff
         OpenGL.enable(GL_DEPTH_TEST)
     }
 
-    fun import(texName: String): Texture2d {
-        return texMap[texName] ?: StaticTextures.white
+    fun import(texName: String, fallback: Texture2d = StaticTextures.white): Texture2d {
+        return texMap[texName] ?: fallback
     }
 
     fun export(texName: String, texture: Texture2d) {

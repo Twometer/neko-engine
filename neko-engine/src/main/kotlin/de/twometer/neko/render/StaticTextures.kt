@@ -8,32 +8,29 @@ import org.lwjgl.system.MemoryStack
 
 object StaticTextures {
 
-    val white by lazy {
-        MemoryStack.stackPush().use {
-            val buf = it.malloc(4)
-            repeat(4) { buf.put(255.toByte()) }
-            buf.flip()
-            return@lazy TextureLoader.load(buf, 1, 1, false)
-        }
-    }
+    val white by lazy { genSolidColorTexture(255, 255, 255, 255) }
 
-    val emptyNormalMap by lazy {
-        MemoryStack.stackPush().use {
-            val buf = it.malloc(4)
-            buf.put(128.toByte())
-            buf.put(128.toByte())
-            buf.put(255.toByte())
-            buf.put(255.toByte())
-            buf.flip()
-            return@lazy TextureLoader.load(buf, 1, 1, false)
-        }
-    }
+    val black by lazy { genSolidColorTexture(0, 0, 0, 255) }
+
+    val emptyNormalMap by lazy { genSolidColorTexture(128, 128, 255, 255) }
 
     val noise3x3 by lazy { genNoiseTexture(3) }
 
     val noise4x4 by lazy { genNoiseTexture(4) }
 
     val noise5x5 by lazy { genNoiseTexture(5) }
+
+    private fun genSolidColorTexture(r: Int, g: Int, b: Int, a: Int): Texture2d {
+        MemoryStack.stackPush().use {
+            val buf = it.malloc(4)
+            buf.put(r.toByte())
+            buf.put(g.toByte())
+            buf.put(b.toByte())
+            buf.put(a.toByte())
+            buf.flip()
+            return TextureLoader.load(buf, 1, 1, false)
+        }
+    }
 
     private fun genNoiseTexture(size: Int): Texture2d {
         MemoryStack.stackPush().use {

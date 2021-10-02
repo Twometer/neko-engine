@@ -3,6 +3,7 @@ package de.twometer.neko.render.pipeline
 import de.twometer.neko.render.EffectsPipeline
 import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.Primitives
+import de.twometer.neko.render.StaticTextures
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.util.Profiler
 
@@ -18,7 +19,8 @@ class Tonemap : PipelineStep() {
 
     override fun render(pipeline: EffectsPipeline) {
         pipeline.import("_Main").bind(4)
-        pipeline.import("AmbientOcclusion").bind(5)
+        pipeline.import("AmbientOcclusion", StaticTextures.white).bind(5)
+        pipeline.import("ScreenSpaceReflections", StaticTextures.black).bind(6)
 
         Profiler.begin("Tonemap")
         shader.bind()
