@@ -24,11 +24,9 @@
 
     const float rayStep = 0.25;
     const float minRayStep = 0.1;
-    const int numRaySteps = 20;
-    const float searchDist = 5;
-    const float searchDistInv = 1 / searchDist;
-    const int numBinarySearchSteps = 5;
-    const float specularExponent = 1.5;
+    const int numRaySteps = 15;
+    const int numBinarySearchSteps = 4;
+    const float specularExponent = 1.55;
 
     in vec2 texCoords;
     out vec4 color;
@@ -62,16 +60,13 @@
         return vec3(project(ray), depth);
     }
 
-
-    vec4 rayCast(vec3 dir, inout vec3 ray, out float dDepth)
-    {
+    vec4 rayCast(vec3 dir, inout vec3 ray, out float dDepth) {
         dir *= rayStep;
 
         vec2 projectedCoord;
         float depth;
 
-        for(int i = 0; i < numRaySteps; i++)
-        {
+        for(int i = 0; i < numRaySteps; i++) {
             ray += dir;
 
             projectedCoord = project(ray);
@@ -90,17 +85,19 @@
     }
 
     void main() {
-        float specular = clamp(texture(gNormal, texCoords).a, 0, 1);
-        if (specular == 0)
+        vec4 normalVal = texture(gNormal, texCoords);
+        float specular = clamp(normalVal.a, 0, 1);
+        if (specular <= 0.02)
             discard;
 
-        vec3 viewNormal = normalize(mat3(_viewMatrix) * texture(gNormal, texCoords).xyz);
+        vec3 viewNormal = normalize(mat3(_viewMatrix) * normalVal.xyz);
         vec3 viewPos = sampleViewPosition(texCoords);
 
+        // Jitter vector
+        const float jitterStrength = 0.03;
+        vec3 jitter = (vec3(rand(texCoords * 11), rand(texCoords * 13), rand(texCoords * 17)) - 0.5) * jitterStrength;
 
         // Reflection vector
-        float jitterStr = 0.05;
-        vec3 jitter = (normalize(vec3(rand(texCoords), rand(texCoords * 41), rand(texCoords * 47))) - 0.5) * jitterStr;
         vec3 reflected = reflect(normalize(viewPos), viewNormal + jitter);
 
         // Ray cast
