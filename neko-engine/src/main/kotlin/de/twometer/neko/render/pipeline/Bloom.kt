@@ -18,16 +18,18 @@ class Bloom : PipelineStep() {
     }, 0.45f)
     private val blurBuffer = FboManager.request({
         it.addColorTexture(0, GL30.GL_RGBA16F, GL30.GL_RGBA, GL30.GL_LINEAR, GL30.GL_FLOAT)
-    }, 1.0f)
+    }, 0.85f)
 
     override fun render(pipeline: EffectsPipeline) {
-        Profiler.begin("Bloom")
+        Profiler.begin("Bloom extract")
         baseShader.bind()
         baseBuffer.bind()
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         pipeline.import("_Main").bind(4)
         Primitives.fullscreenQuad.render()
+        Profiler.end()
 
+        Profiler.begin("Bloom blur")
         blurShader.bind()
         blurBuffer.bind()
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
