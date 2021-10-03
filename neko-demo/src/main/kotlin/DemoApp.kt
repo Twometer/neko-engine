@@ -1,3 +1,4 @@
+
 import de.twometer.neko.audio.SoundEngine
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
@@ -15,14 +16,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
 import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_ALT
-import java.util.*
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
     private lateinit var rin: ModelNode
     private lateinit var sky: Sky
-
-    private val performanceProfile = TreeMap<String, Double>()
 
     override fun onPreInit() {
         AssetManager.registerPath("./neko-engine/assets")
@@ -30,7 +28,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     }
 
     override fun onPostInit() {
-         Profiler.enable()
+        Profiler.enabled = true
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)
@@ -98,48 +96,33 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     var selectedNode: Node? = null
 
     override fun onRenderFrame() {
-        ImGui.begin("Scenegraph")
-        fun drawNode(node: Node) {
-            ImGui.pushID(node.id)
-            val open = ImGui.treeNode("${node.id} - ${node.javaClass.simpleName} [${node.name}]")
-            if (ImGui.isItemClicked()) {
-                selectedNode = node
+        if (ImGui.begin("Scenegraph")) {
+            fun drawNode(node: Node) {
+                ImGui.pushID(node.id)
+                val open = ImGui.treeNode("${node.id} - ${node.javaClass.simpleName} [${node.name}]")
+                if (ImGui.isItemClicked()) {
+                    selectedNode = node
+                }
+                if (open) {
+                    node.children.forEach(::drawNode)
+                    ImGui.treePop()
+                }
+                ImGui.popID()
             }
-            if (open) {
-                node.children.forEach(::drawNode)
-                ImGui.treePop()
-            }
-            ImGui.popID()
+            drawNode(scene.rootNode)
         }
-        drawNode(scene.rootNode)
-        ImGui.end()
-
-        ImGui.begin("Debug")
-        ImGui.text("FPS: " + timer.fps)
-        ImGui.text("X:" + scene.camera.position.x)
-        ImGui.text("Y:" + scene.camera.position.y)
-        ImGui.text("Z:" + scene.camera.position.z)
-        ImGui.separator()
-        performanceProfile.entries
-            .sortedByDescending { it.value }
-            .forEach {
-                ImGui.text("${it.key}: ${it.value}ms")
-            }
         ImGui.end()
 
         selectedNode?.apply {
-            ImGui.begin("Node info")
-            ImGui.text("POS:" + this.transform.translation)
-            ImGui.text("ROT:" + this.transform.rotation)
-            ImGui.text("SCALE:" + this.transform.scale)
+            if (ImGui.begin("Node info")) {
+                ImGui.text("POS:" + this.transform.translation)
+                ImGui.text("ROT:" + this.transform.rotation)
+                ImGui.text("SCALE:" + this.transform.scale)
+            }
             ImGui.end()
         }
-    }
 
-    override fun onPostFrame() {
-        Profiler.getSections().forEach {
-            performanceProfile[it.key] = it.value.duration
-        }
+        showDebugWindow()
     }
 
     @Subscribe

@@ -33,17 +33,9 @@ class ProfileSection {
 
 object Profiler {
 
-    private var enabled = false
+    var enabled = false
     private val profile = HashMap<String, ProfileSection>()
     private val sectionStack = Stack<String>()
-
-    fun enable() {
-        enabled = true
-    }
-
-    fun disable() {
-        enabled = false
-    }
 
     fun begin(name: String) {
         if (!enabled) return

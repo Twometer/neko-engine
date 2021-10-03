@@ -16,6 +16,8 @@ import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
 import de.twometer.neko.util.Profiler
 import de.twometer.neko.util.Timer
+import imgui.ImGui
+import imgui.flag.ImGuiWindowFlags
 import mu.KotlinLogging
 import org.lwjgl.opengl.GL11.*
 
@@ -34,6 +36,8 @@ open class NekoApp(config: AppConfig = AppConfig()) {
     var playerController: PlayerController = DefaultPlayerController()
     var guiManager: GuiManager = GuiManager()
     var cursorVisible = false
+    private val performanceProfile = HashMap<String, Double>()
+    private val performanceHistory = FloatArray(144)
 
     fun run() {
         if (the != null)
@@ -96,9 +100,10 @@ open class NekoApp(config: AppConfig = AppConfig()) {
                 timer.reset()
             }
 
+            onPostFrame()
             window.update()
             Profiler.endFrame()
-            onPostFrame()
+            storeProfilerResults()
         }
 
         logger.info { "Shutting down..." }
@@ -108,11 +113,58 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         OpenAL.close()
     }
 
+    protected fun showDebugWindow() {
+        val workspacePos = ImGui.getMainViewport().workPos
+        val windowFlags =
+            ImGuiWindowFlags.NoDecoration or ImGuiWindowFlags.AlwaysAutoResize or ImGuiWindowFlags.NoSavedSettings or ImGuiWindowFlags.NoNav or ImGuiWindowFlags.NoFocusOnAppearing or ImGuiWindowFlags.NoMove
+        ImGui.setNextWindowPos(workspacePos.x + 10f, workspacePos.y + 10f)
+        ImGui.setNextWindowBgAlpha(0.55f)
+        if (ImGui.begin("Debug", windowFlags)) {
+            ImGui.text("FPS: " + timer.fps)
+            ImGui.separator()
+            ImGui.text("X:" + scene.camera.position.x)
+            ImGui.text("Y:" + scene.camera.position.y)
+            ImGui.text("Z:" + scene.camera.position.z)
+            if (Profiler.enabled && performanceProfile.isNotEmpty()) {
+                ImGui.separator()
+                ImGui.plotLines("frame times", performanceHistory, performanceHistory.size)
+                ImGui.separator()
+                if (ImGui.beginTable("performance_profile", 2)) {
+                    performanceProfile.entries
+                        .sortedByDescending { it.value }
+                        .forEach {
+                            ImGui.tableNextColumn()
+                            ImGui.text(it.key)
+                            ImGui.tableNextColumn()
+                            ImGui.text("${it.value}ms")
+                        }
+                    ImGui.endTable()
+                }
+            }
+        }
+        ImGui.end()
+    }
+
+    private fun storeProfilerResults() {
+        if (!Profiler.enabled)
+            return
+
+        pushPerformanceHistory(performanceProfile["Full frame"]?.toFloat() ?: 0f)
+        Profiler.getSections().forEach {
+            performanceProfile[it.key] = it.value.duration
+        }
+    }
+
     private fun logGlInfo() {
         val version = glGetString(GL_VERSION)
         val vendor = glGetString(GL_VENDOR)
         val os = System.getProperty("os.name")
         logger.info { "Detected OpenGL $version ($vendor) on $os" }
+    }
+
+    private fun pushPerformanceHistory(value: Float) {
+        for (i in 1 until performanceHistory.size) performanceHistory[i - 1] = performanceHistory[i]
+        performanceHistory[performanceHistory.size - 1] = value
     }
 
     open fun onPreInit() = Unit
