@@ -85,6 +85,9 @@
         return vec4(projectedCoord, depth, 0.0);
     }
 
+    float rand(vec2 co){
+        return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+    }
 
     void main() {
         float specular = clamp(texture(gNormal, texCoords).a, 0, 1);
@@ -96,7 +99,9 @@
 
 
         // Reflection vector
-        vec3 reflected = reflect(normalize(viewPos), viewNormal);
+        float jitterStr = 0.05;
+        vec3 jitter = (normalize(vec3(rand(texCoords), rand(texCoords * 41), rand(texCoords * 47))) - 0.5) * jitterStr;
+        vec3 reflected = reflect(normalize(viewPos), viewNormal + jitter);
 
         // Ray cast
         vec3 hitPos = viewPos;
