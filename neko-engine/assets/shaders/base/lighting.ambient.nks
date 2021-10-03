@@ -1,4 +1,4 @@
-#bind gPosition 0
+#bind gNormal   1
 #bind gAlbedo   2
 
 #begin vertex
@@ -15,15 +15,17 @@
     in vec2 texCoords;
     out vec4 color;
 
-    uniform sampler2D gPosition;
+    uniform sampler2D gNormal;
     uniform sampler2D gAlbedo;
 
     uniform float ambientStrength;
     uniform vec4 backgroundColor;
 
     void main() {
-        vec4 position = texture(gPosition, texCoords);
+        vec4 normal = texture(gNormal, texCoords);
         vec4 albedo = texture(gAlbedo, texCoords);
-        color = vec4(mix(backgroundColor.rgb, albedo.rgb * ambientStrength, position.a), 1.0f);
+
+        float ambientVisibility = float(normal.x == 0 && normal.y == 0 && normal.z == 0);
+        color = vec4(mix(albedo.rgb * ambientStrength, backgroundColor.rgb, ambientVisibility), 1.0f);
     }
 #end fragment

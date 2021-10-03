@@ -24,6 +24,7 @@
     layout(location = 1) out vec4 gNormal;
     layout(location = 2) out vec4 gAlbedo;
 
+    uniform float emissive;
     uniform float specular;
     uniform float shininess;
     uniform vec4 diffuseColor;
@@ -61,8 +62,8 @@
 
         textureColor.rgb *= diffuseColor.rgb;
 
-        gPosition = vec4(fragmentPosition, 1.0f);
-        gNormal = vec4(perturbedNormal, specular);       // Encode as NormalSpecular
+        gPosition = vec4(fragmentPosition, emissive);   // Encode as PositionEmissive
+        gNormal = vec4(perturbedNormal, specular);      // Encode as NormalSpecular
         gAlbedo = vec4(textureColor.rgb, shininess);    // Encode as AlbedoShininess
     }
 #end fragment

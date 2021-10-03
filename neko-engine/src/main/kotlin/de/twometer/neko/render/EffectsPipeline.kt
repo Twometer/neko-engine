@@ -12,6 +12,7 @@ class EffectsPipeline(private val gBuffer: FramebufferRef, private val sceneBuff
 
     init {
         steps.add(AmbientOcclusion())
+        steps.add(Bloom())
         steps.add(SSR())
         steps.add(Tonemap())
         steps.add(FXAA())

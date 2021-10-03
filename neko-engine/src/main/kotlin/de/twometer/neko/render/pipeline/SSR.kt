@@ -20,6 +20,7 @@ class SSR : PipelineStep() {
     override fun render(pipeline: EffectsPipeline) {
         Profiler.begin("Screen Space Reflections")
         pipeline.import("_Main").bind(4)
+        pipeline.import("Bloom").bind(5)
         shader.bind()
         buffer.bind()
         glClear(GL_COLOR_BUFFER_BIT)

@@ -230,6 +230,7 @@ class SceneRenderer(val scene: Scene) {
             shader["modelMatrix"] = modelMatrix
             shader["normalMatrix"] = createNormalMatrix(modelMatrix)
             shader["specular"] = (node.material[MatKey.ColorSpecular] as? Color ?: Color.White).r
+            shader["emissive"] = (node.material[MatKey.ColorEmissive] as? Color ?: Color.Black).r
             shader["shininess"] = node.material[MatKey.Shininess] as? Float ?: 4.0f
             shader["diffuseColor"] = node.material[MatKey.ColorDiffuse] as? Color ?: Color.White
 

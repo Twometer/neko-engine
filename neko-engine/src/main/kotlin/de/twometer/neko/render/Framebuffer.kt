@@ -1,5 +1,6 @@
 package de.twometer.neko.render
 
+import de.twometer.neko.core.NekoApp
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
 
@@ -16,9 +17,17 @@ class Framebuffer(val width: Int, val height: Int) {
     var depthBuffer: Int = 0
         private set
 
-    fun bind(bufType: Int = GL_FRAMEBUFFER) = glBindFramebuffer(bufType, framebufferId)
+    fun bind(bufType: Int = GL_FRAMEBUFFER) {
+        glBindFramebuffer(bufType, framebufferId)
+        glViewport(0, 0, width, height)
+    }
 
-    fun unbind() = glBindFramebuffer(GL_FRAMEBUFFER, 0)
+    fun unbind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+
+        val (w, h) = NekoApp.the.window.getSize()
+        glViewport(0, 0, w, h)
+    }
 
     fun addColorTexture(
         attachmentNum: Int = 0,

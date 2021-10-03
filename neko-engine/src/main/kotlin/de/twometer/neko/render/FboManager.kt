@@ -10,19 +10,15 @@ import org.greenrobot.eventbus.Subscribe
  */
 data class FramebufferRef(
     var fbo: Framebuffer,
-    private val performanceResize: Boolean,
+    private val scale: Float,
     private val config: (Framebuffer) -> Unit
 ) {
 
-    fun resize(width: Float, height: Float, scale: Float) {
-        if (performanceResize) {
-            resize(width * scale, height * scale)
-        } else {
-            resize(width, height)
-        }
+    fun resize(width: Float, height: Float) {
+        resizeImpl(width * scale, height * scale)
     }
 
-    private fun resize(width: Float, height: Float) {
+    private fun resizeImpl(width: Float, height: Float) {
         fbo.destroy()
         fbo = Framebuffer(width.toInt(), height.toInt()).also(config)
             .verify()
@@ -41,8 +37,6 @@ object FboManager {
 
     private val framebufferRefs = ArrayList<FramebufferRef>()
 
-    private const val scale = 0.5f
-
     fun setup() {
         Events.register(this)
     }
@@ -50,15 +44,16 @@ object FboManager {
     @Subscribe
     fun onSizeChanged(event: ResizeEvent) {
         for (handle in framebufferRefs)
-            handle.resize(event.width.toFloat(), event.height.toFloat(), scale)
+            handle.resize(event.width.toFloat(), event.height.toFloat())
     }
 
-    fun request(configure: (Framebuffer) -> Unit, performanceResize: Boolean = false): FramebufferRef {
-        val (width, height) = NekoApp.the!!.window.getSize()
-        val framebuffer = Framebuffer(width, height).also(configure)
+    fun request(configure: (Framebuffer) -> Unit, scale: Float = 1.0f): FramebufferRef {
+        val (width, height) = NekoApp.the.window.getSize()
+        val framebuffer = Framebuffer((width * scale).toInt(), (height * scale).toInt())
+            .also(configure)
             .verify()
 
-        val ref = FramebufferRef(framebuffer, performanceResize, configure)
+        val ref = FramebufferRef(framebuffer, scale, configure)
         framebufferRefs.add(ref)
         return ref
     }

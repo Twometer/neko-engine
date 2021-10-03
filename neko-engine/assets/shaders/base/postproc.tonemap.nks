@@ -3,6 +3,7 @@
 #bind textureSampler 4
 #bind ssaoSampler 5
 #bind ssrSampler 6
+#bind bloomSampler 7
 
 #begin fragment
     out vec4 color;
@@ -12,6 +13,7 @@
     uniform sampler2D textureSampler;
     uniform sampler2D ssaoSampler;
     uniform sampler2D ssrSampler;
+    uniform sampler2D bloomSampler;
 
     uniform float gamma;
     uniform float exposure;
@@ -20,7 +22,8 @@
         vec3 sceneColor = texture(textureSampler, texCoords).rgb;
         float ssaoFac = texture(ssaoSampler, texCoords).r;
         vec4 ssrColor = texture(ssrSampler, texCoords);
-        vec3 hdrColor = sceneColor * ssaoFac + ssrColor.rgb * ssrColor.a;
+        vec3 bloomColor = texture(bloomSampler, texCoords).rgb;
+        vec3 hdrColor = sceneColor * ssaoFac + ssrColor.rgb * ssrColor.a + bloomColor;
 
         // Tone mapping
         vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);

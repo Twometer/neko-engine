@@ -21,6 +21,7 @@ class Tonemap : PipelineStep() {
         pipeline.import("_Main").bind(4)
         pipeline.import("AmbientOcclusion", StaticTextures.white).bind(5)
         pipeline.import("ScreenSpaceReflections", StaticTextures.black).bind(6)
+        pipeline.import("Bloom", StaticTextures.black).bind(7)
 
         Profiler.begin("Tonemap")
         shader.bind()

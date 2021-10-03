@@ -1,0 +1,25 @@
+#include "base/postproc.base.nks"
+
+#bind gPosition 0
+#bind postMainTex 4
+
+#inject CameraMatrices
+#inject ScreenSize
+
+#begin fragment
+    uniform sampler2D gPosition;
+    uniform sampler2D postMainTex;
+    uniform float threshold;
+    out vec4 fragColor;
+    in vec2 texCoords;
+
+    float luma(vec3 color) {
+        return dot(color, vec3(0.299, 0.587, 0.114));
+    }
+
+    void main() {
+        float emissive = texture(gPosition, texCoords).a;
+        vec3 color = texture(postMainTex, texCoords).rgb;
+        fragColor = vec4(color * emissive, 1);
+    }
+#end fragment
