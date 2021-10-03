@@ -6,15 +6,19 @@ A 3D game rendering engine using Kotlin and LWJGL
 
 ## Feature Plan
 
-- [x] Deferred Rendering pipeline
-- [x] Scenegraph model system
+- [x] Deferred HDR rendering pipeline
+- [x] Scenegraph-based model system
     - [x] Assimp model importer
     - [x] Bone and animation support
     - [x] Component system
 - [x] Shader preprocessor: NekoShaders (.nks)
 - [x] Ultralight GUI Framework
-- [ ] OpenAL 3D sound engine
-- [x] Fully extendable PostProcessingFX pipeline
+- [x] OpenAL 3D sound engine
+- [x] Extensible Post Processing FX pipeline
+    - [x] Scalable Ambient Occlusion
+    - [x] Screen Space Reflections
+    - [x] Bloom
+    - [x] FXAA
 - [ ] Support for game scripts
 - [ ] Multiplayer and sync engine
 
