@@ -1,0 +1,27 @@
+#inject CameraMatrices
+
+#set CullFace Off
+//#set DepthTest Off
+
+#begin vertex
+    layout(location = 0) in vec3 vertexPosition;
+    layout(location = 1) in vec3 vertexNormal;
+    layout(location = 2) in vec2 vertexTexCoords;
+
+    uniform mat4 _viewMatrix;
+    uniform mat4 _projectionMatrix;
+    uniform mat4 modelMatrix;
+
+    void main() {
+        vec4 worldSpacePos = modelMatrix * vec4(vertexPosition, 1.0f);
+        gl_Position = _projectionMatrix * _viewMatrix * worldSpacePos;
+    }
+#end vertex
+
+#begin fragment
+    out vec4 color;
+
+    void main() {
+        color = vec4(1,1,1,1);
+    }
+#end fragment

@@ -137,6 +137,24 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             this.cursorVisible = !this.cursorVisible
         }
     }
+
+    /*@Subscribe
+    fun renderFwd(e: RenderForwardEvent) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        val shader = ShaderCache.get("debug.nks")
+        shader.bind()
+
+        scene.rootNode.scanTree {
+            if (it is Geometry) {
+                val aabb = it.aabb!!.transform(it.compositeTransform.matrix)
+                shader["modelMatrix"] =
+                    Matrix4f().translate(aabb.center).scale(aabb.sizeX * 0.5f, aabb.sizeY * 0.5f, aabb.sizeZ * 0.5f)
+                Primitives.unitCube.render()
+            }
+        }
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    }*/
 }
 
 fun main() {

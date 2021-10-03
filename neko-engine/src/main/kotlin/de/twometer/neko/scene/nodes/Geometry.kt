@@ -13,7 +13,8 @@ class Geometry(
     material: Material = Material.Default,
     name: String = "",
     val skeletonRoot: SkeletonNode? = null,
-    val aabb: AABB? = null
+    val aabb: AABB? = null,
+    val canPick: Boolean = true
 ) :
     RenderableNode(material, name = name) {
 

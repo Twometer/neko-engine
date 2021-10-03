@@ -8,7 +8,12 @@ import java.nio.IntBuffer
 
 class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "Unnamed mesh") {
 
-    val aabb: AABB = AABB(Vector3f(0f, 0f, 0f), Vector3f(0f, 0f, 0f))
+    companion object {
+        private const val AABB_INIT = 100000000f
+        const val MAX_BONE_INFLUENCE = 4
+    }
+
+    val aabb: AABB = AABB(Vector3f(AABB_INIT, AABB_INIT, AABB_INIT), Vector3f(-AABB_INIT, -AABB_INIT, -AABB_INIT))
     val vertices: FloatBuffer = MemoryUtil.memAllocFloat(capacity * dimensions)
     var normals: FloatBuffer? = null
     var texCoords: FloatBuffer? = null
@@ -130,10 +135,6 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
 
     fun toGeometry(material: Material = Material.Default): Geometry {
         return Geometry(this, material, name, skeletonRoot, aabb).also { destroy() }
-    }
-
-    companion object {
-        const val MAX_BONE_INFLUENCE = 4
     }
 
 }

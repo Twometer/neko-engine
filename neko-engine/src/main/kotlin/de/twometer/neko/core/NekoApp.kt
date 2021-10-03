@@ -9,6 +9,7 @@ import de.twometer.neko.gui.GuiManager
 import de.twometer.neko.gui.ImGuiHandler
 import de.twometer.neko.gui.Page
 import de.twometer.neko.player.DefaultPlayerController
+import de.twometer.neko.player.PickEngine
 import de.twometer.neko.player.PlayerController
 import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.SceneRenderer
@@ -26,13 +27,16 @@ private val logger = KotlinLogging.logger {}
 open class NekoApp(config: AppConfig = AppConfig()) {
 
     companion object {
-        var the: NekoApp? = null
+        private var instance: NekoApp? = null
+
+        val the: NekoApp get() = instance!!
     }
 
     val window = Window(config)
     val timer = Timer(config.timerSpeed)
     val scene = Scene()
     val renderer = SceneRenderer(scene)
+    val pickEngine = PickEngine(scene)
     var playerController: PlayerController = DefaultPlayerController()
     var guiManager: GuiManager = GuiManager()
     var cursorVisible = false
@@ -40,9 +44,9 @@ open class NekoApp(config: AppConfig = AppConfig()) {
     private val performanceHistory = FloatArray(144)
 
     fun run() {
-        if (the != null)
+        if (instance != null)
             error("Only one NekoApp instance is allowed")
-        else the = this
+        else instance = this
 
         logger.info { "Starting Neko Engine v${Neko.VERSION}" }
         CrashHandler.register()
@@ -125,6 +129,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
             ImGui.text("X:" + scene.camera.position.x)
             ImGui.text("Y:" + scene.camera.position.y)
             ImGui.text("Z:" + scene.camera.position.z)
+            ImGui.text("LookAt: " + (pickEngine.pick()?.name ?: "nothing"))
             if (Profiler.enabled && performanceProfile.isNotEmpty()) {
                 ImGui.separator()
                 ImGui.plotLines("frame times", performanceHistory, performanceHistory.size)

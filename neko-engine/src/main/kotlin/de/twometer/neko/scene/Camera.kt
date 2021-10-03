@@ -32,7 +32,7 @@ class Camera {
         private set
 
     fun update() {
-        val (width, height) = NekoApp.the?.window?.getSize()!!
+        val (width, height) = NekoApp.the.window.getSize()
         val aspect = width.toFloat() / height.toFloat()
 
         val yaw = rotation.x
