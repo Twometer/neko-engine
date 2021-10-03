@@ -17,7 +17,9 @@ object ImGuiHandler {
         io.fonts.addFontDefault()
 
         glfw.init(window.handle, true)
-        gl3.init("#version 130")
+        gl3.init("#version 330")
+
+        ImGuiTheme.apply()
     }
 
     fun wantsControl() = ImGui.getIO().wantCaptureMouse
