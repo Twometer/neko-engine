@@ -1,12 +1,14 @@
 package de.twometer.neko.scene
 
 import de.twometer.neko.scene.nodes.Geometry
+import org.joml.Vector3f
 import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
 class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "Unnamed mesh") {
 
+    val aabb: AABB = AABB(Vector3f(0f, 0f, 0f), Vector3f(0f, 0f, 0f))
     val vertices: FloatBuffer = MemoryUtil.memAllocFloat(capacity * dimensions)
     var normals: FloatBuffer? = null
     var texCoords: FloatBuffer? = null
@@ -59,12 +61,14 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     }
 
     fun putVertex(x: Float, y: Float) {
+        aabb.addPoint(Vector3f(x, y, 0f))
         vertices.put(x)
         vertices.put(y)
         numVertices++
     }
 
     fun putVertex(x: Float, y: Float, z: Float) {
+        aabb.addPoint(Vector3f(x, y, z))
         vertices.put(x)
         vertices.put(y)
         vertices.put(z)
@@ -125,7 +129,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {
-        return Geometry(this, material, name, skeletonRoot).also { destroy() }
+        return Geometry(this, material, name, skeletonRoot, aabb).also { destroy() }
     }
 
     companion object {

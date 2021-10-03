@@ -11,6 +11,7 @@ import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.RenderBucket
 import de.twometer.neko.scene.Scene
+import de.twometer.neko.scene.nodes.Geometry
 import de.twometer.neko.scene.nodes.PointLight
 import de.twometer.neko.scene.nodes.RenderableNode
 import de.twometer.neko.util.Profiler
@@ -219,6 +220,11 @@ class SceneRenderer(val scene: Scene) {
         // Then render the node
         Profiler.begin("GBuffer draw")
         nodes.forEach { node ->
+            if (node is Geometry && node.aabb != null &&
+                !scene.camera.isInFrustum(node.aabb.center, node.aabb.diagonal)
+            )
+                return@forEach
+
             val shader = ShaderCache.get(node.material.shader)
 
             OpenGL.setBoolean(GL_CULL_FACE, node.material[MatKey.TwoSided] == true)
