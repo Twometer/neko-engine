@@ -12,15 +12,15 @@ A 3D game rendering engine using Kotlin and LWJGL
     - [x] Bone and animation support
     - [x] Component system
 - [x] Shader preprocessor: NekoShaders (.nks)
-- [x] Ultralight GUI Framework
+- [x] Ultralight UI and ImGUI
 - [x] OpenAL 3D sound engine
+- [ ] 3D text billboards
 - [x] Extensible Post Processing FX pipeline
     - [x] Scalable Ambient Occlusion
     - [x] Screen Space Reflections
     - [x] Bloom
     - [x] FXAA
-- [ ] Support for game scripts
-- [ ] Multiplayer and sync engine
+    - [x] Vignette
 
 ## Asset Layout
 
