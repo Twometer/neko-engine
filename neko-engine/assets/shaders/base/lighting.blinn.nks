@@ -1,3 +1,5 @@
+#include "base/depth_util.nks"
+
 #bind gPosition 0
 #bind gNormal   1
 #bind gAlbedo   2
@@ -55,7 +57,7 @@
     uniform vec2 _screenSize;
     uniform vec3 _cameraPosition;
 
-    uniform sampler2D gPosition;
+    uniform sampler2D gDepth;
     uniform sampler2D gNormal;
     uniform sampler2D gAlbedo;
 
@@ -65,7 +67,7 @@
         // Unpack GBuffer
         vec4 normalSpec = texture(gNormal, texCoords);
         vec4 albedoShine = texture(gAlbedo, texCoords);
-        vec3 position = texture(gPosition, texCoords).xyz;
+        vec3 position = reconstructWorldSpacePos(texCoords, texture(gDepth, texCoords).r);
         vec3 normal = normalSpec.xyz;
         vec3 albedo = albedoShine.rgb;
         float specularStrength = normalSpec.a;

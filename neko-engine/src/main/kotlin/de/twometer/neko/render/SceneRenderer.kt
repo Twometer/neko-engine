@@ -46,15 +46,15 @@ class SceneRenderer(val scene: Scene) {
 
         // Framebuffers
         gBuffer = FboManager.request({
-            it.addDepthBuffer()
-                .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_LINEAR, GL_FLOAT)  // Positions
-                .addColorTexture(1, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Normals
-                .addColorTexture(2, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)  // Albedo
+            it.addDepthTexture()
+                .addColorTexture(0, GL_RGBA16F, GL_RGBA, GL_LINEAR, GL_FLOAT)  // NormalSpecular
+                .addColorTexture(1, GL_RGBA16F, GL_RGBA, GL_LINEAR, GL_FLOAT)  // AlbedoShininess
+                .addColorTexture(2, GL_RGB16F, GL_RGB, GL_LINEAR, GL_FLOAT)    // Emissive
         })
 
         sceneBuffer = FboManager.request({
             it.addDepthBuffer()
-                .addColorTexture(0, GL_RGBA32F, GL_RGBA, GL_NEAREST, GL_FLOAT)
+                .addColorTexture(0, GL_RGBA16F, GL_RGBA, GL_LINEAR, GL_FLOAT)
         })
 
         effectsPipeline = EffectsPipeline(gBuffer, sceneBuffer)
@@ -189,10 +189,11 @@ class SceneRenderer(val scene: Scene) {
         Profiler.end()
     }
 
-    private fun bindGBuffer() {
-        gBuffer.fbo.getColorTexture(0).bind(0)
-        gBuffer.fbo.getColorTexture(1).bind(1)
-        gBuffer.fbo.getColorTexture(2).bind(2)
+    fun bindGBuffer() {
+        gBuffer.fbo.depthTexture!!.bind(0)              // gDepth
+        gBuffer.fbo.getColorTexture(0).bind(1)     // gNormal
+        gBuffer.fbo.getColorTexture(1).bind(2)     // gAlbedo
+        gBuffer.fbo.getColorTexture(2).bind(3)     // gEmissive
     }
 
     private fun renderGBuffer() {

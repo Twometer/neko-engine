@@ -20,9 +20,9 @@
 #end vertex
 
 #begin fragment
-    layout(location = 0) out vec4 gPosition;
-    layout(location = 1) out vec4 gNormal;
-    layout(location = 2) out vec4 gAlbedo;
+    layout(location = 0) out vec4 gNormal;
+    layout(location = 1) out vec4 gAlbedo;
+    layout(location = 2) out vec3 gEmissive;
 
     uniform float emissive;
     uniform float specular;
@@ -62,8 +62,8 @@
 
         textureColor.rgb *= diffuseColor.rgb;
 
-        gPosition = vec4(fragmentPosition, emissive);   // Encode as PositionEmissive
         gNormal = vec4(perturbedNormal, specular);      // Encode as NormalSpecular
         gAlbedo = vec4(textureColor.rgb, shininess);    // Encode as AlbedoShininess
+        gEmissive.r = emissive;                         // Encode as Emissive [other components reserved]
     }
 #end fragment

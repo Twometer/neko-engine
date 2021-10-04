@@ -1,0 +1,29 @@
+#inject CameraMatricesInverse
+
+#begin fragment
+
+    uniform mat4 _projectionMatrixInverse;
+    uniform mat4 _viewMatrixInverse;
+
+    vec3 reconstructViewSpacePos(vec2 uv, float depth) {
+        float z = depth * 2.0 - 1.0;
+
+        vec4 clipSpacePosition = vec4(uv * 2.0 - 1.0, z, 1.0);
+        vec4 viewSpacePosition = _projectionMatrixInverse * clipSpacePosition;
+        viewSpacePosition /= viewSpacePosition.w; // Perspective divide
+
+        return viewSpacePosition.xyz;
+    }
+
+    vec3 reconstructWorldSpacePos(vec2 uv, float depth) {
+        float z = depth * 2.0 - 1.0;
+
+        vec4 clipSpacePosition = vec4(uv * 2.0 - 1.0, z, 1.0);
+        vec4 viewSpacePosition = _projectionMatrixInverse * clipSpacePosition;
+        viewSpacePosition /= viewSpacePosition.w; // Perspective divide
+
+        vec4 worldSpacePosition = _viewMatrixInverse * viewSpacePosition;
+        return worldSpacePosition.xyz;
+    }
+
+#end fragment

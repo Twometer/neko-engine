@@ -1,6 +1,7 @@
 #include "base/postproc.base.nks"
+#include "base/depth_util.nks"
 
-#bind gPosition 0
+#bind gDepth 0
 #bind gNormal 1
 #bind gAlbedo 2
 #bind postMainTex 4
@@ -13,7 +14,7 @@
 
 #begin fragment
 
-    uniform sampler2D gPosition;
+    uniform sampler2D gDepth;
     uniform sampler2D gNormal;
     uniform sampler2D gAlbedo;
     uniform sampler2D postMainTex;
@@ -32,8 +33,7 @@
     out vec4 color;
 
     vec3 sampleViewPosition(vec2 uv) {
-        vec4 worldPosition = vec4(textureLod(gPosition, uv, 2).xyz, 1.0);
-        return (_viewMatrix * worldPosition).xyz;
+        return reconstructViewSpacePos(uv, texture(gDepth, uv).r);
     }
 
     vec2 project(vec3 vec) {

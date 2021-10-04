@@ -1,5 +1,6 @@
 package de.twometer.neko.render
 
+import de.twometer.neko.core.NekoApp
 import de.twometer.neko.render.pipeline.*
 import de.twometer.neko.res.ShaderCache
 import org.lwjgl.opengl.GL30.*
@@ -35,9 +36,7 @@ class EffectsPipeline(private val gBuffer: FramebufferRef, private val sceneBuff
     }
 
     private fun runPipeline() {
-        gBuffer.fbo.getColorTexture(0).bind(0)
-        gBuffer.fbo.getColorTexture(1).bind(1)
-        gBuffer.fbo.getColorTexture(2).bind(2)
+        NekoApp.the.renderer.bindGBuffer()
         texMap.clear()
         export("_Main", sceneBuffer.fbo.getColorTexture())
 

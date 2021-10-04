@@ -1,6 +1,7 @@
 #include "base/postproc.base.nks"
+#include "base/depth_util.nks"
 
-#bind gPosition 0
+#bind gDepth 0
 #bind gNormal 1
 #bind noise 4
 
@@ -17,7 +18,7 @@
     #define VARIATION             1
     #define PI                    3.14159265359
 
-    uniform sampler2D gPosition;
+    uniform sampler2D gDepth;
     uniform sampler2D gNormal;
     uniform sampler2D noise;
 
@@ -42,9 +43,7 @@
     }
 
     vec3 getPositionVS(vec2 uv) {
-        vec3 originWS = texture(gPosition, uv).xyz;
-        vec4 originVS = _viewMatrix * vec4(originWS, 1.0);
-        return originVS.xyz;
+        return reconstructViewSpacePos(uv, texture(gDepth, uv).r);
     }
 
     // returns a unit vector and a screen-space radius for the tap on a unit disk

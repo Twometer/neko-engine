@@ -5,6 +5,7 @@ import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Mesh
 import de.twometer.neko.scene.SkeletonNode
 import org.lwjgl.opengl.GL30.*
+import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
@@ -35,6 +36,7 @@ class Geometry(
     private val boneWeightBuffer: Int?
 
     init {
+        destroyEmptyBuffers()
         mesh.vertices.flip()
         mesh.normals?.flip()
         mesh.texCoords?.flip()
@@ -109,6 +111,21 @@ class Geometry(
         glVertexAttribIPointer(index, dimensions, GL_INT, 0, 0)
         glEnableVertexAttribArray(index)
         return vbo
+    }
+
+    private fun destroyEmptyBuffers() {
+        mesh.normals = destroyEmptyBuffer(mesh.normals)
+        mesh.texCoords = destroyEmptyBuffer(mesh.texCoords)
+        mesh.indices = destroyEmptyBuffer(mesh.indices)
+        mesh.boneIds = destroyEmptyBuffer(mesh.boneIds)
+        mesh.boneWeights = destroyEmptyBuffer(mesh.boneWeights)
+    }
+
+    private  fun <T : Buffer>destroyEmptyBuffer(buffer: T?): T? {
+        return if (buffer?.position() != 0)
+            buffer
+        else
+            null
     }
 
 }

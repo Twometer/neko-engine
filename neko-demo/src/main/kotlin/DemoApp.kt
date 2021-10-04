@@ -10,7 +10,6 @@ import de.twometer.neko.res.RawLoader
 import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.nodes.*
 import de.twometer.neko.util.MathF.toRadians
-import de.twometer.neko.util.Profiler
 import imgui.ImGui
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Vector3f
@@ -28,8 +27,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     }
 
     override fun onPostInit() {
-        Profiler.enabled = true
-        playerController = BenchmarkPlayerController()
+        //Profiler.enabled = true
+        //playerController = BenchmarkPlayerController()
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)

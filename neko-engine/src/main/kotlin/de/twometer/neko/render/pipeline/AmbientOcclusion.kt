@@ -7,7 +7,6 @@ import de.twometer.neko.render.Primitives
 import de.twometer.neko.render.StaticTextures
 import de.twometer.neko.res.ShaderCache
 import de.twometer.neko.util.Profiler
-import org.lwjgl.opengl.GL30
 
 class AmbientOcclusion : PipelineStep() {
 
@@ -15,10 +14,10 @@ class AmbientOcclusion : PipelineStep() {
     private val blurShader = ShaderCache.get("base/postproc.ao_blur.nks")
 
     private val baseBuffer = FboManager.request({
-        it.addColorTexture(0, GL30.GL_RGBA16F, GL30.GL_RGBA, GL30.GL_NEAREST, GL30.GL_FLOAT)
+        it.addColorTexture(0)
     })
     private val blurBuffer = FboManager.request({
-        it.addColorTexture(0, GL30.GL_RGBA16F, GL30.GL_RGBA, GL30.GL_NEAREST, GL30.GL_FLOAT)
+        it.addColorTexture(0)
     })
 
     var intensity: Float = 0f
@@ -29,7 +28,7 @@ class AmbientOcclusion : PipelineStep() {
         Profiler.begin("AO Base")
         baseBuffer.bind()
         baseShader.bind()
-        baseShader["uFOV"] = NekoApp.the!!.scene.camera.fov
+        baseShader["uFOV"] = NekoApp.the.scene.camera.fov
         baseShader["uIntensity"] = intensity
         baseShader["uSampleRadiusWS"] = radius
         baseShader["uBias"] = bias
