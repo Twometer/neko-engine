@@ -1,0 +1,23 @@
+#include "base/postproc.base.nks"
+
+#bind sampler 4
+
+// From https://www.shadertoy.com/view/lsKSWR
+
+#begin fragment
+    out vec4 color;
+    in vec2 texCoords;
+
+    uniform sampler2D sampler;
+    uniform float strength;
+    uniform float exponent;
+
+    void main() {
+        vec2 uv = texCoords * (1.0 - texCoords.yx);
+        float fac = uv.x * uv.y * strength;
+        fac = pow(fac, exponent);
+        fac = clamp(fac, 0.0, 1.0);
+
+        color = vec4(texture(sampler, texCoords).rgb * fac, 1.0);
+    }
+#end fragment

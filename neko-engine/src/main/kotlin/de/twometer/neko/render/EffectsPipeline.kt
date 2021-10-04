@@ -17,6 +17,7 @@ class EffectsPipeline(private val gBuffer: FramebufferRef, private val sceneBuff
         steps.add(SSR())
         steps.add(Tonemap())
         steps.add(FXAA())
+        steps.add(Vignette())
     }
 
     fun render() {
