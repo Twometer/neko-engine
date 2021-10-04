@@ -15,6 +15,7 @@ import de.twometer.neko.render.FboManager
 import de.twometer.neko.render.SceneRenderer
 import de.twometer.neko.scene.Scene
 import de.twometer.neko.util.CrashHandler
+import de.twometer.neko.util.FpsLimiter
 import de.twometer.neko.util.Profiler
 import de.twometer.neko.util.Timer
 import imgui.ImGui
@@ -40,6 +41,8 @@ open class NekoApp(config: AppConfig = AppConfig()) {
     var playerController: PlayerController = DefaultPlayerController()
     var guiManager: GuiManager = GuiManager()
     var cursorVisible = false
+    var fpsLimit = 60
+
     private val performanceProfile = HashMap<String, Double>()
     private val performanceHistory = FloatArray(144)
 
@@ -108,6 +111,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
             window.update()
             Profiler.endFrame()
             storeProfilerResults()
+            FpsLimiter.sync(fpsLimit)
         }
 
         logger.info { "Shutting down..." }
