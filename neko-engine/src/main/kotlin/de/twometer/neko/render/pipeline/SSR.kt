@@ -25,7 +25,7 @@ class SSR : PipelineStep() {
         shader.bind()
         buffer.bind()
         glClear(GL_COLOR_BUFFER_BIT)
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         pipeline.export("ScreenSpaceReflections", buffer.fbo.getColorTexture())
         Profiler.end()
     }

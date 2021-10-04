@@ -26,7 +26,7 @@ class Bloom : PipelineStep() {
         baseBuffer.bind()
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         pipeline.import("_Main").bind(4)
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         Profiler.end()
 
         Profiler.begin("Bloom blur")
@@ -34,7 +34,7 @@ class Bloom : PipelineStep() {
         blurBuffer.bind()
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
         baseBuffer.fbo.getColorTexture().bind(4)
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
 
         pipeline.export("Bloom", blurBuffer.fbo.getColorTexture())
         Profiler.end()

@@ -57,7 +57,7 @@ class GuiManager : UltralightLoadListener {
         UltralightLoader.load()
         renderer = UltralightRenderer.create()
 
-        val (width, height) = NekoApp.the!!.window.getSize()
+        val (width, height) = NekoApp.the.window.getSize()
         view = renderer.createView(width.toLong(), height.toLong(), true)
         view.setViewListener(UltralightNekoViewListener())
         view.setLoadListener(this)
@@ -128,7 +128,7 @@ class GuiManager : UltralightLoadListener {
             surface.clearDirtyBounds()
         }
 
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
 
         shader.unbind()
         OpenGL.enable(GL_DEPTH_TEST)

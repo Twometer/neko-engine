@@ -1,0 +1,57 @@
+#inject CameraMatrices
+#set CullFace Off
+#set DepthTest On
+
+#begin shared
+    vec2 texCoords;
+    vec3 fontColor;
+#end shared
+
+#begin vertex
+    in vec2 position;
+
+    uniform mat4 _projectionMatrix;
+    uniform mat4 _viewMatrix;
+    uniform mat4 _viewMatrixInverse;
+    uniform mat4 modelMatrix;
+
+    uniform vec2 atlasSize;
+    uniform vec2 glyphCoords;
+    uniform vec2 glyphSize;
+    uniform vec2 glyphOffset;
+    uniform vec3 glyphColor;
+
+    void main() {
+        mat3 invViewRot = inverse(mat3(_viewMatrix));
+        vec3 worldPosition = vec3(0.01 * (position * glyphSize + glyphOffset), 0.0);
+        gl_Position = _projectionMatrix * _viewMatrix * modelMatrix * vec4(invViewRot * worldPosition, 1.0);
+        fontColor = glyphColor;
+
+        // Compute base coordinates
+        texCoords = position * 0.5 + 0.5;
+        texCoords.y = 1.0 - texCoords.y;
+
+        // Offset coordinates
+        texCoords *= glyphSize / atlasSize;
+        texCoords += glyphCoords / atlasSize;
+    }
+#end vertex
+
+#begin fragment
+    out vec4 color;
+
+    uniform sampler2D sampler;
+
+    const float width = 0.5;
+    const float edge = 0.11;
+
+    void main() {
+        float distance = 1.0 - texture(sampler, texCoords).a;
+        float alpha = 1.0 - smoothstep(width, width + edge, distance);
+
+        if (alpha < 0.1)
+            discard;
+
+        color = vec4(fontColor, alpha);
+    }
+#end fragment

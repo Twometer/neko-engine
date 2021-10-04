@@ -48,7 +48,7 @@ class EffectsPipeline(private val gBuffer: FramebufferRef, private val sceneBuff
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
         import("_Main").bind(4)
         copyShader.bind()
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         copyShader.unbind()
     }
 

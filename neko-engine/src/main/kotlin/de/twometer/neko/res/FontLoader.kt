@@ -15,7 +15,7 @@ object FontLoader {
         val imgPath = AssetManager.resolve("$name.png", AssetType.Fonts).absolutePath
 
         val image = ImageLoader.load(imgPath)
-        val texture = TextureLoader.load(image.pixels, image.width, image.height)
+        val texture = TextureLoader.load(image.pixels, image.width, image.height, false)
         image.destroy()
 
         return FontFace(texture, parse(fntData))

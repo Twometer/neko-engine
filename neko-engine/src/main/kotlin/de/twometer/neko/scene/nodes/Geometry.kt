@@ -1,5 +1,6 @@
 package de.twometer.neko.scene.nodes
 
+import de.twometer.neko.render.Shader
 import de.twometer.neko.scene.AABB
 import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Mesh
@@ -57,7 +58,7 @@ class Geometry(
         glBindVertexArray(0)
     }
 
-    override fun render() {
+    override fun render(shader: Shader) {
         glBindVertexArray(vao)
         if (indexBuffer != null) {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)

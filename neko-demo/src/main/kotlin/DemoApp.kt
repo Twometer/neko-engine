@@ -1,4 +1,3 @@
-
 import de.twometer.neko.audio.SoundEngine
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
@@ -27,7 +26,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         //Profiler.enabled = true
         //playerController = BenchmarkPlayerController()
 
-        var testFont = FontCache.get("lucida")
+        val testFont = FontCache.get("lucida")
+
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)
@@ -36,10 +36,17 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             rin = it
         })
 
+
+
         scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
             it.transform.translation.set(2f, 0f, 0f)
             it.transform.scale.set(0.01, 0.01, 0.01)
             it.playAnimation(it.animations[0])
+
+            it.attachChild(Billboard(testFont, "TheLegend27").also { tag ->
+                tag.transform.scale.set(10f, 10f, 10f)
+                tag.transform.translation.set(0f,1.7f,0f)
+            })
         })
 
         scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
@@ -122,6 +129,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         }
 
         showDebugWindow()
+
+
     }
 
     @Subscribe

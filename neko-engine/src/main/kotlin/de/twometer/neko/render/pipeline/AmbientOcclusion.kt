@@ -33,14 +33,14 @@ class AmbientOcclusion : PipelineStep() {
         baseShader["uSampleRadiusWS"] = radius
         baseShader["uBias"] = bias
         StaticTextures.noise5x5.bind(4)
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         Profiler.end()
 
         Profiler.begin("AO Blur")
         blurBuffer.bind()
         blurShader.bind()
         baseBuffer.fbo.getColorTexture(0).bind(4)
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         Profiler.end()
 
         pipeline.export("AmbientOcclusion", blurBuffer.fbo.getColorTexture())

@@ -18,7 +18,7 @@ class FXAA : PipelineStep() {
         buffer.bind()
         shader.bind()
         pipeline.import("_Main").bind(4)
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         pipeline.export("_Main", buffer.fbo.getColorTexture())
         Profiler.end()
     }

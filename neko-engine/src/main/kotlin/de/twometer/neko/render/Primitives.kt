@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL31.glDrawArraysInstanced
  */
 object Primitives {
 
-    val fullscreenQuad: Primitive by lazy {
+    val unitQuad: Primitive by lazy {
         Primitive(floatArrayOf(-1f, 1f, -1f, -1f, 1f, 1f, 1f, -1f), GL_TRIANGLE_STRIP, 2)
     }
 

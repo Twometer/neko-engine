@@ -28,7 +28,7 @@ class Tonemap : PipelineStep() {
         buffer.bind()
         shader["gamma"] = gamma
         shader["exposure"] = exposure
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         Profiler.end()
 
         pipeline.export("_Main", buffer.fbo.getColorTexture())

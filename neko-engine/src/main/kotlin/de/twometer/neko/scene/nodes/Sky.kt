@@ -1,6 +1,7 @@
 package de.twometer.neko.scene.nodes
 
 import de.twometer.neko.render.Primitives
+import de.twometer.neko.render.Shader
 import de.twometer.neko.render.TextureCube
 import de.twometer.neko.scene.MatKey
 import de.twometer.neko.scene.Material
@@ -12,7 +13,7 @@ class Sky(cubemap: TextureCube) :
         RenderBucket.Forward
     ) {
 
-    override fun render() {
+    override fun render(shader: Shader) {
         Primitives.unitCube.render()
     }
 

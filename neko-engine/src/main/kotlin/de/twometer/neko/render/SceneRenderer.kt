@@ -139,7 +139,7 @@ class SceneRenderer(val scene: Scene) {
         ambientShader.bind()
         ambientShader["ambientStrength"] = scene.ambientStrength
         ambientShader["backgroundColor"] = scene.backgroundColor
-        Primitives.fullscreenQuad.render()
+        Primitives.unitQuad.render()
         Profiler.end()
 
         // Blinn-Phong pass (point lights)
@@ -172,7 +172,7 @@ class SceneRenderer(val scene: Scene) {
                 shader["normalMatrix"] = createNormalMatrix(modelMatrix)
                 bindTexture(node.material[MatKey.TextureDiffuse])
 
-                node.render()
+                node.render(shader)
                 OpenGL.resetState() // Clean up the crap that the shader may have left behind. Could probably be done more elegant.
             }
         }
@@ -240,7 +240,7 @@ class SceneRenderer(val scene: Scene) {
                 it.loadMatrices(shader)
             }
 
-            node.render()
+            node.render(shader)
         }
         Profiler.end()
 
