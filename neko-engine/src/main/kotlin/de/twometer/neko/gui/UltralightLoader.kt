@@ -15,7 +15,7 @@ private val logger = KotlinLogging.logger {}
 
 object UltralightLoader {
 
-    private val window = NekoApp.the!!.window
+    private val window = NekoApp.the.window
 
     fun load() {
         logger.info { "Loading ultralight..." }
@@ -32,7 +32,7 @@ object UltralightLoader {
         val platform = UltralightPlatform.instance()
         platform.setConfig(
             UltralightConfig()
-                .fontHinting(FontHinting.NORMAL)
+                .fontHinting(FontHinting.SMOOTH)
                 .resourcePath(resourcePath.toString())
                 .deviceScale(window.getScale().toDouble())
         )
