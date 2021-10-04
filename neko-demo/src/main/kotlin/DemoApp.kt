@@ -3,10 +3,7 @@ import de.twometer.neko.audio.SoundEngine
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.KeyPressEvent
-import de.twometer.neko.res.AssetManager
-import de.twometer.neko.res.CubemapCache
-import de.twometer.neko.res.ModelLoader
-import de.twometer.neko.res.RawLoader
+import de.twometer.neko.res.*
 import de.twometer.neko.scene.Color
 import de.twometer.neko.scene.nodes.*
 import de.twometer.neko.util.MathF.toRadians
@@ -29,6 +26,8 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
     override fun onPostInit() {
         //Profiler.enabled = true
         //playerController = BenchmarkPlayerController()
+
+        var testFont = FontCache.get("lucida")
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)
