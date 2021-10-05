@@ -9,11 +9,11 @@ import de.twometer.neko.util.MathF.toRadians
 import imgui.ImGui
 import org.greenrobot.eventbus.Subscribe
 import org.joml.Vector3f
-import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
-import org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_ALT
+import org.lwjgl.glfw.GLFW.*
 
 class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
+    private lateinit var girl: ModelNode
     private lateinit var rin: ModelNode
     private lateinit var sky: Sky
 
@@ -29,8 +29,13 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         val testFont = FontCache.get("lucida")
 
         scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
+            it.animations.add(AnimationCache.get("walk.ani"))
             it.transform.scale.set(0.0001)
-            it.playAnimation(it.animations[0])
+            it.transform.translation.set(-1.7f,0.25f,16f)
+            it.transform.rotation.rotateX(toRadians(90f))
+            it.transform.rotation.rotateY(toRadians(-5f))
+            it.playAnimation(it.animations[1])
+            girl = it
         })
 
         scene.rootNode.attachChild(ModelLoader.load("test.fbx").also {
@@ -65,7 +70,6 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         scene.rootNode.attachChild(ModelLoader.load("demo-run.fbx").also {
             it.transform.translation.set(5f, 0f, 0f)
-            it.transform.rotation.rotateY(toRadians(15f))
             it.transform.scale.set(0.01, 0.01, 0.01)
             it.playAnimation(it.animations[0])
         })
@@ -154,6 +158,12 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         }
         if (e.key == GLFW_KEY_LEFT_ALT) {
             this.cursorVisible = !this.cursorVisible
+        }
+        if (e.key == GLFW_KEY_1) {
+            girl.playAnimation(girl.animations[0])
+        }
+        if (e.key == GLFW_KEY_2) {
+            girl.playAnimation(girl.animations[1])
         }
     }
 

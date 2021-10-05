@@ -4,6 +4,7 @@ import java.io.File
 
 enum class AssetType(val folderName: String) {
     Any(""),
+    Animations("animations/"),
     Textures("textures/"),
     Models("models/"),
     Shaders("shaders/"),
