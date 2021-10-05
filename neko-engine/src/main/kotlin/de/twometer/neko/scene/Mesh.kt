@@ -1,6 +1,5 @@
 package de.twometer.neko.scene
 
-import de.twometer.neko.scene.component.SkeletonComponent
 import de.twometer.neko.scene.nodes.Geometry
 import org.joml.Vector3f
 import org.lwjgl.system.MemoryUtil
@@ -141,8 +140,8 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {
-        return Geometry(this, material, name, aabb).also {
-            if (bones != null) it.attachComponent(SkeletonComponent(bones as Map<String, Bone>))
+        return Geometry(name, material, aabb).also { g ->
+            g.initialize(this)
             destroy()
         }
     }

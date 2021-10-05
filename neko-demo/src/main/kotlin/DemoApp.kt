@@ -42,7 +42,9 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             it.transform.translation.y = -1f
         })
 
-        scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
+        val rinPrefab = ModelLoader.load("rin.fbx")
+
+        scene.rootNode.attachChild(rinPrefab.createInstance().also {
             it.transform.translation.set(0.75f, 0f, 0f)
             it.transform.rotation.rotateX(toRadians(90f))
             it.transform.scale.set(0.0001)
@@ -52,6 +54,13 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
                 tag.transform.translation.set(0f, 1.7f, 0f)
             })
             rin = it
+        })
+
+        scene.rootNode.attachChild(rinPrefab.createInstance().also {
+            it.transform.translation.set(-2f, 0f, 0f)
+            it.transform.rotation.rotateX(toRadians(90f))
+            it.transform.scale.set(0.0001)
+            it.playAnimation(it.animations[0])
         })
 
         scene.rootNode.attachChild(ModelLoader.load("demo-run.fbx").also {

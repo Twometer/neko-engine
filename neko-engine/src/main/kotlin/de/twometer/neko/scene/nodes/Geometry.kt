@@ -2,21 +2,28 @@ package de.twometer.neko.scene.nodes
 
 import de.twometer.neko.render.Shader
 import de.twometer.neko.scene.AABB
+import de.twometer.neko.scene.Bone
 import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Mesh
+import de.twometer.neko.scene.component.SkeletonComponent
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(
-    private val mesh: Mesh,
-    material: Material = Material.Default,
-    name: String = "",
-    val aabb: AABB? = null,
-    val canPick: Boolean = true
-) :
-    RenderableNode(material, name = name) {
+class Geometry(name: String, material: Material = Material.Default, val aabb: AABB? = null) :
+    RenderableNode(name = name, material = material) {
+
+    private var vao: Int = -1
+    private var vertexBuffer: Int = -1
+    private var normalBuffer: Int? = null
+    private var texCoordBuffer: Int? = null
+    private var indexBuffer: Int? = null
+    private var boneIdBuffer: Int? = null
+    private var boneWeightBuffer: Int? = null
+    private var numIndices: Int = -1
+    private var numVertices: Int = -1
+    var canPick: Boolean = true
 
     companion object {
         const val VertexIdx = 0
@@ -26,16 +33,13 @@ class Geometry(
         const val BoneWeightIdx = 4
     }
 
-    private val vao: Int
-    private val vertexBuffer: Int
-    private val normalBuffer: Int?
-    private val texCoordBuffer: Int?
-    private val indexBuffer: Int?
-    private val boneIdBuffer: Int?
-    private val boneWeightBuffer: Int?
+    fun initialize(mesh: Mesh) {
+        mesh.normals = destroyEmptyBuffer(mesh.normals)
+        mesh.texCoords = destroyEmptyBuffer(mesh.texCoords)
+        mesh.indices = destroyEmptyBuffer(mesh.indices)
+        mesh.boneIds = destroyEmptyBuffer(mesh.boneIds)
+        mesh.boneWeights = destroyEmptyBuffer(mesh.boneWeights)
 
-    init {
-        destroyEmptyBuffers()
         mesh.vertices.flip()
         mesh.normals?.flip()
         mesh.texCoords?.flip()
@@ -52,18 +56,37 @@ class Geometry(
         indexBuffer = mesh.indices?.let { createIndexBuffer(it) }
         boneIdBuffer = mesh.boneIds?.let { createIntArrayBuffer(BoneIdIdx, 4, it) }
         boneWeightBuffer = mesh.boneWeights?.let { createFloatArrayBuffer(BoneWeightIdx, 4, it) }
+        mesh.bones?.let { attachComponent(SkeletonComponent(mesh.bones as Map<String, Bone>)) }
+
+        numIndices = mesh.numIndices
+        numVertices = mesh.numVertices
 
         glBindVertexArray(0)
+    }
+
+    override fun createInstance(): Node {
+        val node = Geometry(name = name, material = material, aabb = aabb)
+        node.initializeFrom(this)
+        node.vao = vao
+        node.vertexBuffer = vertexBuffer
+        node.normalBuffer = normalBuffer
+        node.texCoordBuffer = texCoordBuffer
+        node.indexBuffer = indexBuffer
+        node.boneIdBuffer = boneIdBuffer
+        node.boneWeightBuffer = boneWeightBuffer
+        node.numIndices = numIndices
+        node.numVertices = numVertices
+        return node
     }
 
     override fun render(shader: Shader) {
         glBindVertexArray(vao)
         if (indexBuffer != null) {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer)
-            glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, 0)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer!!)
+            glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
         } else
-            glDrawArrays(GL_TRIANGLES, 0, mesh.numVertices)
+            glDrawArrays(GL_TRIANGLES, 0, numVertices)
 
         glBindVertexArray(0)
     }
@@ -74,16 +97,6 @@ class Geometry(
         texCoordBuffer?.also { glDeleteBuffers(it) }
         indexBuffer?.also { glDeleteBuffers(it) }
         glDeleteVertexArrays(vao)
-    }
-
-    fun findModelNode(): ModelNode {
-        var node: Node? = this
-        while (node != null) {
-            if (node is ModelNode)
-                return node
-            node = node.parent
-        }
-        error("Geometry $name did not have a parent ModelNode")
     }
 
     private fun createIndexBuffer(data: IntBuffer): Int {
@@ -112,15 +125,7 @@ class Geometry(
         return vbo
     }
 
-    private fun destroyEmptyBuffers() {
-        mesh.normals = destroyEmptyBuffer(mesh.normals)
-        mesh.texCoords = destroyEmptyBuffer(mesh.texCoords)
-        mesh.indices = destroyEmptyBuffer(mesh.indices)
-        mesh.boneIds = destroyEmptyBuffer(mesh.boneIds)
-        mesh.boneWeights = destroyEmptyBuffer(mesh.boneWeights)
-    }
-
-    private  fun <T : Buffer>destroyEmptyBuffer(buffer: T?): T? {
+    private fun <T : Buffer> destroyEmptyBuffer(buffer: T?): T? {
         return if (buffer?.position() != 0)
             buffer
         else

@@ -118,4 +118,8 @@ class Animator(private val rootNode: Node) : BaseComponent() {
             .scale(interpolateScale())
     }
 
+    override fun createInstance(): BaseComponent {
+        return Animator(rootNode)
+    }
+
 }

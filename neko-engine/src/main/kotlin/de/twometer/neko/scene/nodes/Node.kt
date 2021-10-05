@@ -66,4 +66,20 @@ open class Node(
         }
     }
 
+    protected open fun createInstance(): Node {
+        val node = Node(name = name)
+        node.initializeFrom(this)
+        return node
+    }
+
+    protected fun initializeFrom(other: Node) {
+        transform.set(other.transform)
+        other.components.forEach { (_, component) ->
+            attachComponent(component.createInstance())
+        }
+        other.children.forEach {
+            attachChild(it.createInstance())
+        }
+    }
+
 }

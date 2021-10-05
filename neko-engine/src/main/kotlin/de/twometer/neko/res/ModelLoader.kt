@@ -4,8 +4,8 @@ import de.twometer.neko.render.Animator
 import de.twometer.neko.render.Texture
 import de.twometer.neko.scene.*
 import de.twometer.neko.scene.nodes.Geometry
-import de.twometer.neko.scene.nodes.ModelNode
 import de.twometer.neko.scene.nodes.Node
+import de.twometer.neko.scene.nodes.ModelNode
 import mu.KotlinLogging
 import org.joml.Matrix4f
 import org.joml.Quaternionf

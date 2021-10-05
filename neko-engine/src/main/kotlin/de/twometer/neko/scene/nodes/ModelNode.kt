@@ -11,4 +11,9 @@ class ModelNode(name: String, val animations: MutableList<Animation> = ArrayList
         }
     }
 
+    public override fun createInstance(): ModelNode {
+        val modelNode = ModelNode(this.name, animations)
+        modelNode.initializeFrom(this)
+        return modelNode
+    }
 }
