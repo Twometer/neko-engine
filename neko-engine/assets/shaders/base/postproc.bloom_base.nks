@@ -16,6 +16,8 @@
     void main() {
         float emissive = texture(gEmissive, texCoords).r;
         vec3 color = texture(postMainTex, texCoords).rgb;
+        float luma = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
+        emissive += max(luma - 0.9, 0.0);
         fragColor = vec4(color * emissive, 1);
     }
 #end fragment
