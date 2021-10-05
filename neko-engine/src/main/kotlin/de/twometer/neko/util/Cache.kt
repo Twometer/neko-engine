@@ -6,6 +6,11 @@ abstract class Cache<K, V> {
 
     protected abstract fun create(key: K): V
 
+    fun preload(key: K) {
+        if (!map.containsKey(key))
+            map[key] = create(key)
+    }
+
     fun get(key: K): V {
         var result = map[key]
         if (result == null) {
