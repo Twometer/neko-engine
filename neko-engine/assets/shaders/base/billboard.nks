@@ -21,10 +21,26 @@
     uniform vec2 glyphOffset;
     uniform vec3 glyphColor;
 
+    mat4 removeRotationFromMatrix(mat4 m) {
+        float scale = length(vec3(m[0][0], m[1][1], m[2][2]));
+        m[0][0] = scale;
+        m[1][1] = scale;
+        m[2][2] = scale;
+
+        m[1][0] = 0;
+        m[2][0] = 0;
+        m[0][1] = 0;
+        m[2][1] = 0;
+        m[0][2] = 0;
+        m[1][2] = 0;
+        return m;
+    }
+
     void main() {
+        mat3 invModel = inverse(mat3(modelMatrix));
         mat3 invViewRot = inverse(mat3(_viewMatrix));
         vec3 worldPosition = vec3(0.01 * (position * glyphSize + glyphOffset), 0.0);
-        gl_Position = _projectionMatrix * _viewMatrix * modelMatrix * vec4(invViewRot * worldPosition, 1.0);
+        gl_Position = _projectionMatrix * _viewMatrix * removeRotationFromMatrix(modelMatrix) * vec4(invViewRot * worldPosition, 1.0);
         fontColor = glyphColor;
 
         // Compute base coordinates
