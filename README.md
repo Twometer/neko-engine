@@ -14,7 +14,7 @@ A 3D game rendering engine using Kotlin and LWJGL
 - [x] Shader preprocessor: NekoShaders (.nks)
 - [x] Ultralight UI and ImGUI
 - [x] OpenAL 3D sound engine
-- [ ] 3D text billboards
+- [x] 3D text billboards
 - [x] Extensible Post Processing FX pipeline
     - [x] Scalable Ambient Occlusion
     - [x] Screen Space Reflections
@@ -32,7 +32,7 @@ A 3D game rendering engine using Kotlin and LWJGL
 
 ## Examples
 
-Example code can be found [here](https://github.com/Twometer/neko-engine/tree/main/src/main/java/example)
+Example code can be found [here](https://github.com/nekotec/neko-engine/tree/main/neko-demo)
 
 For a game made with the first version of neko engine, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
 
