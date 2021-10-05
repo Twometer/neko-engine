@@ -26,6 +26,18 @@ data class Transform(
             return Matrix4f().translate(translation).rotate(rotation).scale(scale)
         }
 
+    fun reset() {
+        translation.set(0f, 0f, 0f)
+        rotation.set(0f, 0f, 0f, 1f)
+        scale.set(1f, 1f, 1f)
+    }
+
+    fun set(other: Transform) {
+        translation.set(other.translation)
+        rotation.set(other.rotation)
+        scale.set(other.scale)
+    }
+
     operator fun times(transform: Transform): Transform {
         return Transform(
             this.translation.clone().add(transform.translation),

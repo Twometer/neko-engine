@@ -28,32 +28,30 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         val testFont = FontCache.get("lucida")
 
+        scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
+            it.transform.scale.set(0.0001)
+            it.playAnimation(it.animations[0])
+        })
+
+        scene.rootNode.attachChild(ModelLoader.load("test.fbx").also {
+            it.transform.scale.set(0.01f)
+        })
+
+        scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
+            it.transform.scale.set(0.0001f)
+            it.transform.translation.y = -1f
+        })
 
         scene.rootNode.attachChild(ModelLoader.load("rin.fbx").also {
             it.transform.translation.set(0.75f, 0f, 0f)
-            it.transform.scale.set(0.01, 0.01, 0.01)
+            it.transform.rotation.rotateX(toRadians(90f))
+            it.transform.scale.set(0.0001)
             it.playAnimation(it.animations[0])
-            rin = it
-        })
-
-
-
-        scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
-            it.transform.translation.set(2f, 0f, 0f)
-            it.transform.scale.set(0.01, 0.01, 0.01)
-            it.playAnimation(it.animations[0])
-
             it.attachChild(Billboard(testFont, "TheLegend27").also { tag ->
-                tag.transform.scale.set(10f, 10f, 10f)
-                tag.transform.translation.set(0f,1.7f,0f)
+                tag.transform.scale.set(1000f, 1000f, 100f)
+                tag.transform.translation.set(0f, 1.7f, 0f)
             })
-        })
-
-        scene.rootNode.attachChild(ModelLoader.load("test.fbx"))
-
-        scene.rootNode.attachChild(ModelLoader.load("ground.fbx").also {
-            it.transform.rotation.rotateX(toRadians(-90f))
-            it.transform.translation.y = -1f
+            rin = it
         })
 
         scene.rootNode.attachChild(ModelLoader.load("demo-run.fbx").also {
@@ -96,7 +94,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
     override fun onTimerTick() {
         //sky.transform.rotation.rotateY(0.0002f)
-        rin.transform.translation.z += 0.025f
+        rin.transform.translation.z += 0.055f
     }
 
     var selectedNode: Node? = null
@@ -124,6 +122,10 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
                 ImGui.text("POS:" + this.transform.translation)
                 ImGui.text("ROT:" + this.transform.rotation)
                 ImGui.text("SCALE:" + this.transform.scale)
+
+                if (ImGui.button("RESET")) {
+                    this.transform.reset()
+                }
             }
             ImGui.end()
         }

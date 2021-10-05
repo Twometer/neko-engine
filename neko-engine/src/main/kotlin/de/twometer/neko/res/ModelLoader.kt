@@ -3,7 +3,9 @@ package de.twometer.neko.res
 import de.twometer.neko.render.Animator
 import de.twometer.neko.render.Texture
 import de.twometer.neko.scene.*
+import de.twometer.neko.scene.nodes.Geometry
 import de.twometer.neko.scene.nodes.ModelNode
+import de.twometer.neko.scene.nodes.Node
 import mu.KotlinLogging
 import org.joml.Matrix4f
 import org.joml.Quaternionf
@@ -39,7 +41,8 @@ object ModelLoader {
 
         val animations = ArrayList<Animation>()
         val materials = ArrayList<Material>()
-        val node = ModelNode(name = modelFileName, animations = animations)
+        val geometries = ArrayList<Geometry>()
+        val modelNode = ModelNode(name = modelFileName, animations = animations)
 
         aiScene.mAnimations()?.also {
             val aiNumAnimations = aiScene.mNumAnimations()
@@ -59,25 +62,49 @@ object ModelLoader {
             }
         }
 
+        val rootNode = Node("RootNode")
         aiScene.mMeshes()?.also {
             val aiNumMeshes = aiScene.mNumMeshes()
             for (i in 0 until aiNumMeshes) {
                 val aiMesh = AIMesh.create(it[i])
                 val material = materials[aiMesh.mMaterialIndex()]
-                val mesh = createMesh(aiMesh, aiScene.mRootNode())
+                val mesh = createMesh(aiMesh)
                 val geometry = mesh.toGeometry(material)
 
-                if (mesh.hasRig() && node.animations.isNotEmpty()) {
+                if (mesh.hasBones() && modelNode.animations.isNotEmpty()) {
                     material.shader = "base/geometry.animated.nks"
-                    geometry.attachChild(geometry.skeletonRoot!!)
-                    geometry.attachComponent(Animator())
+                    geometry.attachComponent(Animator(rootNode))
                 }
 
+                geometries.add(geometry)
+            }
+        }
+
+
+        importNodeTree(aiScene.mRootNode()!!, rootNode, geometries)
+        modelNode.attachChild(rootNode)
+
+        return modelNode
+    }
+
+    private fun importNodeTree(aiNode: AINode, node: Node, geometries: List<Geometry>) {
+        node.transform.set(Transform.fromMatrix(aiNode.mTransformation().toMatrix4f()))
+
+        aiNode.mMeshes()?.also {
+            while (it.hasRemaining()) {
+                val geometry = geometries[it.get()]
                 node.attachChild(geometry)
             }
         }
 
-        return node
+        aiNode.mChildren()?.also {
+            while (it.hasRemaining()) {
+                val aiChildNode = AINode.create(it.get())
+                val childNode = Node(aiChildNode.mName().dataString())
+                node.attachChild(childNode)
+                importNodeTree(aiChildNode, childNode, geometries)
+            }
+        }
     }
 
     private fun createBone(aiBone: AIBone, index: Int): Bone {
@@ -131,21 +158,7 @@ object ModelLoader {
         return animation
     }
 
-    private fun createBoneHierarchy(bones: Map<String, Bone>, baseNode: AINode): SkeletonNode {
-        val bone = bones[baseNode.mName().dataString()]
-
-        val skeletonNode = SkeletonNode(baseNode.mName().dataString(), bone, baseNode.mTransformation().toMatrix4f())
-        baseNode.mChildren()?.apply {
-            while (this.hasRemaining()) {
-                val aiNode = AINode.create(this.get())
-                val node = createBoneHierarchy(bones, aiNode)
-                skeletonNode.children.add(node)
-            }
-        }
-        return skeletonNode
-    }
-
-    private fun createMesh(aiMesh: AIMesh, rootNode: AINode?): Mesh {
+    private fun createMesh(aiMesh: AIMesh): Mesh {
         val name = aiMesh.mName().dataString()
         logger.debug {
             "Loading mesh $name (${aiMesh.mNumVertices()} vertices, ${aiMesh.mNumFaces()} tris, ${aiMesh.mNumBones()} bones)"
@@ -170,17 +183,13 @@ object ModelLoader {
 
         val aiBones = aiMesh.mBones()
         aiBones?.apply {
-            mesh.addRig()
+            mesh.addBones()
 
-            val bones = HashMap<String, Bone>()
             while (aiBones.hasRemaining()) {
                 val aiBone = AIBone.create(aiBones.get())
-                val bone = createBone(aiBone, bones.size)
-                mesh.putBoneVertexData(bone)
-                bones[bone.name] = bone
+                val bone = createBone(aiBone, mesh.bones!!.size)
+                mesh.putBone(bone)
             }
-
-            mesh.skeletonRoot = createBoneHierarchy(bones, rootNode!!)
         }
 
         val aiFaces = aiMesh.mFaces()

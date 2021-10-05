@@ -4,7 +4,6 @@ import de.twometer.neko.render.Shader
 import de.twometer.neko.scene.AABB
 import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Mesh
-import de.twometer.neko.scene.SkeletonNode
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
 import java.nio.FloatBuffer
@@ -14,7 +13,6 @@ class Geometry(
     private val mesh: Mesh,
     material: Material = Material.Default,
     name: String = "",
-    val skeletonRoot: SkeletonNode? = null,
     val aabb: AABB? = null,
     val canPick: Boolean = true
 ) :

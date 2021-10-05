@@ -1,5 +1,6 @@
 package de.twometer.neko.scene
 
+import de.twometer.neko.scene.component.SkeletonComponent
 import de.twometer.neko.scene.nodes.Geometry
 import org.joml.Vector3f
 import org.lwjgl.system.MemoryUtil
@@ -20,7 +21,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     var indices: IntBuffer? = null
     var boneIds: IntBuffer? = null
     var boneWeights: FloatBuffer? = null
-    var skeletonRoot: SkeletonNode? = null
+    var bones: MutableMap<String, Bone>? = null
 
     var numVertices = 0
         private set
@@ -34,9 +35,10 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     var dimTexCoords = 0
         private set
 
-    fun addRig(): Mesh {
+    fun addBones(): Mesh {
         boneIds = MemoryUtil.memAllocInt(capacity * 4)
         boneWeights = MemoryUtil.memAllocFloat(capacity * 4)
+        bones = HashMap()
 
         // Fill rig with default values
         for (i in 0 until capacity * MAX_BONE_INFLUENCE) {
@@ -47,7 +49,7 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
         return this
     }
 
-    fun hasRig() = boneIds != null && boneWeights != null
+    fun hasBones() = boneIds != null && boneWeights != null && bones != null
 
     fun addNormals(): Mesh {
         normals = MemoryUtil.memAllocFloat(capacity * dimensions)
@@ -111,13 +113,18 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
         numIndices += indices.size
     }
 
-    fun putBoneVertexData(bone: Bone) {
+    fun putBone(bone: Bone) {
+        if (!hasBones())
+            throw IllegalStateException("Cannot put bone data to mesh without a rig")
+
+        this.bones!![bone.name] = bone
+
         bone.vertexWeights.forEach {
             val baseOffset = it.vertexId * MAX_BONE_INFLUENCE
             for (i in 0 until MAX_BONE_INFLUENCE) {
-                if (boneIds?.get(baseOffset + i)!! < 0) {
-                    boneIds?.put(baseOffset + i, bone.index)
-                    boneWeights?.put(baseOffset + i, it.weight)
+                if (boneIds!!.get(baseOffset + i) < 0) {
+                    boneIds!!.put(baseOffset + i, bone.index)
+                    boneWeights!!.put(baseOffset + i, it.weight)
                     break
                 }
             }
@@ -134,7 +141,10 @@ class Mesh(private val capacity: Int, val dimensions: Int, val name: String = "U
     }
 
     fun toGeometry(material: Material = Material.Default): Geometry {
-        return Geometry(this, material, name, skeletonRoot, aabb).also { destroy() }
+        return Geometry(this, material, name, aabb).also {
+            if (bones != null) it.attachComponent(SkeletonComponent(bones as Map<String, Bone>))
+            destroy()
+        }
     }
 
 }
