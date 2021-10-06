@@ -42,6 +42,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
     var guiManager: GuiManager = GuiManager()
     var cursorVisible = false
     var fpsLimit = 60
+    var loadingPage = "base/loading.html"
 
     private val performanceProfile = HashMap<String, Double>()
     private val performanceHistory = FloatArray(144)
@@ -70,7 +71,7 @@ open class NekoApp(config: AppConfig = AppConfig()) {
         Events.post(ResizeEvent(width, height))
 
         // Rendering context ready - display the loading screen
-        guiManager.page = Page("base/loading.html")
+        guiManager.page = Page(loadingPage)
         do {
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
             guiManager.render()
