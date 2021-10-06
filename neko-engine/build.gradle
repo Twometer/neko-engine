@@ -2,6 +2,7 @@ import org.gradle.internal.os.OperatingSystem
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+    id 'maven-publish'
 }
 
 group 'de.twometer'
@@ -11,16 +12,23 @@ version '2.0.0'
 project.ext.lwjglVersion = "3.2.3"
 project.ext.imguiVersion = "1.84.1.0"
 
-switch (OperatingSystem.current()) {
-    case OperatingSystem.LINUX:
-        project.ext.natives = "natives-linux"
-        break
-    case OperatingSystem.MAC_OS:
-        project.ext.natives = "natives-macos"
-        break
-    case OperatingSystem.WINDOWS:
-        project.ext.natives = "natives-windows"
-        break
+/* Use appropriate natives */
+if (System.getenv("NEKO_NATIVES") == null) {
+    switch (OperatingSystem.current()) {
+        case OperatingSystem.LINUX:
+            project.ext.natives = "natives-linux"
+            break
+        case OperatingSystem.MAC_OS:
+            project.ext.natives = "natives-macos"
+            break
+        case OperatingSystem.WINDOWS:
+            project.ext.natives = "natives-windows"
+            break
+        default:
+            throw IllegalStateException("Unsupported operating system")
+    }
+} else {
+    project.ext.natives = System.getenv("NEKO_NATIVES")
 }
 
 repositories {
@@ -63,5 +71,36 @@ dependencies {
 jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'neko-engine'
+            from components.java
+            pom {
+                name = 'neko-engine'
+                description = 'Neko Engine is a 3D game engine using Kotlin and LWJGL'
+                url = 'https://github.com/nekotec/neko-engine'
+                licenses {
+                    license {
+                        name = 'Apache License 2.0'
+                        url = 'https://github.com/nekotec/neko-engine/blob/main/LICENSE'
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "maven.twometer.de"
+            url = "https://maven.twometer.de/releases"
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
     }
 }
