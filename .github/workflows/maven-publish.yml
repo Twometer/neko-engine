@@ -11,7 +11,7 @@ jobs:
         with:
           java-version: 11
       - name: Publish package
-        run: gradle publish
+        run: ./gradlew publish
         env:
           MAVEN_USER: ${{ secrets.MAVEN_USER }}
           MAVEN_PASS: ${{ secrets.MAVEN_PASS }}
