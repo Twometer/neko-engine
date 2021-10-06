@@ -12,7 +12,7 @@ class DefaultPlayerController : PlayerController {
     var sensitivity = 0.25f
 
     override fun updateCamera(window: Window, scene: Scene, deltaTime: Double) {
-        if (!window.isFocused() || NekoApp.the?.cursorVisible == true)
+        if (!window.isFocused() || NekoApp.the.cursorVisible)
             return
 
         var speed = this.speed * deltaTime.toFloat()

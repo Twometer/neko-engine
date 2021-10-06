@@ -10,7 +10,7 @@ import org.lwjgl.glfw.GLFW.*
 
 class UltralightNekoInputAdapter(private val view: UltralightView) {
 
-    val window = NekoApp.the!!.window
+    val window = NekoApp.the.window
 
     @Subscribe
     fun keyCallback(e: KeyEvent) {

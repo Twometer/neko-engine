@@ -4,7 +4,7 @@ import de.twometer.neko.core.NekoApp
 
 open class Page(val path: String) {
 
-    private val guiManager = NekoApp.the!!.guiManager
+    private val guiManager = NekoApp.the.guiManager
 
     open fun onDocumentReady() = Unit
 

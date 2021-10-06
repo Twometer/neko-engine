@@ -14,7 +14,7 @@ private val logger = KotlinLogging.logger {}
 
 class UltralightNekoViewListener : UltralightViewListener {
 
-    private val window = NekoApp.the!!.window
+    private val window = NekoApp.the.window
 
     override fun onChangeTitle(title: String?) = Unit
 

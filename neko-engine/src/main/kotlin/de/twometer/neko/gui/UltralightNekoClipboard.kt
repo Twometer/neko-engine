@@ -5,12 +5,12 @@ import de.twometer.neko.core.NekoApp
 
 class UltralightNekoClipboard : UltralightClipboard {
 
-    override fun clear() = NekoApp.the!!.window.setClipboardContent("")
+    override fun clear() = NekoApp.the.window.setClipboardContent("")
 
-    override fun readPlainText(): String = NekoApp.the!!.window.getClipboardContent() ?: ""
+    override fun readPlainText(): String = NekoApp.the.window.getClipboardContent() ?: ""
 
     override fun writePlainText(text: String?) {
-        if (text != null) NekoApp.the!!.window.setClipboardContent(text)
+        if (text != null) NekoApp.the.window.setClipboardContent(text)
     }
 
 }
