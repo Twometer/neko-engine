@@ -24,6 +24,7 @@ private val logger = KotlinLogging.logger {}
 
 class GuiManager : UltralightLoadListener {
 
+    private val globalObjects = HashMap<String, Any>()
     private lateinit var shader: Shader
     private lateinit var renderer: UltralightRenderer
     private lateinit var view: UltralightView
@@ -143,6 +144,10 @@ class GuiManager : UltralightLoadListener {
         }
     }
 
+    fun registerGlobalObject(key: String, value: Any) {
+        globalObjects[key] = value
+    }
+
     @Subscribe
     fun onResize(event: ResizeEvent) = view.resize(event.width.toLong(), event.height.toLong())
 
@@ -168,7 +173,9 @@ class GuiManager : UltralightLoadListener {
 
         page?.run {
             contextProvider.syncWithJavascript {
-                contextProvider.registerObject(it.context, "Remote", this)
+                contextProvider.registerObject(it.context, "_remote", this)
+                for (global in globalObjects)
+                    contextProvider.registerObject(it.context, global.key, global.value)
                 this.onLoaded()
                 runScript("if (typeof OnLoad !== 'undefined') { OnLoad(); }")
             }
