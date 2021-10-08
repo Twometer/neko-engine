@@ -5,13 +5,14 @@ import de.twometer.neko.scene.AABB
 import de.twometer.neko.scene.Bone
 import de.twometer.neko.scene.Material
 import de.twometer.neko.scene.Mesh
+import de.twometer.neko.scene.component.BoundingBoxProviderComponent
 import de.twometer.neko.scene.component.SkeletonComponent
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-class Geometry(name: String, material: Material = Material.Default, val aabb: AABB? = null) :
+class Geometry(name: String, material: Material = Material.Default, private val _aabb: AABB? = null) :
     RenderableNode(name = name, material = material) {
 
     private var vao: Int = -1
@@ -24,6 +25,8 @@ class Geometry(name: String, material: Material = Material.Default, val aabb: AA
     private var numIndices: Int = -1
     private var numVertices: Int = -1
     var canPick: Boolean = true
+    val aabb: AABB?
+        get() = getComponent<BoundingBoxProviderComponent>()?.provider?.invoke(this) ?: _aabb
 
     companion object {
         const val VertexIdx = 0
@@ -65,7 +68,7 @@ class Geometry(name: String, material: Material = Material.Default, val aabb: AA
     }
 
     override fun createInstance(): Node {
-        val node = Geometry(name = name, material = material, aabb = aabb)
+        val node = Geometry(name = name, material = material, _aabb = _aabb)
         node.initializeFrom(this)
         node.vao = vao
         node.vertexBuffer = vertexBuffer

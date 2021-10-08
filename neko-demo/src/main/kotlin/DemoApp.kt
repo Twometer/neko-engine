@@ -2,16 +2,22 @@ import de.twometer.neko.audio.SoundEngine
 import de.twometer.neko.core.AppConfig
 import de.twometer.neko.core.NekoApp
 import de.twometer.neko.events.KeyPressEvent
+import de.twometer.neko.events.RenderForwardEvent
+import de.twometer.neko.render.Primitives
 import de.twometer.neko.res.*
+import de.twometer.neko.scene.AABB
 import de.twometer.neko.scene.Color
+import de.twometer.neko.scene.component.BoundingBoxProviderComponent
 import de.twometer.neko.scene.nodes.*
 import de.twometer.neko.util.MathF.toRadians
 import imgui.ImGui
 import org.greenrobot.eventbus.Subscribe
+import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.opengl.GL11.*
 
-class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
+class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo", windowIcon = "icon.png")) {
 
     private lateinit var girl: ModelNode
     private lateinit var rin: ModelNode
@@ -28,10 +34,23 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
 
         val testFont = FontCache.get("lucida")
 
+        scene.rootNode.attachChild(ModelLoader.load("astronaut.fbx").also {
+            it.transform.translation.set(-1.7f, 0.25f, 16f)
+            it.transform.rotation.rotateX(toRadians(90f))
+            //it.transform.rotation.rotateY(toRadians(-45f))
+            it.scanTree(ScanFilters.GEOMETRY) { n ->
+                n.attachComponent(BoundingBoxProviderComponent {
+                    AABB(Vector3f(), Vector3f(1f, 1f, 1f))
+                })
+            }
+
+            it.playAnimation(it.animations[1])
+        })
+
         scene.rootNode.attachChild(ModelLoader.load("girl.fbx").also {
             it.animations.add(AnimationCache.get("walk.ani"))
             it.transform.scale.set(0.0001)
-            it.transform.translation.set(-1.7f,0.25f,16f)
+            it.transform.translation.set(-1.7f, 0.25f, 16f)
             it.transform.rotation.rotateX(toRadians(90f))
             it.transform.rotation.rotateY(toRadians(-5f))
             it.playAnimation(it.animations[1])
@@ -80,7 +99,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
             it.transform.translation.set(2f, 2f, 0f)
         })
 
-        scene.rootNode.attachChild(ModelLoader.load("skeld.obj"))
+        //scene.rootNode.attachChild(ModelLoader.load("skeld.obj"))
 
         val lightPositions = RawLoader.loadLines("lights.txt")
         for (pos in lightPositions) {
@@ -137,7 +156,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
                 ImGui.text("SCALE:" + this.transform.scale)
 
                 if (ImGui.button("RESET")) {
-                    this.transform.reset()
+                    this.transform.scale.set(1f, 1f, 1f)
                 }
             }
             ImGui.end()
@@ -167,7 +186,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         }
     }
 
-    /*@Subscribe
+    @Subscribe
     fun renderFwd(e: RenderForwardEvent) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         val shader = ShaderCache.get("debug.nks")
@@ -183,7 +202,7 @@ class DemoApp : NekoApp(AppConfig(windowTitle = "Neko Engine Demo")) {
         }
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    }*/
+    }
 }
 
 fun main() {

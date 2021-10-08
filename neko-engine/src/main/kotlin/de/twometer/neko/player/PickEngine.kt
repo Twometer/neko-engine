@@ -25,7 +25,7 @@ class PickEngine(private val scene: Scene) {
         val nodes = ArrayList<NodeReference>()
         scene.rootNode.scanTree {
             if (it is Geometry && it.aabb != null && it.canPick) {
-                val transformedAABB = it.aabb.transform(it.compositeTransform.matrix)
+                val transformedAABB = it.aabb!!.transform(it.compositeTransform.matrix)
                 val distSq = scene.camera.position.distanceSquared(transformedAABB.center)
                 if (distSq <= maxDistanceSq)
                     nodes.add(NodeReference(it, transformedAABB, distSq))
