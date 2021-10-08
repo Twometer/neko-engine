@@ -1,10 +1,14 @@
 package de.twometer.neko.core
 
 import de.twometer.neko.events.*
+import de.twometer.neko.res.AssetManager
+import de.twometer.neko.res.AssetType
+import de.twometer.neko.res.ImageLoader
 import de.twometer.neko.util.Cache
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
+import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL
 import org.lwjgl.system.MemoryUtil.NULL
 
@@ -56,6 +60,15 @@ class Window(private val config: AppConfig) {
             if (action == GLFW_REPEAT || action == GLFW_PRESS)
                 Events.post(KeyPressEvent(key))
             Events.post(KeyEvent(key, scancode, action, mods))
+        }
+
+        if (config.windowIcon != null) {
+            val image = ImageLoader.load(AssetManager.resolve(config.windowIcon, AssetType.Textures).absolutePath)
+            val glfwArray = GLFWImage.malloc(1)
+            val glfwImage = GLFWImage.malloc()
+            glfwImage.set(image.width, image.height, image.pixels)
+            glfwArray.put(0, glfwImage)
+            glfwSetWindowIcon(handle, glfwArray)
         }
     }
 
