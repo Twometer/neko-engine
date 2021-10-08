@@ -49,6 +49,11 @@ open class Node(
         parent = null
     }
 
+    fun scanTree(filter: (Node) -> Boolean, consumer: (Node) -> Unit) {
+        children.forEach { it.scanTree(filter, consumer) }
+        if (filter(this)) consumer(this)
+    }
+
     fun scanTree(consumer: (Node) -> Unit) {
         children.forEach { it.scanTree(consumer) }
         consumer(this)
