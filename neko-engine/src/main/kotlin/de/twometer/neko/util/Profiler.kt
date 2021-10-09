@@ -34,11 +34,12 @@ class ProfileSection {
 object Profiler {
 
     var enabled = false
+    private var thisFrameEnabled = false
     private val profile = HashMap<String, ProfileSection>()
     private val sectionStack = Stack<String>()
 
     fun begin(name: String) {
-        if (!enabled) return
+        if (!thisFrameEnabled) return
 
         var entry = profile[name]
         if (entry == null) {
@@ -50,13 +51,14 @@ object Profiler {
     }
 
     fun end() {
-        if (!enabled) return
+        if (!thisFrameEnabled) return
 
         profile[sectionStack.pop()]!!.runEndQuery()
     }
 
     fun beginFrame() {
-        if (!enabled) return
+        thisFrameEnabled = enabled
+        if (!thisFrameEnabled) return
 
         for (section in profile)
             section.value.reset()
@@ -65,7 +67,7 @@ object Profiler {
     }
 
     fun endFrame() {
-        if (!enabled) return
+        if (!thisFrameEnabled) return
 
         end()
         for (section in profile)
