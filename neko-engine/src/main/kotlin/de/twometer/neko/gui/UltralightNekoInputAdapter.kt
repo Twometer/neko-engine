@@ -16,6 +16,10 @@ class UltralightNekoInputAdapter(private val view: UltralightView) {
     fun keyCallback(e: KeyEvent) {
         val translatedKey = glfwToUltralightKey(e.key)
 
+        // Disallow history navigation using backspace
+        if (e.key == GLFW_KEY_BACKSPACE && !view.hasInputFocus())
+            return
+
         // Build the event
         val event = UltralightKeyEvent()
             .type(if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) UltralightKeyEventType.RAW_DOWN else UltralightKeyEventType.UP)
