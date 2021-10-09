@@ -58,6 +58,8 @@ dependencies {
     api "io.github.spair:imgui-java-binding:$imguiVersion"
     api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
 
+    implementation 'com.google.code.gson:gson:2.8.8'
+
     runtimeOnly "org.lwjgl:lwjgl::$natives"
     runtimeOnly "org.lwjgl:lwjgl-assimp::$natives"
     runtimeOnly "org.lwjgl:lwjgl-glfw::$natives"
