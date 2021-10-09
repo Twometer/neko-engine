@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'de.twometer'
-version '2.2.0'
+version '2.3.0'
 
 /* Version configuration */
 project.ext.lwjglVersion = "3.2.3"
