@@ -68,7 +68,7 @@ class Geometry(name: String, material: Material = Material.Default, private val 
     }
 
     override fun createInstance(): Node {
-        val node = Geometry(name = name, material = material, _aabb = _aabb)
+        val node = Geometry(name = name, material = material.createInstance(), _aabb = _aabb)
         node.initializeFrom(this)
         node.vao = vao
         node.vertexBuffer = vertexBuffer

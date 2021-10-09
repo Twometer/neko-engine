@@ -52,6 +52,10 @@ data class Material(
 
     fun hasProperty(key: String) = props.containsKey(key)
 
+    fun createInstance(): Material {
+        return Material(name, HashMap(props), shader)
+    }
+
     private fun sanitize(key: String, value: Any?): Any? {
         return when {
             value == null -> value
