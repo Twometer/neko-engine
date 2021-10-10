@@ -28,7 +28,7 @@ open class Page(val path: String) {
     }
 
     protected fun setElementProperty(elementId: String, property: String, value: String) {
-        runScript("document.getElementById('$elementId')['$property'] = ${escapeJs(value)};")
+        runScript("document.getElementById('$elementId')['$property'] = '${escapeJs(value)}';")
     }
 
     protected fun setElementText(elementId: String, text: String) {
