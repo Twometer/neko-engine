@@ -1,6 +1,7 @@
 package de.twometer.neko.gui
 
 import com.labymedia.ultralight.UltralightJava
+import com.labymedia.ultralight.UltralightLoadException
 import com.labymedia.ultralight.UltralightPlatform
 import com.labymedia.ultralight.config.FontHinting
 import com.labymedia.ultralight.config.UltralightConfig
@@ -26,7 +27,14 @@ object UltralightLoader {
         if (!Files.exists(ultralightPath))
             error("Ultralight natives not found")
 
-        UltralightJava.extractNativeLibrary(ultralightPath)
+        try {
+            UltralightJava.extractNativeLibrary(ultralightPath)
+        } catch (e: UltralightLoadException) {
+            if (e.cause is AccessDeniedException)
+                logger.warn { "Write access to the Ultralight natives directory is denied. This is probably due to the app already running, ignoring." }
+            else throw e
+        }
+
         UltralightJava.load(ultralightPath)
 
         val platform = UltralightPlatform.instance()
