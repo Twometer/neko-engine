@@ -30,7 +30,7 @@ object UltralightLoader {
         try {
             UltralightJava.extractNativeLibrary(ultralightPath)
         } catch (e: UltralightLoadException) {
-            if (e.cause is AccessDeniedException)
+            if (e.cause is java.nio.file.AccessDeniedException)
                 logger.warn { "Write access to the Ultralight natives directory is denied. This is probably due to the app already running, ignoring." }
             else throw e
         }

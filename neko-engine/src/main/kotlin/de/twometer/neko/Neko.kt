@@ -2,6 +2,6 @@ package de.twometer.neko
 
 object Neko {
 
-    const val VERSION = "2.3.2"
+    const val VERSION = "2.3.3"
 
 }
