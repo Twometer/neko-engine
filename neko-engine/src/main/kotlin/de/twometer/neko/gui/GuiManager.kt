@@ -30,11 +30,17 @@ class GuiManager : UltralightLoadListener {
     private lateinit var view: UltralightView
     private lateinit var contextProvider: PageContextProvider
 
+    private val loadLock = Object()
     var finishedLoading: Boolean = false
         private set
 
     var page: Page? = null
         set(newVal) {
+            synchronized(loadLock) {
+                if (!finishedLoading && field != null)
+                    loadLock.wait()
+            }
+
             field?.onUnloaded()
             field = newVal
             finishedLoading = false
@@ -169,8 +175,6 @@ class GuiManager : UltralightLoadListener {
     }
 
     override fun onFinishLoading(frameId: Long, isMainFrame: Boolean, url: String?) {
-        finishedLoading = true
-
         page?.run {
             contextProvider.syncWithJavascript {
                 contextProvider.registerObject(it.context, "_remote", this)
@@ -178,12 +182,19 @@ class GuiManager : UltralightLoadListener {
                     contextProvider.registerObject(it.context, global.key, global.value)
                 this.onLoaded()
                 runScript("if (typeof OnLoad !== 'undefined') { OnLoad(); }")
+
+                synchronized(loadLock) {
+                    finishedLoading = true
+                    loadLock.notifyAll()
+                }
             }
         }
     }
 
     override fun onBeginLoading(frameId: Long, isMainFrame: Boolean, url: String?) {
-        finishedLoading = false
+        synchronized(loadLock) {
+            finishedLoading = false
+        }
     }
 
     override fun onUpdateHistory() = Unit
