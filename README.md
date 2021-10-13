@@ -35,7 +35,7 @@ dependencies {
 
 Example code can be found [here](https://github.com/nekotec/neko-engine/tree/main/neko-demo)
 
-For a game made with the first version of neko engine, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
+For a game made with the Neko Engine, see my [Among Us 3D](https://github.com/Twometer/among-us-3d)
 
 ## Debugging
 
